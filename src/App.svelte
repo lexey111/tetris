@@ -40,7 +40,7 @@
 <style>
     #todo {
 	    position: absolute;
-	    bottom: 20px;
+	    bottom: 100px;
 	    left: 120px;
     }
 </style>

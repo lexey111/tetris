@@ -1,5 +1,5 @@
-import type {TThreeFrame} from "./scene-globals";
-import {World} from "./scene-globals";
+import type {TThreeFrame} from "../world/world-globals";
+import {World} from "../world/world-globals";
 import * as THREE from "three";
 
 export function initScene(container, sizeX, sizeY) {
@@ -9,7 +9,7 @@ export function initScene(container, sizeX, sizeY) {
 		container: container,
 		scene: new THREE.Scene(),
 		camera: new THREE.PerspectiveCamera(75, sizeX / sizeY, 0.1, 500),
-		renderer: new THREE.WebGLRenderer({alpha: true, antialias: false}),
+		renderer: new THREE.WebGLRenderer({alpha: false, antialias: false}),
 		sizeX: sizeX,
 		sizeY: sizeY
 	}
@@ -50,6 +50,7 @@ export function initScene(container, sizeX, sizeY) {
 	Frame.renderer.shadowMap.enabled = true;
 	Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+	Frame.animation = true;
 	World.frames.push(Frame);
 }
 

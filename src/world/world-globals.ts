@@ -8,6 +8,7 @@ export type TThreeFrame = {
 	camera?: THREE.OrthographicCamera | THREE.PerspectiveCamera
 	sizeX: number
 	sizeY: number
+	animation?: boolean
 }
 
 export type TWorld = {

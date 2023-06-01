@@ -6,7 +6,7 @@
 	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
 	import {renderLetter} from "../symbols/font-utils";
 
-	export let text = '';
+	export let text = 'AAAA';
 
 	let Frame: TThreeFrame;
 	const scale = 10;
@@ -38,7 +38,7 @@
 
 	function initScene() {
 		Frame = {
-			container: document.getElementById('score'),
+			container: document.getElementById('next'),
 			scene: new THREE.Scene(),
 			renderer: new THREE.WebGLRenderer({alpha: false, antialias: false}),
 			camera: new THREE.OrthographicCamera(sizeX / -2, sizeX / 2, sizeY / 2, sizeY / -2, -10, 20000),
@@ -100,4 +100,4 @@
 	}
 </style>
 
-<div id="score"></div>
+<div id="next"></div>
