@@ -46,6 +46,7 @@
 
 		World.cube.rotation.x += 0.01;
 		World.cube.rotation.y += 0.01;
+		World.cube.rotation.z -= 0.01;
 
 		World.light.position.z += World.inc;
 		if (World.light.position.z > 5) {

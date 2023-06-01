@@ -8,15 +8,14 @@ export type TThreeFrame = {
 	camera?: THREE.OrthographicCamera | THREE.PerspectiveCamera
 	sizeX: number
 	sizeY: number
-	animation?: boolean
 }
 
 export type TWorld = {
 	frames: TThreeFrame[]
 	inc: number
 	light?: THREE.DirectionalLight
-	cube?: any,
-	text?: any,
+	cube?: any
+	text?: any
 }
 export const World: TWorld = {
 	frames: [],

@@ -3,20 +3,29 @@
 	import * as THREE from "three";
 	import {World} from "../world/world-globals.ts";
 	import type {TThreeFrame} from "../world/world-globals";
-	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
-	import {renderLetter} from "../symbols/font-utils";
+	import type {TFigureType} from "../figures/figures";
+	import {createFigure} from "../figures/figures-builder";
+	import {createCube} from "../figures/figures-utils";
 
-	export let text = 'AAAA';
+	export let type: TFigureType = 'S';
 
 	let Frame: TThreeFrame;
-	const scale = 10;
+	const scale = 50;
 
 	let sizeX;
-	const sizeY = scale * SymbolHeight / 2;
+	let sizeY;
+	let figure;
 	$: {
-		sizeX = scale * text.length * SymbolWidth / 2;
-		console.log('set size x', sizeX, text.length);
-		updateScene();
+		figure = createFigure(type);
+		console.log('figure', figure);
+		if (figure) {
+			sizeX = figure.width * scale;
+			sizeY = figure.height * scale;
+			console.log('size', sizeX, sizeY)
+			// sizeX = 4 * scale;
+			// sizeY = 4 * scale;
+			updateScene();
+		}
 	}
 
 	onMount(() => {
@@ -28,11 +37,18 @@
 		if (!Frame) {
 			return;
 		}
-		drawText();
+		console.log('draw', sizeX, sizeY)
+		drawFigure();
 		Frame.renderer.setSize(sizeX, sizeY);
 		(Frame.camera as THREE.OrthographicCamera).left = sizeX / -2;
 		(Frame.camera as THREE.OrthographicCamera).right = sizeX / 2;
-		Frame.camera.zoom = scale / 2;
+		(Frame.camera as THREE.OrthographicCamera).top = sizeY / -2;
+		(Frame.camera as THREE.OrthographicCamera).bottom = sizeY / 2;
+
+		(Frame.camera as THREE.OrthographicCamera).position.y = 0;
+		figure.height;
+
+		Frame.camera.zoom = scale;
 		Frame.camera.updateProjectionMatrix();
 	}
 
@@ -41,11 +57,11 @@
 			container: document.getElementById('next'),
 			scene: new THREE.Scene(),
 			renderer: new THREE.WebGLRenderer({alpha: false, antialias: false}),
-			camera: new THREE.OrthographicCamera(sizeX / -2, sizeX / 2, sizeY / 2, sizeY / -2, -10, 20000),
+			camera: new THREE.OrthographicCamera(sizeX / -2, sizeX / 2, sizeY / 2, sizeY / -2, -10, 2000),
+			// camera: new THREE.PerspectiveCamera(75, sizeX / sizeY, 0.1, 500),
 			sizeX: sizeX,
 			sizeY: sizeY
 		};
-		Frame.camera.position.y = SymbolHeight / 1.8;
 
 		Frame.container.appendChild(Frame.renderer.domElement);
 
@@ -57,27 +73,31 @@
 		const semiLight = new THREE.HemisphereLight(0x8080A0, 0x222222, 0.84);
 
 		Frame.scene.add(semiLight);
+		const cube = createCube();
+		cube.scale.set(0.2, 0.2, 0.5);
+		Frame.scene.add(cube);
 
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 		World.frames.push(Frame);
 	}
 
-	function drawText() {
+	function drawFigure() {
 		if (!Frame) {
 			return;
 		}
-		clearText();
-		const xOffset = text.length * SymbolWidth / 2;
+		clearFigure();
 
-		text.split('').forEach((sym, idx) => {
-			const symbol = renderLetter(sym);
-			symbol.position.x = idx * SymbolWidth - xOffset;
-			Frame.scene.add(symbol);
-		});
+		const fig = figure.object.clone();
+
+		fig.position.setX(-(figure.width - 1) / 2);
+		fig.position.setY(-(figure.height + 1) / 2);
+		// fig.scale.set(0.5, 0.5, 0.5)
+
+		Frame.scene.add(fig);
 	}
 
-	function clearText() {
+	function clearFigure() {
 		if (!Frame) {
 			return;
 		}
@@ -96,7 +116,8 @@
 </script>
 
 <style>
-	#score {
+	#next {
+        margin-top: 20px;
 	}
 </style>
 
