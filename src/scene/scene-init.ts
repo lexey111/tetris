@@ -1,6 +1,7 @@
 import type {TThreeFrame} from "../world/world-globals";
 import {World} from "../world/world-globals";
 import * as THREE from "three";
+import {createCube} from "../figures/figures-utils";
 
 export function initScene(container, sizeX, sizeY) {
 	// @ts-ignore
@@ -17,20 +18,12 @@ export function initScene(container, sizeX, sizeY) {
 
 	Frame.container.appendChild(Frame.renderer.domElement);
 
-	const geometry = new THREE.BoxGeometry(5, 5, 5);
-	const material = new THREE.MeshStandardMaterial({
-		color: 0xdddddd,
-		transparent: true,
-		opacity: 0.9,
-		side: THREE.DoubleSide
-	});
-
-	World.cube = new THREE.Mesh(geometry, material);
-	World.cube.castShadow = true;
-	World.cube.receiveShadow = true;
-
+	World.cube = createCube();
 	World.cube.position.x = 4.5;
 	World.cube.position.y = 15;
+	World.cube.scale.set(5, 5, 5)
+
+	//World.cube.scale.set(5);
 
 	Frame.scene.add(World.cube);
 
@@ -83,6 +76,7 @@ const wallCubeMaterial = new THREE.MeshStandardMaterial({color: 0x0095DD});
 
 function addWallCube(scene, x, y, z) {
 	const cube = new THREE.Mesh(wallGeometry, wallCubeMaterial);
+	// const cube = createCube();
 	cube.position.set(x, y, z);
 	cube.castShadow = true;
 	cube.receiveShadow = true;
