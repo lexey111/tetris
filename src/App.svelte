@@ -1,13 +1,13 @@
 <script lang="ts">
-	import Scene from "./scene/Scene.svelte";
 	import WebGL from "three/examples/jsm/capabilities/WebGL";
+	import World from "./world/World.svelte";
 
 	const isWebGL = WebGL.isWebGLAvailable();
 </script>
 
 <main>
     {#if isWebGL}
-        <Scene/>
+        <World/>
     {:else }
         <h1>No WebGL available</h1>
         <p>{WebGL.getWebGLErrorMessage().innerText}</p>
@@ -38,9 +38,9 @@
 
 
 <style>
-    #todo {
-	    position: absolute;
-	    bottom: 100px;
-	    left: 120px;
-    }
+	#todo {
+		position: absolute;
+		bottom: 100px;
+		left: 120px;
+	}
 </style>
