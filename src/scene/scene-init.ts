@@ -12,7 +12,7 @@ export function initScene(container, sizeX, sizeY) {
 		container: container,
 		scene: new THREE.Scene(),
 		camera: new THREE.PerspectiveCamera(75, sizeX / sizeY, 0.1, 500),
-		renderer: new THREE.WebGLRenderer({alpha: false, antialias: false}),
+		renderer: new THREE.WebGLRenderer({alpha: true, antialias: false}),
 		sizeX: sizeX,
 		sizeY: sizeY
 	}

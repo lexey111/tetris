@@ -56,14 +56,13 @@
 
 	@media screen and (max-width: 768px) {
 		#screen-content {
-			padding-top: 200px;
+			padding-bottom: 200px;
 		}
 
 		#left-container {
 			left: 50%;
-			top: unset;
-			bottom: 100%;
-			padding-bottom: 20px;
+			top: 100%;
+			padding-top: 20px;
 			transform: translateX(-50%);
 		}
 	}

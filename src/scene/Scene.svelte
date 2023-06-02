@@ -40,6 +40,8 @@
 		animate();
 	});
 
+	let rInc = 0.05;
+	let xInc = 0.01;
 	function animate() {
 		requestAnimationFrame(animate);
 		if (!World.light) {
@@ -50,12 +52,14 @@
 		World.cube.rotation.y += 0.02;
 		World.cube.rotation.z -= 0.05;
 
-		World.cube.position.y += World.inc;
-		if (World.cube.position.y > 18) {
-			World.inc = -World.inc;
+		World.cube.position.y += rInc;
+		if (World.cube.position.y > 16 || World.cube.position.y < 4) {
+			rInc = -rInc;
 		}
-		if (World.cube.position.y < 4) {
-			World.inc = -World.inc;
+
+		World.cube.position.x += xInc;
+		if (World.cube.position.x > 5.5 || World.cube.position.x < 3.5) {
+			xInc = -xInc;
 		}
 		// World.light.position.z += World.inc;
 		// if (World.light.position.z > 15) {
