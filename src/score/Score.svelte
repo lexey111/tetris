@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {onMount} from "svelte";
 	import * as THREE from "three";
-	import {World} from "../world/world-globals.ts";
 	import type {TThreeFrame} from "../world/world-globals";
 	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
 	import {renderLetter} from "../symbols/font-utils";
@@ -40,7 +39,7 @@
 		Frame = {
 			container: document.getElementById('score'),
 			scene: new THREE.Scene(),
-			renderer: new THREE.WebGLRenderer({alpha: false, antialias: false}),
+			renderer: new THREE.WebGLRenderer({alpha: true, antialias: false}),
 			camera: new THREE.OrthographicCamera(sizeX / -2, sizeX / 2, sizeY / 2, sizeY / -2, -10, 20000),
 			sizeX: sizeX,
 			sizeY: sizeY

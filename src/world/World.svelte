@@ -4,6 +4,9 @@
 	import Next from "../next/Next.svelte";
 	import Scene from "../scene/Scene.svelte";
 
+	const figs = ['S', 'Z', 'I', 'L', 'T', 'O', 'J'];
+	let fig = 'S';
+
 	let num = 7;
 	let text = '-' + num + '-';
 
@@ -11,6 +14,10 @@
 		text = '-' + num + '-';
 		num += Math.floor(Math.random() * 10);
 	}, 1000);
+
+	setInterval(() => {
+		fig = figs[Math.floor(Math.random() * figs.length)];
+	}, 4000);
 </script>
 
 <style>
@@ -72,8 +79,8 @@
     <div id="screen-content">
         <div id="scene-container">
             <div id="left-container">
+                <Next type={fig}/>
                 <Score text={text}/>
-                <Next text="123"/>
             </div>
             <Scene/>
         </div>

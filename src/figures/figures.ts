@@ -23,6 +23,10 @@ export const Figures: Record<string, Array<string>> = {
 		'##',
 		'##'
 	],
+	'T' : [
+		' #',
+		'###'
+	],
 	'I' : [
 		'#',
 		'#',

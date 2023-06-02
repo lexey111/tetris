@@ -1,26 +1,27 @@
 <script lang="ts">
 	import {onMount} from "svelte";
 	import * as THREE from "three";
-	import {World} from "../world/world-globals.ts";
 	import type {TThreeFrame} from "../world/world-globals";
 	import type {TFigureType} from "../figures/figures";
 	import {createFigure} from "../figures/figures-builder";
-	import {createCube} from "../figures/figures-utils";
 
-	export let type: TFigureType = 'S';
+	export let type: TFigureType = 'I';
 
 	let Frame: TThreeFrame;
-	const scale = 50;
+	const scale = 30;
 
 	let sizeX;
 	let sizeY;
 	let figure;
+	let _obj;
+	let pivot;
+
 	$: {
 		figure = createFigure(type);
 		console.log('figure', figure);
 		if (figure) {
-			sizeX = figure.width * scale;
-			sizeY = figure.height * scale;
+			sizeX = 6 * scale; // square
+			sizeY = 6 * scale;
 			updateScene();
 		}
 	}
@@ -28,6 +29,7 @@
 	onMount(() => {
 		initScene();
 		updateScene();
+		animate();
 	});
 
 	function updateScene() {
@@ -36,15 +38,12 @@
 		}
 		drawFigure();
 		Frame.renderer.setSize(sizeX, sizeY);
-		(Frame.camera as THREE.OrthographicCamera).left = sizeX / -2;
-		(Frame.camera as THREE.OrthographicCamera).right = sizeX / 2;
-		(Frame.camera as THREE.OrthographicCamera).top = sizeY / -2;
-		(Frame.camera as THREE.OrthographicCamera).bottom = sizeY / 2;
 
-		(Frame.camera as THREE.OrthographicCamera).position.y = 0;
-		figure.height;
+		Frame.camera.position.set(0, 5, 30);
+		// Frame.camera.rotation.y = -.2;
+		Frame.camera.lookAt(new THREE.Vector3(0, 0, 0));
+		Frame.camera.zoom = 10;
 
-		Frame.camera.zoom = scale;
 		Frame.camera.updateProjectionMatrix();
 		Frame.renderer.render(Frame.scene, Frame.camera);
 	}
@@ -53,30 +52,54 @@
 		Frame = {
 			container: document.getElementById('next'),
 			scene: new THREE.Scene(),
-			renderer: new THREE.WebGLRenderer({alpha: false, antialias: false}),
-			camera: new THREE.OrthographicCamera(sizeX / -2, sizeX / 2, sizeY / 2, sizeY / -2, -10, 2000),
-			// camera: new THREE.PerspectiveCamera(75, sizeX / sizeY, 0.1, 500),
+			renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
+			camera: new THREE.PerspectiveCamera(75, sizeX / sizeY, 0.1, 500),
 			sizeX: sizeX,
 			sizeY: sizeY
 		};
 
 		Frame.container.appendChild(Frame.renderer.domElement);
 
-		const light = new THREE.DirectionalLight(0xffffff, 1);
-		light.position.set(0, 14, 30);
+		const light = new THREE.DirectionalLight(0xffffff, .7);
+		light.position.set(0, 4, 30);
 		light.castShadow = true;
 		Frame.scene.add(light);
 
-		const semiLight = new THREE.HemisphereLight(0x8080A0, 0x222222, 0.84);
-
+		const semiLight = new THREE.HemisphereLight(0x8080A0, 0x222222, 0.64);
 		Frame.scene.add(semiLight);
-		const cube = createCube();
-		cube.scale.set(0.2, 0.2, 0.5);
-		Frame.scene.add(cube);
+
+		// const cube = createCube();
+		// cube.scale.set(0.5, 0.5, 0.5);
+		// // cube.position.set(-2, 0, 0)
+		// Frame.scene.add(cube);
+
+		const plight1 = new THREE.PointLight(0xffff88, .8, 20);
+		plight1.position.set(-2, 0, 2);
+		plight1.castShadow = true;
+		const plight2 = new THREE.PointLight(0x8888ff, .8, 20);
+		plight2.position.set(2, 0, 2);
+		plight2.castShadow = true;
+
+		Frame.scene.add(plight1);
+		Frame.scene.add(plight2);
 
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-		// World.frames.push(Frame);
+	}
+
+	let rZ = 0.01;
+
+	function animate() {
+		requestAnimationFrame(animate);
+		if (!Frame || !_obj) {
+			return;
+		}
+		pivot.rotation.y += rZ;
+		if (pivot.rotation.y > .5 || pivot.rotation.y < -.5) {
+			rZ = -rZ;
+		}
+		// pivot.rotation.y += 0.02;
+		Frame.renderer.render(Frame.scene, Frame.camera);
 	}
 
 	function drawFigure() {
@@ -84,13 +107,15 @@
 			return;
 		}
 		clearFigure();
+		if (!pivot) {
+			pivot = new THREE.Group();
+			Frame.scene.add(pivot);
+		}
 
-		const fig = figure.object.clone();
+		_obj = figure.object.clone();
+		pivot.add(_obj);
 
-		fig.position.setX(-(figure.width - 1) / 2);
-		fig.position.setY(-(figure.height + 1) / 2);
-
-		Frame.scene.add(fig);
+		_obj.position.set(-figure.width / 2 + 0.5, -figure.height / 2 - 0.5);
 	}
 
 	function clearFigure() {
@@ -113,7 +138,7 @@
 
 <style>
 	#next {
-        margin-top: 20px;
+		margin: 60px 0;
 	}
 </style>
 

@@ -23,7 +23,7 @@ function renderFigureToCache(type: TFigureType) {
 	const SymbolHeight = symbol.length;
 	let maxWidth = 0;
 
-	for (let line = SymbolHeight - 1; line >= 0; line--) {
+	for (let line = 0; line < SymbolHeight; line++) {
 		let matrix = symbol[line].split('');
 		if (matrix.length > maxWidth) {
 			maxWidth = matrix.length;
@@ -32,7 +32,7 @@ function renderFigureToCache(type: TFigureType) {
 		for (let cell = 0; cell < matrix.length; cell++) {
 			if (matrix[cell] !== ' ') {
 				const pixel = createCube();
-				pixel.position.set(cell, line + 1, 0);
+				pixel.position.set(cell, SymbolHeight - line, 0);
 				pixel.castShadow = true;
 				pixel.receiveShadow = true;
 
