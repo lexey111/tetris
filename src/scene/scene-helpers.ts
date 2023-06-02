@@ -1,4 +1,3 @@
-import WebGL from "three/examples/jsm/capabilities/WebGL";
 import * as THREE from "three";
 
 export function setResizeCallback(container: HTMLElement, callbackFn: (width: number, height: number) => void) {
@@ -56,8 +55,8 @@ export function addSpaceItems(scene) {
 		for (let j = 0; j < 20; j++) {
 			const item = new THREE.Mesh(spaceGeometry, spaceMaterial);
 			item.position.set(i, j, -0.5);
-			// item.castShadow = true;
-			// item.receiveShadow = true;
+			item.castShadow = true;
+			item.receiveShadow = true;
 			spaceGroup.add(item);
 		}
 	}

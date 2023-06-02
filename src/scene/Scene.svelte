@@ -47,25 +47,31 @@
 		}
 
 		World.cube.rotation.x += 0.01;
-		World.cube.rotation.y += 0.01;
-		World.cube.rotation.z -= 0.01;
+		World.cube.rotation.y += 0.02;
+		World.cube.rotation.z -= 0.05;
 
-		World.light.position.z += World.inc;
-		if (World.light.position.z > 5) {
+		World.cube.position.y += World.inc;
+		if (World.cube.position.y > 18) {
 			World.inc = -World.inc;
 		}
-		if (World.light.position.z < -5) {
+		if (World.cube.position.y < 4) {
 			World.inc = -World.inc;
 		}
-
-		// World.camera.position.z += World.inc;
-		// if (World.camera.position.z > 35) {
+		// World.light.position.z += World.inc;
+		// if (World.light.position.z > 15) {
 		// 	World.inc = -World.inc;
 		// }
-		// if (World.camera.position.z < 15) {
+		// if (World.light.position.z < -15) {
 		// 	World.inc = -World.inc;
 		// }
 		// const mainFrame = World.frames.find(f => f.isMain);
+		// mainFrame.camera.position.z += World.inc;
+		// if (mainFrame.camera.position.z > 5) {
+		// 	mainFrame.inc = -World.inc;
+		// }
+		// if (mainFrame.camera.position.z < 5) {
+		// 	mainFrame.inc = -World.inc;
+		// }
 
 		World.frames.forEach(frame => {
 			if (frame.renderer && frame.camera && frame.scene) {
