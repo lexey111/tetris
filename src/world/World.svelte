@@ -1,6 +1,6 @@
 <script>
-	import Score from "../score/Score.svelte";
 	import Help from "../help/Help.svelte";
+	import Score from "../score/Score.svelte";
 	import Next from "../next/Next.svelte";
 	import Scene from "../scene/Scene.svelte";
 
@@ -9,31 +9,44 @@
 
 	setInterval(() => {
 		text = '-' + num + '-';
-		num += 10;
+		num += Math.floor(Math.random() * 10);
 	}, 1000);
 </script>
 
 <style>
 	#screen-wrapper {
-		width: 100vw;
-		height: 100vh;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		overflow: hidden;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+	}
+
+	#screen-content {
+		margin: 0 auto;
+		flex-grow: 2;
+		width: 100%;
 		display: flex;
 		flex-flow: column nowrap;
 	}
 
-	#screen-content {
-		display: flex;
-		flex-flow: row nowrap;
-		max-width: 80%;
-		min-width: 960px;
+	#scene-container {
+		width: auto;
+		aspect-ratio: 1 / 2;
 		height: 100%;
-		margin: 0 auto;
+		align-self: center;
+		position: relative;
 	}
 
 	#left-container {
-		flex-shrink: 0;
-		flex-grow: 0;
+		position: absolute;
+		left: 0;
+		top: 0;
+		transform: translateX(-100%);
 		width: 200px;
 		display: flex;
 		flex-flow: column nowrap;
@@ -41,22 +54,28 @@
 		padding-top: 40px;
 	}
 
-	#scene-container {
-		flex-shrink: 1;
-		flex-grow: 2;
-		display: flex;
-		position: relative;
-        border: 2px solid yellow;
+	@media screen and (max-width: 768px) {
+		#screen-content {
+			padding-top: 200px;
+		}
+
+		#left-container {
+			left: 50%;
+			top: unset;
+			bottom: 100%;
+			padding-bottom: 20px;
+			transform: translateX(-50%);
+		}
 	}
 </style>
 
 <div id="screen-wrapper">
     <div id="screen-content">
-        <div id="left-container">
-            <Score text={text}/>
-            <Next text="123"/>
-        </div>
         <div id="scene-container">
+            <div id="left-container">
+                <Score text={text}/>
+                <Next text="123"/>
+            </div>
             <Scene/>
         </div>
     </div>

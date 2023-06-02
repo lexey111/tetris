@@ -15,7 +15,6 @@
 	const sizeY = scale * SymbolHeight / 2;
 	$: {
 		sizeX = scale * text.length * SymbolWidth / 2;
-		console.log('set size x', sizeX, text.length);
 		updateScene();
 	}
 
@@ -34,6 +33,7 @@
 		(Frame.camera as THREE.OrthographicCamera).right = sizeX / 2;
 		Frame.camera.zoom = scale / 2;
 		Frame.camera.updateProjectionMatrix();
+		Frame.renderer.render(Frame.scene, Frame.camera);
 	}
 
 	function initScene() {
@@ -60,7 +60,7 @@
 
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-		World.frames.push(Frame);
+		// World.frames.push(Frame);
 	}
 
 	function drawText() {

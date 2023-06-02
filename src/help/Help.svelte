@@ -4,13 +4,17 @@
 
 <style>
 	#help-content {
+		margin-top: auto;
+		width: 100%;
 		display: flex;
 		flex-flow: row nowrap;
 		height: 100px;
 		background: #06191f;
 		justify-content: center;
-		padding-top: 20px;
 		position: relative;
+		flex-grow: 0;
+		flex-shrink: 0;
+		overflow: hidden;
 	}
 
 	#help-content:before {
@@ -27,6 +31,8 @@
 	#help {
 		display: flex;
 		flex-flow: row nowrap;
+		align-items: center;
+		justify-content: center;
 		max-width: 80%;
 		min-width: 960px;
 		overflow: hidden;
@@ -34,21 +40,26 @@
 		height: 100%;
 		color: #777;
 	}
+
+	#help div {
+		margin-right: 20px;
+	}
+
+	#help div:last-child {
+		margin-right: 0;
+	}
 </style>
 
 <div id="help-content">
     <div id="help">
-        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi, aspernatur consectetur enim esse est eum,
-            eveniet ex in, neque nesciunt obcaecati saepe ullam veniam vitae voluptas. Odit porro quisquam quos?
+        <div>
+            Left Right
         </div>
-        <div>Corporis culpa, enim fuga illum itaque iure ratione sit totam vero voluptate. Aspernatur aut consequuntur,
-            cum
-            et eum incidunt, minus, modi nesciunt nulla officia pariatur perspiciatis quasi reiciendis repudiandae
-            voluptatum?
+        <div>
+            Drop
         </div>
-        <div>Ad consequuntur error modi nemo nisi nulla possimus provident sunt. Adipisci deleniti harum ipsam iusto
-            nam,
-            neque numquam odit omnis porro quasi, repellendus sequi sit vitae. Delectus inventore magnam sed!
+        <div>
+            Pause
         </div>
     </div>
 </div>

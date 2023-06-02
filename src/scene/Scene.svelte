@@ -1,18 +1,19 @@
 <script>
 	import {onMount} from "svelte";
-	import {setResizeCallback} from "./scene-helpers.ts";
 	import {World} from "../world/world-globals.ts";
-	import {debounce} from "ts-debounce";
 	import {initScene} from "./scene-init.ts";
+	import {setResizeCallback} from "./scene-helpers.ts";
 
-	const updateWorldParameters = debounce(_updateWorldParameters, 200);
 	let container;
 
-	function _updateWorldParameters() {
+	function updateWorldParameters() {
 		const mainFrame = World.frames.find(f => f.isMain);
 		if (!mainFrame) {
 			return;
 		}
+		mainFrame.sizeX = container.offsetWidth;
+		mainFrame.sizeY = container.offsetHeight;
+
 		mainFrame.renderer.setSize(mainFrame.sizeX, mainFrame.sizeY);
 		mainFrame.camera.aspect = mainFrame.sizeX / mainFrame.sizeY;
 		mainFrame.camera.updateProjectionMatrix()
@@ -21,6 +22,8 @@
 	}
 
 	onMount(() => {
+		container = document.getElementById('scene-container');
+		initScene(container, container.offsetWidth, container.offsetHeight);
 		container = document.getElementById('scene');
 
 		setResizeCallback(container, (width, height) => {
@@ -34,7 +37,6 @@
 
 			updateWorldParameters();
 		});
-
 		animate();
 	});
 

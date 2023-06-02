@@ -19,6 +19,7 @@ export function initScene(container, sizeX, sizeY) {
 	Frame.renderer.setSize(Frame.sizeX, Frame.sizeY);
 
 	Frame.container.appendChild(Frame.renderer.domElement);
+	Frame.renderer.domElement.style.position = 'absolute';
 
 	World.cube = createCube();
 	World.cube.position.x = 4.5;
@@ -43,5 +44,5 @@ export function initScene(container, sizeX, sizeY) {
 	Frame.renderer.shadowMap.enabled = true;
 	Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-	// World.frames.push(Frame);
+	World.frames.push(Frame);
 }

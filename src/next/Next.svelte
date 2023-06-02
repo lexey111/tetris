@@ -21,9 +21,6 @@
 		if (figure) {
 			sizeX = figure.width * scale;
 			sizeY = figure.height * scale;
-			console.log('size', sizeX, sizeY)
-			// sizeX = 4 * scale;
-			// sizeY = 4 * scale;
 			updateScene();
 		}
 	}
@@ -37,7 +34,6 @@
 		if (!Frame) {
 			return;
 		}
-		console.log('draw', sizeX, sizeY)
 		drawFigure();
 		Frame.renderer.setSize(sizeX, sizeY);
 		(Frame.camera as THREE.OrthographicCamera).left = sizeX / -2;
@@ -50,6 +46,7 @@
 
 		Frame.camera.zoom = scale;
 		Frame.camera.updateProjectionMatrix();
+		Frame.renderer.render(Frame.scene, Frame.camera);
 	}
 
 	function initScene() {
@@ -79,7 +76,7 @@
 
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-		World.frames.push(Frame);
+		// World.frames.push(Frame);
 	}
 
 	function drawFigure() {
@@ -92,7 +89,6 @@
 
 		fig.position.setX(-(figure.width - 1) / 2);
 		fig.position.setY(-(figure.height + 1) / 2);
-		// fig.scale.set(0.5, 0.5, 0.5)
 
 		Frame.scene.add(fig);
 	}
