@@ -53,7 +53,7 @@
 		World.cube.rotation.z -= 0.05;
 
 		World.cube.position.y += rInc;
-		if (World.cube.position.y > 16 || World.cube.position.y < 4) {
+		if (World.cube.position.y > 15 || World.cube.position.y < 4) {
 			rInc = -rInc;
 		}
 

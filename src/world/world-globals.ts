@@ -6,8 +6,8 @@ export type TThreeFrame = {
 	renderer: THREE.WebGLRenderer
 	scene: THREE.Scene
 	camera?: THREE.OrthographicCamera | THREE.PerspectiveCamera
-	sizeX: number
-	sizeY: number
+	sizeX?: number
+	sizeY?: number
 }
 
 export type TWorld = {

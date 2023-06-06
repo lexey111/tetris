@@ -32,7 +32,7 @@ function renderFigureToCache(type: TFigureType) {
 		for (let cell = 0; cell < matrix.length; cell++) {
 			if (matrix[cell] !== ' ') {
 				const pixel = createCube();
-				pixel.position.set(cell, SymbolHeight - line, 0);
+				pixel.position.set(cell, SymbolHeight - line, (Math.random() / 12) * (Math.random() > 0.5 ? -1 : 1));
 				pixel.castShadow = true;
 				pixel.receiveShadow = true;
 

@@ -18,7 +18,6 @@ const wallCube = new THREE.Mesh(wallGeometry, wallCubeMaterial);
 
 function createWallBrick(x, y, z) {
 	const cube = wallCube.clone();
-	// const cube = createCube();
 	cube.position.set(x, y, z);
 	cube.castShadow = true;
 	cube.receiveShadow = true;
@@ -44,6 +43,10 @@ export function addWalls(scene) {
 	scene.add(verticalWall);
 	scene.add(verticalWall2);
 	scene.add(bottomWall);
+
+	const topWall = bottomWall.clone();
+	topWall.position.setY(21);
+	scene.add(topWall);
 }
 
 const spaceGeometry = new THREE.SphereGeometry(0.05, 2, 2);

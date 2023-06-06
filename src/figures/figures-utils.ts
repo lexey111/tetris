@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 const material = new THREE.MeshStandardMaterial({
 	color: 0xdddddd,
-	// transparent: true,
+	transparent: true,
 	// opacity: 0.9,
 	// side: THREE.DoubleSide
 });
