@@ -1,33 +1,9 @@
 <script lang="ts">
 
+	import Keys from "../keys/Keys.svelte";
 </script>
 
 <style>
-	#help-content {
-		margin-top: auto;
-		width: 100%;
-		display: flex;
-		flex-flow: row nowrap;
-		height: 100px;
-		background: #06191f;
-		justify-content: center;
-		position: relative;
-		flex-grow: 0;
-		flex-shrink: 0;
-		overflow: hidden;
-	}
-
-	#help-content:before {
-		display: block;
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 16px;
-		background: linear-gradient(to bottom, #020b0c, #06191f);
-	}
-
 	#help {
 		display: flex;
 		flex-flow: row nowrap;
@@ -50,16 +26,6 @@
 	}
 </style>
 
-<div id="help-content">
-    <div id="help">
-        <div>
-            Left Right
-        </div>
-        <div>
-            Drop
-        </div>
-        <div>
-            Pause
-        </div>
-    </div>
+<div id="help">
+    <Keys/>
 </div>

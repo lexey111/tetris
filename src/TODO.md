@@ -5,3 +5,6 @@
 3. --Svelte?
 4. minecraft cubes etc.
 5. sliced entry page .::#
+6. keys
+7. binary templates
+8. 

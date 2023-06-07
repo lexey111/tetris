@@ -7,53 +7,44 @@
 
 	export let type: TFigureType = 'S';
 	export let rnd = -1;
+
+	const size = 6 * 20; // fixed scene size 6x6 cells with scale factor 20
+
 	let oldType = '';
 	let oldRnd = -2;
 
 	let Frame: TThreeFrame;
-	const scale = 20;
-
-	const size = 6 * scale; // fixed scene size XxX
 
 	let figures = [];
 
 	$: {
-		if (Frame && (oldType !== type || oldRnd !== rnd)) {
+		if (Frame && type && (oldType !== type || oldRnd !== rnd)) {
 			console.log('= figure changes...', oldType, '->', type);
-			const figure = putFigureToPivot(type);
-
-			// mark all current content to remove
+			// mark all the current content to be removed
 			markAllToRemove();
+
 			// add new figure to top
+			const figure = putFigureToPivot(type);
 			figures.unshift(figure);
 
 			Frame.scene.add(figure);
 
 			oldRnd = rnd;
 			oldType = type;
-			updateScene();
 		}
 	}
 
 	onMount(() => {
 		initScene();
-		updateScene();
 		animate();
 	});
-
-	function updateScene() {
-		if (!Frame) {
-			return;
-		}
-		Frame.renderer.render(Frame.scene, Frame.camera);
-	}
 
 	function initScene() {
 		Frame = {
 			container: document.getElementById('next'),
 			scene: new THREE.Scene(),
 			renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
-			camera: new THREE.PerspectiveCamera(75, size / size, 0.1, 500),
+			camera: new THREE.PerspectiveCamera(75, size * 2 / size, 0.1, 500),
 		};
 
 		// add lights
@@ -78,7 +69,8 @@
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-		Frame.renderer.setSize(size, size);
+		// set scene params
+		Frame.renderer.setSize(size * 2, size);
 
 		Frame.camera.position.set(0, 5, 30);
 		Frame.camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -87,53 +79,53 @@
 		Frame.camera.updateProjectionMatrix();
 
 		Frame.container.appendChild(Frame.renderer.domElement);
+
 		setTimeout(() => {
-			Frame.container.style.opacity = 1;
-		}, .2);
+			Frame.container.style.opacity = '1';
+		}, 0);
 	}
 
 	let rZ = 0.01; // rotation increment
 	const dY = 0.1; // vertical move increment
 
 	function animate() {
+		if (figures.length > 0) {
+			// slide down
+			if (figures[0].position.y > 0) {
+				figures[0].position.y -= dY * Math.sin(figures[0].position.y);
+			}
+			// rotate left-right
+			figures[0].rotation.y += rZ;
+			if (figures[0].rotation.y > .5 || figures[0].rotation.y < -.5) {
+				rZ = -rZ;
+			}
+
+			// hideout
+			let needCleanup = false;
+
+			for (let i = 1; i < figures.length; i++) {
+				figures[i].step += 1;
+				if (figures[i].step > 100) {
+					needCleanup = true;
+				}
+
+				if (figures[i].position.y > -1.5) {
+					// first go down...
+					figures[i].position.y -= dY;
+				} else {
+					// ...then decompose
+					animateParts(i);
+				}
+			}
+			needCleanup && cleanup();
+			Frame && Frame.renderer.render(Frame.scene, Frame.camera);
+		}
 		requestAnimationFrame(animate);
-		if (!Frame || figures.length === 0) {
-			return;
-		}
-		// slide down
-		if (figures[0].position.y > 0) {
-			figures[0].position.y -= dY * Math.sin(figures[0].position.y);
-		}
-		// rotate left-right
-		figures[0].rotation.y += rZ;
-		if (figures[0].rotation.y > .5 || figures[0].rotation.y < -.5) {
-			rZ = -rZ;
-		}
-
-		// hideout
-		let needCleanup = false;
-
-		for (let i = 1; i < figures.length; i++) {
-			figures[i].step += 1;
-			if (figures[i].step > 100) {
-				needCleanup = true;
-			}
-
-			if (figures[i].position.y > -1) {
-				// first go down...
-				figures[i].position.y -= dY;
-			} else {
-				// ...then decompose
-				animateParts(i);
-			}
-		}
-		needCleanup && cleanup();
-		updateScene();
 	}
 
 	function randomSign() {
 		return Math.random() > 0.5 ? -1 : 1;
-    }
+	}
 
 	function animateParts(i) {
 		if (i <= 0 || i >= figures.length) {
@@ -199,36 +191,11 @@
 
 <style>
 	#next {
-		border-radius: 100%;
 		opacity: 0;
 		overflow: hidden;
-		padding: 6px;
-		transition: opacity .5s ease;
+		transition: opacity 2s ease;
 		position: relative;
-	}
-
-	#next:before {
-		content: '';
-		display: block;
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		border: 8px solid rgba(1, 18, 27, .9);
-		border-radius: 100%;
-	}
-
-	#next:after {
-		content: '';
-		display: block;
-		position: absolute;
-		top: 8px;
-		left: 8px;
-		right: 8px;
-		bottom: 8px;
-		border: 4px solid rgba(9, 81, 126, .8);
-		border-radius: 100%;
+		border-bottom: 2px solid rgba(9, 81, 126, .8);
 	}
 </style>
 
