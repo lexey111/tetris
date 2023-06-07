@@ -110,17 +110,19 @@
 			if (figures[1].step < 200) {
 				figures[1].step += dZ;
 				figures[1].children[0].children.forEach(child => {
-					if (!child.randomIncZ) {
-						child.randomIncZ = Math.random() > 0.5 ? -.2 : .2;
-						child.randomIncX = Math.random() > 0.5 ? -.1 : .1;
-						child.randomIncY = Math.random() / -7 // always down
-					}
-					child.position.x += child.randomIncX;
-					child.position.y += child.randomIncY;
-					child.position.z += child.randomIncZ;
+					child.children.forEach(child => {
+						if (!child.randomIncZ) {
+							child.randomIncZ = Math.random() > 0.5 ? -.2 : .2;
+							child.randomIncX = Math.random() > 0.5 ? -.2 : .2;
+							child.randomIncY = Math.random() / -2 // always down
+						}
+						child.position.x += child.randomIncX;
+						child.position.y += child.randomIncY;
+						child.position.z += child.randomIncZ;
 
-					child.rotation.x += child.randomIncX;
-					child.rotation.y -= child.randomIncY;
+						child.rotation.x += child.randomIncX;
+						child.rotation.y -= child.randomIncY;
+					})
 				})
 			} else {
 				// gone!
