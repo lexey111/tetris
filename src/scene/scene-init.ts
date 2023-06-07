@@ -40,9 +40,12 @@ export function initScene(container, sizeX, sizeY) {
 	// });
 
 	Frame.camera.position.set(4.5, 8, 20);
+	Frame.camera.lookAt(new THREE.Vector3(5, 8, 0));
+	Frame.camera.zoom = .1;
+	// Frame.camera.updateProjectionMatrix();
 
 	Frame.renderer.shadowMap.enabled = true;
 	Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-	World.frames.push(Frame);
+	return Frame;
 }

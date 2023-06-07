@@ -5,6 +5,7 @@
 	import {setResizeCallback} from "./scene-helpers.ts";
 
 	let container;
+	let Frame;
 
 	function updateWorldParameters() {
 		const mainFrame = World.frames.find(f => f.isMain);
@@ -22,8 +23,11 @@
 	}
 
 	onMount(() => {
-		container = document.getElementById('scene-container');
-		initScene(container, container.offsetWidth, container.offsetHeight);
+		container = document.getElementById('scene').parentElement;
+
+		Frame = initScene(container, container.offsetWidth, container.offsetHeight);
+		World.frames.push(Frame);
+
 		container = document.getElementById('scene');
 
 		setResizeCallback(container, (width, height) => {
@@ -42,10 +46,20 @@
 
 	let rInc = 0.05;
 	let xInc = 0.01;
+
+	const zoomDelta = .05;
+
 	function animate() {
 		requestAnimationFrame(animate);
-		if (!World.light) {
+
+		if (!World) {
 			return;
+		}
+
+
+		if (Frame.camera.zoom < 1) {
+			Frame.camera.zoom += zoomDelta;
+			Frame.camera.updateProjectionMatrix();
 		}
 
 		World.cube.rotation.x += 0.01;
@@ -77,12 +91,7 @@
 		// 	mainFrame.inc = -World.inc;
 		// }
 
-		World.frames.forEach(frame => {
-			if (frame.renderer && frame.camera && frame.scene) {
-				frame.renderer.render(frame.scene, frame.camera);
-			}
-		})
-		// World.renderers.render(World.scene, World.camera);
+		Frame.renderer.render(Frame.scene, Frame.camera);
 	}
 
 </script>
