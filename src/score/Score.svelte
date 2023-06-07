@@ -5,10 +5,10 @@
 	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
 	import {renderLetter} from "../symbols/font-utils";
 
-	export let text = '';
+	export let text = 'TETRIS';
 
 	let Frame: TThreeFrame;
-	const scale = 10;
+	const scale = 8;
 
 	let sizeX;
 	const sizeY = scale * SymbolHeight / 2;
@@ -71,8 +71,10 @@
 
 		text.split('').forEach((sym, idx) => {
 			const symbol = renderLetter(sym);
-			symbol.position.x = idx * SymbolWidth - xOffset;
-			Frame.scene.add(symbol);
+			if (symbol) {
+				symbol.position.x = idx * SymbolWidth - xOffset;
+				Frame.scene.add(symbol);
+			}
 		});
 	}
 
@@ -96,6 +98,7 @@
 
 <style>
 	#score {
+        margin-top: 20px;
 	}
 </style>
 

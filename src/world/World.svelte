@@ -4,20 +4,22 @@
 	import Next from "../next/Next.svelte";
 	import Scene from "../scene/Scene.svelte";
 
-	const figs = ['S', 'Z', 'I', 'L', 'T', 'O', 'J'];
+	const figs = 'SSS ZZZ II LLL TTT OO JJJ'.split('').filter(s => s !== ' '); // ['S', 'Z', 'I', 'L', 'T', 'O', 'J'];
 	let fig = 'S';
+	let v = 0;
 
 	let num = 7;
-	let text = '-' + num + '-';
+	let text = 'START';
 
 	setInterval(() => {
 		text = '-' + num + '-';
 		num += Math.floor(Math.random() * 10);
-	}, 1000);
+	}, 5000);
 
 	setInterval(() => {
 		fig = figs[Math.floor(Math.random() * figs.length)];
-	}, 4000);
+		v++; // for the same figures
+	}, 2000);
 </script>
 
 <style>
@@ -49,11 +51,11 @@
 		position: relative;
 	}
 
-	#left-container {
+	#side-container {
 		position: absolute;
-		left: 0;
-		top: 0;
-		transform: translateX(-100%);
+		right: 0;
+		top: 30px;
+		transform: translateX(100%);
 		width: 200px;
 		display: flex;
 		flex-flow: column nowrap;
@@ -66,11 +68,11 @@
 			padding-bottom: 200px;
 		}
 
-		#left-container {
+		#side-container {
 			left: 50%;
+            right: unset;
 			top: 100%;
-			padding-top: 20px;
-			transform: translateX(-50%);
+			transform: translateX(-50%) translateY(-40px);
 		}
 	}
 </style>
@@ -78,8 +80,8 @@
 <div id="screen-wrapper">
     <div id="screen-content">
         <div id="scene-container">
-            <div id="left-container">
-                <Next type={fig}/>
+            <div id="side-container">
+                <Next type={fig} rnd={v}/>
                 <Score text={text}/>
             </div>
             <Scene/>

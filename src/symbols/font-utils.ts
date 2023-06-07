@@ -59,6 +59,9 @@ export function renderLetter(letter: string) {
 	if (!FontCache[letter]) {
 		renderSymbolToCache(letter);
 	}
+	if (!FontCache[letter]) {
+		return null;
+	}
 
 	return FontCache[letter].clone(); // .rotateZ(Math.random() > 0.5 ? 0.04 : -0.04);
 }

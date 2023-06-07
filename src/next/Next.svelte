@@ -6,26 +6,30 @@
 	import {createFigure} from "../figures/figures-builder";
 
 	export let type: TFigureType = 'S';
+	export let rnd = -1;
 	let oldType = '';
+	let oldRnd = -2;
 
 	let Frame: TThreeFrame;
-	const scale = 30;
+	const scale = 20;
 
 	const size = 6 * scale; // fixed scene size XxX
 
 	let figures = [];
 
 	$: {
-		if (Frame && oldType !== type) {
+		if (Frame && (oldType !== type || oldRnd !== rnd)) {
 			console.log('= figure changes...', oldType, '->', type);
-			// TODO: the same figures consequentially?
-
-			// wrap with a pivot container to rotate
 			const figure = putFigureToPivot(type);
+
+			// mark all current content to remove
+			markAllToRemove();
+			// add new figure to top
 			figures.unshift(figure);
 
 			Frame.scene.add(figure);
 
+			oldRnd = rnd;
 			oldType = type;
 			updateScene();
 		}
@@ -41,16 +45,7 @@
 		if (!Frame) {
 			return;
 		}
-		Frame.renderer.setSize(size, size);
-
-		Frame.camera.position.set(0, 5, 30);
-		// Frame.camera.rotation.y = -.2;
-		Frame.camera.lookAt(new THREE.Vector3(0, 0, 0));
-		Frame.camera.zoom = 8;
-
-		Frame.camera.updateProjectionMatrix();
 		Frame.renderer.render(Frame.scene, Frame.camera);
-		Frame.container.style.opacity = '1';
 	}
 
 	function initScene() {
@@ -83,59 +78,105 @@
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+		Frame.renderer.setSize(size, size);
+
+		Frame.camera.position.set(0, 5, 30);
+		Frame.camera.lookAt(new THREE.Vector3(0, 0, 0));
+		Frame.camera.zoom = 8;
+
+		Frame.camera.updateProjectionMatrix();
+
 		Frame.container.appendChild(Frame.renderer.domElement);
+		setTimeout(() => {
+			Frame.container.style.opacity = 1;
+		}, .2);
 	}
 
 	let rZ = 0.01; // rotation increment
-	const dY = 0.2; // vertical move increment
-	const dZ = 1; // hideout increment
+	const dY = 0.1; // vertical move increment
 
 	function animate() {
 		requestAnimationFrame(animate);
 		if (!Frame || figures.length === 0) {
 			return;
 		}
+		// slide down
+		if (figures[0].position.y > 0) {
+			figures[0].position.y -= dY * Math.sin(figures[0].position.y);
+		}
 		// rotate left-right
 		figures[0].rotation.y += rZ;
 		if (figures[0].rotation.y > .5 || figures[0].rotation.y < -.5) {
 			rZ = -rZ;
 		}
-		// slide down
-		if (figures[0].position.y > 0) {
-			figures[0].position.y -= dY;
-		}
 
 		// hideout
-		if (figures.length > 1) {
-			if (figures[1].step < 200) {
-				figures[1].step += dZ;
-				figures[1].children[0].children.forEach(child => {
-					child.children.forEach(child => {
-						if (!child.randomIncZ) {
-							child.randomIncZ = Math.random() > 0.5 ? -.2 : .2;
-							child.randomIncX = Math.random() > 0.5 ? -.2 : .2;
-							child.randomIncY = Math.random() / -2 // always down
-						}
-						child.position.x += child.randomIncX;
-						child.position.y += child.randomIncY;
-						child.position.z += child.randomIncZ;
+		let needCleanup = false;
 
-						child.rotation.x += child.randomIncX;
-						child.rotation.y -= child.randomIncY;
-					})
-				})
+		for (let i = 1; i < figures.length; i++) {
+			figures[i].step += 1;
+			if (figures[i].step > 100) {
+				needCleanup = true;
+			}
+
+			if (figures[i].position.y > -1) {
+				// first go down...
+				figures[i].position.y -= dY;
 			} else {
-				// gone!
-				for (let i = figures.length - 1; i > 0; i--) {
-					if (figures[i].parent) {
-						figures[i].parent.remove(figures[1]);
-					}
-				}
-				figures.length = 1; // only first left
+				// ...then decompose
+				animateParts(i);
 			}
 		}
+		needCleanup && cleanup();
+		updateScene();
+	}
 
-		Frame.renderer.render(Frame.scene, Frame.camera);
+	function randomSign() {
+		return Math.random() > 0.5 ? -1 : 1;
+    }
+
+	function animateParts(i) {
+		if (i <= 0 || i >= figures.length) {
+			return;
+		}
+
+		figures[i].children[0].children.forEach(child => {
+			child.children.forEach(child => {
+				if (!child.randomIncZ) {
+					child.randomIncZ = Math.random() > 0.5 ? -.5 : .1;
+					child.randomIncX = randomSign() * .1;
+					child.randomIncY = randomSign() * .1;
+				}
+				child.position.x += child.randomIncX;
+				child.position.y += -child.position.x * child.position.x / 15;
+				child.position.z += child.randomIncZ;
+
+				child.rotation.x += child.randomIncX / 2;
+				child.rotation.y -= child.randomIncY;
+			})
+		})
+	}
+
+	function markAllToRemove() {
+		Frame.scene.traverse(function (node) {
+			if (node instanceof THREE.Mesh) {
+				node['markToRemove'] = true;
+			}
+		});
+	}
+
+	function cleanup() {
+		const objectsToRemove = [];
+		Frame.scene.traverse(function (node) {
+			if (node instanceof THREE.Mesh && node['markToRemove'] === true) {
+				objectsToRemove.push(node);
+			}
+		});
+
+		objectsToRemove.forEach(node => {
+			node.parent.remove(node);
+		});
+		figures.length = 1; // only first left
 	}
 
 	function putFigureToPivot(type) {
@@ -146,9 +187,9 @@
 		const _obj = figure.object.clone();
 
 		const pivot = new THREE.Group();
-		pivot['step'] = 0; // for animation
+		pivot['step'] = 0; // for future animation
 		pivot.add(_obj);
-		pivot.position.y = 3; // to slide down, set initial position
+		pivot.position.y = 3.1; // to slide down, set initial position
 
 		_obj.position.set(-figure.width / 2 + 0.5, -figure.height / 2 - 0.5, 0);
 		return pivot;
@@ -158,13 +199,36 @@
 
 <style>
 	#next {
-		margin: 60px 0;
-		border: 4px solid #0a517e;
 		border-radius: 100%;
 		opacity: 0;
 		overflow: hidden;
+		padding: 6px;
 		transition: opacity .5s ease;
 		position: relative;
+	}
+
+	#next:before {
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		border: 8px solid rgba(1, 18, 27, .9);
+		border-radius: 100%;
+	}
+
+	#next:after {
+		content: '';
+		display: block;
+		position: absolute;
+		top: 8px;
+		left: 8px;
+		right: 8px;
+		bottom: 8px;
+		border: 4px solid rgba(9, 81, 126, .8);
+		border-radius: 100%;
 	}
 </style>
 
