@@ -12,17 +12,7 @@
 		max-width: 80%;
 		min-width: 960px;
 		overflow: hidden;
-		font-size: 12px;
 		height: 100%;
-		color: #777;
-	}
-
-	#help div {
-		margin-right: 20px;
-	}
-
-	#help div:last-child {
-		margin-right: 0;
 	}
 </style>
 

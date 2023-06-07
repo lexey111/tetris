@@ -1,5 +1,5 @@
 <script>
-	import {onMount} from "svelte";
+	import {onDestroy, onMount} from "svelte";
 	import {World} from "../world/world-globals.ts";
 	import {initScene} from "./scene-init.ts";
 	import {setResizeCallback} from "./scene-helpers.ts";
@@ -43,6 +43,19 @@
 		});
 		animate();
 	});
+
+	onDestroy(() => {
+		console.log('Dispose Scene');
+		if (Frame) {
+			let id = window.requestAnimationFrame(function () {
+				//
+			});
+			while (id--) {
+				window.cancelAnimationFrame(id);
+			}
+			Frame.renderer.dispose();
+		}
+	})
 
 	let rInc = 0.05;
 	let xInc = 0.01;

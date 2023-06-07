@@ -21,18 +21,18 @@
 		background-color: transparent;
 	}
 
-	#intro h1 {
-		font-size: 8rem;
-		color: rgba(255, 255, 255, .05);
-	}
-
 	#intro #layer-2 {
-		width: 50vw;
+		width: 33vw;
 		flex-grow: 2;
 	}
 
 	#layer-2 {
 		background: linear-gradient(to top left, #011218, #08313f);
+	}
+
+	#layer-2 h1 {
+		font-size: 8rem;
+		color: rgba(255, 255, 255, .2);
 	}
 
 	#layer-2 h1 {
@@ -47,7 +47,7 @@
 	}
 
 	#layer-2 h2 {
-		color: rgba(255, 255, 255, .02);
+		color: rgba(255, 255, 255, .2);
 		font-size: 30vw;
 		display: flex;
 		align-self: center;
@@ -59,10 +59,9 @@
 
 
 	#layer-1, #layer-2, #layer-3 {
-		clip-path: polygon(0% 0%, calc(100% - 40px) 40px, 100% 0%, 100% calc(100% - 40px), 0 calc(100% - 80px), 0% 0%);
 		border-radius: 6px;
 		box-shadow: inset 0 -2px 2px rgba(255, 255, 255, 0.5);
-		width: 25vw;
+		width: 33vw;
 		display: flex;
 		flex-flow: column nowrap;
 		align-content: center;
@@ -70,9 +69,18 @@
 		position: relative;
 	}
 
-	#layer-2 {
-		clip-path: polygon(0% 0%, calc(100% - 40px) 40px, 100% 0%, 100% calc(100% - 80px), 0 calc(100% - 40px), 0% 0%);
+	#layer-1 {
+		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 20px), 0 calc(100% - 40px), 0% 20px);
 	}
+
+	#layer-2 {
+		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 40px), 0 calc(100% - 20px), 0% 0%);
+	}
+
+	#layer-3 {
+		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 20px), 0 calc(100% - 40px), 0% 0%);
+	}
+
 
 	#layer-1:after, #layer-2:after, #layer-3:after {
 		content: '';
@@ -81,7 +89,7 @@
 		top: 0;
 		bottom: 0;
 		right: 0;
-		width: 44px;
+		width: 22px;
 		background-color: rgba(0, 0, 0, .3);
 		clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 0%);
 		border-top-right-radius: 6px;
@@ -93,7 +101,8 @@
 	}
 
 	#layer-2 {
-		background: linear-gradient(to bottom right, #0095ff, #0260a2);
+		/*background: linear-gradient(to bottom right, #0095ff, #0260a2);*/
+		background: linear-gradient(to bottom right, #034c80, #012d4b);
 	}
 
 	#layer-3 {
@@ -108,8 +117,6 @@
         <h1>First</h1>
     </div>
     <div id="layer-2">
-        <h1>TETRIS</h1>
-        <h2>3D</h2>
         <Scene/>
     </div>
     <div id="layer-3">

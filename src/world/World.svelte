@@ -69,7 +69,7 @@
 		display: flex;
 		flex-flow: row nowrap;
 		height: 100px;
-		background: #06191f;
+		background: #011218;
 		justify-content: center;
 		position: relative;
 		flex-grow: 0;
