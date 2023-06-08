@@ -4,6 +4,7 @@
 	import Text from "../text/Text.svelte";
 	import Next from "../next/Next.svelte";
 	import Disclaimer from "./Disclaimer.svelte";
+	import Bouncer from "./Bouncer.svelte";
 
 	export let onStart;
 
@@ -35,7 +36,7 @@
 			} else {
 				clearInterval(textingHandler);
 			}
-		}, 1000);
+		}, 1500);
 
 		fallingHandler = setInterval(() => {
 			fig = figs[figPosition++];
@@ -230,7 +231,7 @@
 	}
 
 	.text-3d {
-		font-size: 22vw;
+		font-size: 350px;
 		position: absolute;
 		bottom: -20px;
 		left: -60px;
@@ -284,11 +285,25 @@
 		color: rgba(255, 255, 255, .7);
 	}
 
+    #bouncer-container {
+        height: 100%;
+    }
+
 	#next-container {
 		position: relative;
 		margin-top: 2em;
 		cursor: pointer;
 	}
+
+    #layer-2 .text-3d {
+	    justify-content: flex-end;
+        bottom: -40px;
+        transform: none !important;
+    }
+
+    #layer-3 .text-3d {
+        justify-content: flex-start;
+    }
 
 	@media screen and (max-width: 1280px) {
 		#layer-1 {
@@ -336,6 +351,9 @@
 			width: 100%;
 			border: none;
 			border-radius: 0;
+            min-height: unset;
+            height: 100%;
+            overflow: hidden;
 		}
 
 		.page:after {
@@ -368,8 +386,11 @@
             <div id="tetris-text">
                 <Text text={text} colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={11}/>
             </div>
-            <!--        <Scene/>-->
+            <div id="bouncer-container">
+                <Bouncer/>
+            </div>
         </div>
+        <div class="text-3d" style:transform="skew(0, {angle}deg)">Tet </div>
     </div>
     <div id="layer-3" class="page">
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
@@ -379,7 +400,8 @@
                 especially, <i>Scrum</i>.
             </p>
             <p>
-                This page was created just for fun and relaxation from enterprise software development.
+                This page was created just for fun and relaxation from enterprise software development,
+                but you can consider this as my CV :)
             </p>
             <p class="go-link">
                 <a href="https://en.wikipedia.org/wiki/Tetris" target="_blank">Read details &rarr;</a>
@@ -391,7 +413,7 @@
                 &copy; {year}, Oleksii Koshkin
             </p>
         </div>
-        <div class="text-3d" style:transform="skew(0, {angle}deg)">Tetris</div>
+        <div class="text-3d" style:transform="skew(0, {angle}deg)">&nbsp;ris</div>
     </div>
     <div id="layer-4" class="page">
         <div class="layer-content" style:transform="skew(0, {angle}deg)">

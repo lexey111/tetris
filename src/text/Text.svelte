@@ -24,16 +24,7 @@
 	});
 
 	onDestroy(() => {
-		if (!Frame) {
-			return;
-		}
-		let id = window.requestAnimationFrame(function () {
-			//
-		});
-		while (id--) {
-			window.cancelAnimationFrame(id);
-		}
-		Frame.renderer.dispose();
+		Frame && Frame.renderer.dispose();
 	});
 
 	function updateScene() {
