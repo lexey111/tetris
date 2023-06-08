@@ -14,8 +14,10 @@
 	let text = '';
 	const FullText = 'TETRIS'
 
-	const figs = 'SZILTOJ'.split('');
+	// const figs = 'SZILTOJ'.split('');
+	const figs = 'tetris'.split('');
 	let fig = '';
+	let figPosition = 0;
 	let v = 0;
 
 	let disclaimer = false;
@@ -36,8 +38,11 @@
 		}, 1000);
 
 		fallingHandler = setInterval(() => {
-			fig = figs[Math.floor(Math.random() * figs.length)];
-			v++; // for the same figures
+			fig = figs[figPosition++];
+			if (figPosition === figs.length) {
+				figPosition = 0;
+			}
+			v++;
 		}, 3000);
 
 	});
@@ -86,12 +91,12 @@
 		transform: scaleX(0) scaleY(0);
 		opacity: 0;
 
-        transform-origin: top center;
+		transform-origin: top center;
 
 		animation-name: appear;
 		animation-delay: .5s;
 		animation-iteration-count: 1;
-		animation-duration: .5s;
+		animation-duration: 1s;
 		animation-timing-function: ease;
 		animation-fill-mode: forwards;
 	}

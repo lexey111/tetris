@@ -2,7 +2,7 @@
 	import {onMount} from "svelte";
 	import * as THREE from "three";
 	import type {TThreeFrame} from "../world/world-globals";
-	import {SVGLoader} from "three/examples/jsm/loaders/SVGLoader";
+	import {createKey} from "./keys-utils";
 
 	let Frame: TThreeFrame;
 
@@ -110,77 +110,21 @@
 		requestAnimationFrame(animate);
 	}
 
-	function extrudeSVG(id, color) {
-		// https://muffinman.io/blog/three-js-extrude-svg-path/
-		const svgMarkup = document.getElementById(id).outerHTML;
-
-		const loader = new SVGLoader();
-		const svgData = loader.parse(svgMarkup);
-
-		const svgGroup = new THREE.Group();
-		const material = new THREE.MeshStandardMaterial({
-			color,
-			// transparent: true,
-			// opacity: 0.9,
-			// side: THREE.DoubleSide
-		});
-
-		svgData.paths.forEach(path => {
-			const shapes = path.toShapes(true);
-
-			shapes.forEach(shape => {
-				const geometry = new THREE.ExtrudeGeometry(shape, {
-					depth: 100,
-					bevelEnabled: true
-				});
-
-				const mesh = new THREE.Mesh(geometry, material);
-				mesh.castShadow = true;
-				mesh.receiveShadow = true;
-
-				const box = new THREE.Box3().setFromObject(mesh);
-				const size = new THREE.Vector3();
-				box.getSize(size);
-
-				mesh.scale.set(SVGScale, SVGScale, SVGScale);
-
-				mesh.position.x = -(sizeL / 2);
-				mesh.position.y = -(sizeL / 2);
-
-				svgGroup.add(mesh);
-			});
-		});
-		return svgGroup;
-	}
-
-	function createKey(symbol = 'arrow', keyColor = 0x223344, textColor = 0x777788) {
-		const grpKey = new THREE.Group();
-
-		const key = extrudeSVG('key', keyColor);
-		const arrow = extrudeSVG(symbol, textColor);
-
-		key.position.z = -.5;
-		if (symbol === 'arrow' || symbol === 'rotate') {
-			arrow.scale.set(0.4, -0.4, 0.4);
-		} else {
-			arrow.scale.set(.8, -.8, .4);
-		}
-
-		grpKey.add(arrow);
-		grpKey.add(key);
-
-		return grpKey;
-	}
-
 	function createKeys() {
-		keyboardKeys.keyArrowLeft = createKey();
+		keyboardKeys.keyArrowLeft = createKey({SVGScale, sizeL});
 		keyboardKeys.keyArrowDown = keyboardKeys.keyArrowLeft.clone();
 		keyboardKeys.keyArrowRight = keyboardKeys.keyArrowLeft.clone();
 
-		keyboardKeys.keyArrowUp = createKey('rotate');
-		keyboardKeys.keyEscape = createKey('escape', 0x223344, 0xdd5555);
-		keyboardKeys.keyPause = createKey('pause');
-		keyboardKeys.keySpace = createKey('drop');
+		keyboardKeys.keyArrowUp = createKey({symbol: 'rotate', SVGScale, sizeL});
+		keyboardKeys.keyEscape = createKey({
+			symbol: 'escape',
+			keyColor: 0x223344,
+			textColor: 0xdd5555,
+			SVGScale,
+			sizeL
+		});
+		keyboardKeys.keyPause = createKey({symbol: 'pause', SVGScale, sizeL});
+		keyboardKeys.keySpace = createKey({symbol: 'drop', SVGScale, sizeL});
 
 		const keys = new THREE.Group();
 

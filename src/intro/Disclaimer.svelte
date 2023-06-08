@@ -1,5 +1,6 @@
 <script>
 	import {onDestroy, onMount} from "svelte";
+	import Key from "../keys/single-key/Key.svelte";
 
 	export let onHide;
 
@@ -72,13 +73,15 @@
 		padding: 40px;
 		margin: 0 auto;
 		color: #ccd;
-		font-size: 14px;
-		width: auto;
+		font-size: 1.6vh;
+		width: fit-content;
 	}
 
 	h1 {
 		font-weight: normal;
 		text-transform: uppercase;
+		font-size: 4em;
+        color: #FF0088;
 	}
 
 	p {
@@ -86,8 +89,36 @@
 	}
 
 	ul {
-		margin: 0;
+		margin: 1em;
 		padding: 1em;
+	}
+
+	li::marker {
+		content: '—  ';
+		font-size: 1.2em;
+        color: #FF0088;
+	}
+
+	ul li {
+		margin-bottom: 1em;
+	}
+
+	#keyset {
+		display: flex;
+		flex-flow: column nowrap;
+		font-style: italic;
+		align-items: center;
+		justify-items: center;
+		align-content: center;
+		justify-content: center;
+		margin-top: 4em;
+        padding-top: 2em;
+        border-top: 2px dotted #FF0088;
+	}
+
+	#keyset p {
+		margin: 1em 0 0 0;
+        color: #FF0088;
 	}
 </style>
 
@@ -97,17 +128,26 @@
             <h1>Disclaimer</h1>
             <ul>
                 <li>
+                    This is just a demo.
+                </li>
+                <li>
                     This is my first game.
                 </li>
                 <li>
                     This is my first 3D WebGL experience.
                 </li>
                 <li>
-                    If you're having performance issues, especially in Safari, plug in a power adapter or/and use
+                    If you're having performance issues, especially in Safari, <br/>plug in a power adapter or/and use
                     Chrome.
                 </li>
+                <li>
+                    Don't worry; be happy.
+                </li>
             </ul>
-            <p>[ESC] or click anywhere to return.</p>
+            <div id="keyset">
+                <Key size={80} keyColor={0x888888} textColor={0x444444}/>
+                <p>or click anywhere to return.</p>
+            </div>
         </div>
     </div>
 </div>
