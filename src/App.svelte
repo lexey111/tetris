@@ -13,10 +13,10 @@
 	}
 </script>
 
-<main on:click={showGame}>
+<main>
     {#if isWebGL}
         {#if intro}
-            <Intro/>
+            <Intro onStart={showGame}/>
         {:else}
             <World/>
         {/if}

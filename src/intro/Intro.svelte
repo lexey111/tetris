@@ -3,6 +3,9 @@
 	import {setResizeCallback} from "../scene/scene-helpers";
 	import Text from "../text/Text.svelte";
 	import Next from "../next/Next.svelte";
+	import Disclaimer from "./Disclaimer.svelte";
+
+	export let onStart;
 
 	let angle;
 
@@ -11,7 +14,13 @@
 	let text = '';
 	const FullText = 'TETRIS'
 
-    const year = new Date().getFullYear();
+	const figs = 'SZILTOJ'.split('');
+	let fig = '';
+	let v = 0;
+
+	let disclaimer = false;
+
+	const year = new Date().getFullYear();
 
 	onMount(() => {
 		setResizeCallback(document.getElementById('layer-2'), (width, height) => {
@@ -24,7 +33,7 @@
 			} else {
 				clearInterval(textingHandler);
 			}
-		}, 200);
+		}, 1000);
 
 		fallingHandler = setInterval(() => {
 			fig = figs[Math.floor(Math.random() * figs.length)];
@@ -38,13 +47,28 @@
 		clearInterval(fallingHandler);
 	});
 
-	const figs = 'SSS ZZZ II LLL TTT OO JJJ'.split('').filter(s => s !== ' '); // ['S', 'Z', 'I', 'L', 'T', 'O', 'J'];
-	let fig = '';
-	let v = 0;
+	function showDisclaimer() {
+		disclaimer = !disclaimer;
+	}
 
 </script>
 
 <style>
+	@keyframes appear {
+		0% {
+			transform: scaleX(0) scaleY(0) translateY(-4000px);
+			opacity: 0;
+		}
+		50% {
+			transform: scaleX(.5) scaleY(0.01) translateY(-200px);
+			opacity: .2;
+		}
+		100% {
+			transform: scaleX(1) scaleY(1) translateY(0);
+			opacity: 1;
+		}
+	}
+
 	#intro {
 		position: absolute;
 		top: 100px;
@@ -58,6 +82,18 @@
 		display: flex;
 		flex-flow: row nowrap;
 		background-color: transparent;
+
+		transform: scaleX(0) scaleY(0);
+		opacity: 0;
+
+        transform-origin: top center;
+
+		animation-name: appear;
+		animation-delay: .5s;
+		animation-iteration-count: 1;
+		animation-duration: .5s;
+		animation-timing-function: ease;
+		animation-fill-mode: forwards;
 	}
 
 	.page {
@@ -82,6 +118,8 @@
 
 	#layer-2:after {
 		clip-path: none;
+		border-left: 1px dotted rgba(255, 255, 255, .2);
+		box-sizing: border-box;
 	}
 
 	#layer-3 {
@@ -117,12 +155,12 @@
 
 	#layer-2 {
 		background: linear-gradient(to bottom right, #034c80, #012d4b);
+		cursor: pointer;
 	}
 
 	#layer-3 {
 		background: linear-gradient(to bottom right, #aec42b, #687704);
 		border-top-right-radius: 26px;
-		/*color: #343d1a;*/
 	}
 
 	#layer-4 {
@@ -134,7 +172,7 @@
 	.layer-content {
 		padding: 40px;
 		font-size: 14px;
-		/*font-variant: all-petite-caps;*/
+		font-variant: all-petite-caps;
 		transition: font .2s ease;
 		line-height: 2;
 		display: flex;
@@ -147,7 +185,7 @@
 		font-weight: bold;
 		text-shadow: -1px 1px 0 rgba(0, 0, 0, 0.2);
 		display: inline-block;
-		border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+		border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
 	}
 
 	.page a:hover, .page a:active, .page a:focus {
@@ -211,13 +249,24 @@
 		margin-bottom: 40px;
 	}
 
+	.go-link {
+		margin-top: 2em;
+		border: 2px solid rgba(255, 255, 255, .4);
+		border-radius: 40px;
+		padding: 6px 0 6px 12px;
+	}
+
+	.go-link a {
+		border: none !important;
+	}
+
 	.paragraph::first-letter {
 		background: linear-gradient(to bottom right, rgba(255, 255, 255, .5), rgba(255, 255, 255, .2));
 		border-radius: 18px;
 		padding: 6px;
 		min-width: 1em;
 		width: 1em;
-        text-align: center;
+		text-align: center;
 		font-size: 5.5vw;
 		font-weight: bold;
 		float: left;
@@ -232,8 +281,9 @@
 
 	#next-container {
 		position: relative;
-        margin-top: 2em;
-    }
+		margin-top: 2em;
+		cursor: pointer;
+	}
 
 	@media screen and (max-width: 1280px) {
 		#layer-1 {
@@ -302,13 +352,13 @@
                 After a significant period of publication by Nintendo, the rights reverted to Pajitnov in <b>1996</b>,
                 who co-founded the Tetris Company with Henk Rogers to manage licensing.
             </p>
-            <p style="text-align: right; margin-top: 2em">
+            <p class="go-link">
                 <a href="https://en.wikipedia.org/wiki/Tetris" target="_blank">Wikipedia &rarr;</a>
             </p>
         </div>
         <div class="text-3d" style:transform="skew(0, {angle}deg)">3D</div>
     </div>
-    <div id="layer-2" class="page">
+    <div id="layer-2" class="page" on:click={onStart}>
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
             <div id="tetris-text">
                 <Text text={text} colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={11}/>
@@ -326,7 +376,7 @@
             <p>
                 This page was created just for fun and relaxation from enterprise software development.
             </p>
-            <p style="text-align: right; margin: 2em 0">
+            <p class="go-link">
                 <a href="https://en.wikipedia.org/wiki/Tetris" target="_blank">Read details &rarr;</a>
             </p>
             <p>
@@ -347,10 +397,17 @@
                     href="https://vitejs.dev/" target="_blank">Vite</a> as a bundler... nothing too complex, very usual
                 set for small web-apps.
             </p>
-            <div id="next-container">
+            <div id="next-container" on:click={onStart}>
                 <Next accent={'#FF0088'} type={fig} rnd={v}/>
             </div>
+            <p class="go-link">
+                <a href="#" on:click={showDisclaimer}>&uparrow; Disclaimer</a>
+            </p>
         </div>
         <div class="text-3d" style:transform="skew(0, {angle}deg)">GL</div>
     </div>
 </div>
+
+{#if disclaimer}
+    <Disclaimer onHide={showDisclaimer}/>
+{/if}
