@@ -2,12 +2,16 @@
 	import {onDestroy, onMount} from "svelte";
 	import {setResizeCallback} from "../scene/scene-helpers";
 	import Text from "../text/Text.svelte";
+	import Next from "../next/Next.svelte";
 
 	let angle;
 
 	let textingHandler = null;
+	let fallingHandler = null;
 	let text = '';
 	const FullText = 'TETRIS'
+
+    const year = new Date().getFullYear();
 
 	onMount(() => {
 		setResizeCallback(document.getElementById('layer-2'), (width, height) => {
@@ -21,20 +25,26 @@
 				clearInterval(textingHandler);
 			}
 		}, 200);
+
+		fallingHandler = setInterval(() => {
+			fig = figs[Math.floor(Math.random() * figs.length)];
+			v++; // for the same figures
+		}, 3000);
+
 	});
 
 	onDestroy(() => {
 		clearInterval(textingHandler);
+		clearInterval(fallingHandler);
 	});
+
+	const figs = 'SSS ZZZ II LLL TTT OO JJJ'.split('').filter(s => s !== ' '); // ['S', 'Z', 'I', 'L', 'T', 'O', 'J'];
+	let fig = '';
+	let v = 0;
 
 </script>
 
 <style>
-	#intro {
-		--top-line-color: #08313f;
-		--right-line-color: maroon;
-	}
-
 	#intro {
 		position: absolute;
 		top: 100px;
@@ -110,9 +120,9 @@
 	}
 
 	#layer-3 {
-		background: linear-gradient(to bottom right, #ddff00, #687704);
+		background: linear-gradient(to bottom right, #aec42b, #687704);
 		border-top-right-radius: 26px;
-		color: #343d1a;
+		/*color: #343d1a;*/
 	}
 
 	#layer-4 {
@@ -123,18 +133,13 @@
 
 	.layer-content {
 		padding: 40px;
-		font-size: 0.9vw;
+		font-size: 14px;
 		/*font-variant: all-petite-caps;*/
 		transition: font .2s ease;
 		line-height: 2;
 		display: flex;
 		flex-flow: column nowrap;
-        height: 100%;
-	}
-
-	.layer-content h1 {
-		font-weight: normal;
-		font-size: 4em;
+		height: 100%;
 	}
 
 	.page a {
@@ -174,11 +179,11 @@
 	}
 
 	#layer-4 .layer-content {
-        height: auto;
-        justify-self: center;
-        align-self: center;
-        display: flex;
-        flex-flow: column wrap;
+		height: auto;
+		justify-self: center;
+		align-self: center;
+		display: flex;
+		flex-flow: column wrap;
 	}
 
 	.text-3d {
@@ -210,18 +215,25 @@
 		background: linear-gradient(to bottom right, rgba(255, 255, 255, .5), rgba(255, 255, 255, .2));
 		border-radius: 18px;
 		padding: 6px;
-		min-width: 2em;
+		min-width: 1em;
+		width: 1em;
+        text-align: center;
 		font-size: 5.5vw;
 		font-weight: bold;
 		float: left;
 		line-height: 1;
 		margin-right: 10px;
-		margin-left: -10px;
-		margin-top: -10px;
+		margin-left: -5px;
+		margin-top: -5px;
 		text-shadow: -1px 1px 0 rgba(0, 0, 0, 0.1);
 		box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.1);
 		color: rgba(255, 255, 255, .7);
 	}
+
+	#next-container {
+		position: relative;
+        margin-top: 2em;
+    }
 
 	@media screen and (max-width: 1280px) {
 		#layer-1 {
@@ -243,7 +255,7 @@
 		}
 
 		.layer-content {
-			font-size: 1.2vw;
+			/*font-size: 1.5vw;*/
 		}
 	}
 
@@ -253,7 +265,7 @@
 			left: 0;
 			bottom: 0;
 			right: 0;
-            max-height: unset;
+			max-height: unset;
 		}
 
 		#layer-3 {
@@ -314,11 +326,14 @@
             <p>
                 This page was created just for fun and relaxation from enterprise software development.
             </p>
-            <p style="text-align: right; margin: 4em 0">
+            <p style="text-align: right; margin: 2em 0">
                 <a href="https://en.wikipedia.org/wiki/Tetris" target="_blank">Read details &rarr;</a>
             </p>
-            <p class="paragraph">
-                &larr; Or better yet, just go play. Click the button on the blue page!
+            <p>
+                &larr; Or better yet, just go and play. Press the button on the blue page and see how long you last.
+            </p>
+            <p>
+                &copy; {year}, Oleksii Koshkin
             </p>
         </div>
         <div class="text-3d" style:transform="skew(0, {angle}deg)">Tetris</div>
@@ -332,6 +347,9 @@
                     href="https://vitejs.dev/" target="_blank">Vite</a> as a bundler... nothing too complex, very usual
                 set for small web-apps.
             </p>
+            <div id="next-container">
+                <Next accent={'#FF0088'} type={fig} rnd={v}/>
+            </div>
         </div>
         <div class="text-3d" style:transform="skew(0, {angle}deg)">GL</div>
     </div>

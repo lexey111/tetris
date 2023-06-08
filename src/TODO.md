@@ -7,4 +7,4 @@
 5. sliced entry page .::#
 6. keys
 7. binary templates!!
-8. 
+8. safari speed!

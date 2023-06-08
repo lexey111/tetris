@@ -1,11 +1,13 @@
 <script lang="ts">
-	import {onMount} from "svelte";
+	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
 	import type {TThreeFrame} from "../world/world-globals";
 	import type {TFigureType} from "../figures/figures";
 	import {createFigure} from "../figures/figures-builder";
 
 	export let type: TFigureType = 'S';
+	export let accent = '#09517E';
+	let hexAccent = parseInt(accent.replace('#', '0x'), 16);
 	export let rnd = -1;
 
 	const size = 6 * 20; // fixed scene size 6x6 cells with scale factor 20
@@ -39,16 +41,29 @@
 		animate();
 	});
 
+	onDestroy(() => {
+		if (!Frame) {
+			return;
+		}
+		let id = window.requestAnimationFrame(function () {
+			//
+		});
+		while (id--) {
+			window.cancelAnimationFrame(id);
+		}
+		Frame.renderer.dispose();
+	});
+
 	function initScene() {
 		Frame = {
 			container: document.getElementById('next'),
 			scene: new THREE.Scene(),
-			renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
+			renderer: new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'high-performance'}),
 			camera: new THREE.PerspectiveCamera(75, size * 2 / size, 0.1, 500),
 		};
 
 		// add lights
-		const light = new THREE.DirectionalLight(0xffffff, .2);
+		const light = new THREE.DirectionalLight(0xffffff, 2);
 		light.position.set(0, 4, 30);
 		light.castShadow = true;
 		Frame.scene.add(light);
@@ -59,7 +74,8 @@
 		const plight1 = new THREE.PointLight(0xffff88, .8, 20);
 		plight1.position.set(-2, 0, 2);
 		plight1.castShadow = true;
-		const plight2 = new THREE.PointLight(0x8888ff, .8, 20);
+
+		const plight2 = new THREE.PointLight(hexAccent, .8, 20);
 		plight2.position.set(2, 0, 2);
 		plight2.castShadow = true;
 
@@ -92,7 +108,8 @@
 		if (figures.length > 0) {
 			// slide down
 			if (figures[0].position.y > 0) {
-				figures[0].position.y -= dY * Math.sin(figures[0].position.y);
+				figures[0].position.y -= dY * figures[0].position.y;
+				//figures[0].position.y -= dY * Math.sin(figures[0].position.y);
 			}
 			// rotate left-right
 			figures[0].rotation.y += rZ;
@@ -181,12 +198,11 @@
 		const pivot = new THREE.Group();
 		pivot['step'] = 0; // for future animation
 		pivot.add(_obj);
-		pivot.position.y = 3.1; // to slide down, set initial position
+		pivot.position.y = 5; //3.1; // to slide down, set initial position
 
 		_obj.position.set(-figure.width / 2 + 0.5, -figure.height / 2 - 0.5, 0);
 		return pivot;
 	}
-
 </script>
 
 <style>
@@ -195,8 +211,14 @@
 		overflow: hidden;
 		transition: opacity 2s ease;
 		position: relative;
-		border-bottom: 2px solid rgba(9, 81, 126, .8);
+		border-bottom: 2px solid var(--next-accent);
+		justify-content: center;
+		width: 100%;
+		display: flex;
+		flex-flow: row nowrap;
 	}
 </style>
 
-<div id="next"></div>
+<div style="--next-accent: {accent};">
+    <div id="next"></div>
+</div>

@@ -8,7 +8,7 @@ const material = new THREE.MeshStandardMaterial({
 });
 
 const boxMaterial = new THREE.MeshStandardMaterial({
-	color: 0xddddff,
+	color: 0xdddddd,
 	transparent: true,
 	opacity: 0.4,
 	side: THREE.DoubleSide
