@@ -5,7 +5,7 @@ const FontCache = [];
 
 const PixelOffset = 0.1; // distance of pixel's distraction
 
-const PixelGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.1);
+const PixelGeometry = new THREE.BoxGeometry(0.8, 0.8, 2.8);
 const materials = [
 	new THREE.MeshStandardMaterial({
 		color: new THREE.Color("rgb(100, 128, 160)"),
@@ -20,8 +20,9 @@ const materials = [
 		// opacity: 0.9
 	}),
 ];
+const coloredMaterials = {};
 
-function renderSymbolToCache(letter) {
+function renderSymbolToCache(letter, colors?) {
 	const symbol = Font[letter];
 	if (!symbol) {
 		return;
@@ -36,7 +37,23 @@ function renderSymbolToCache(letter) {
 
 		for (let cell = 0; cell < matrix.length; cell++) {
 			if (matrix[cell] !== ' ') {
-				const material = materials[Math.floor(Math.random() * materials.length)];
+				let material;
+
+				if (colors && colors.length > 0) {
+					const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+					if (!coloredMaterials[randomColor]) {
+						coloredMaterials[randomColor] = new THREE.MeshStandardMaterial({
+							color: new THREE.Color(randomColor),
+							// side: THREE.DoubleSide,
+							// transparent: true,
+							// opacity: 0.9
+						});
+					}
+					material = coloredMaterials[randomColor];
+				} else {
+					material = materials[Math.floor(Math.random() * materials.length)];
+				}
 
 				const pixel = new THREE.Mesh(PixelGeometry, material);
 
@@ -55,9 +72,9 @@ function renderSymbolToCache(letter) {
 	FontCache[letter] = group;
 }
 
-export function renderLetter(letter: string) {
+export function renderLetter(letter: string, color?) {
 	if (!FontCache[letter]) {
-		renderSymbolToCache(letter);
+		renderSymbolToCache(letter, color);
 	}
 	if (!FontCache[letter]) {
 		return null;

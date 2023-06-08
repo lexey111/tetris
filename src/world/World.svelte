@@ -1,6 +1,6 @@
 <script>
 	import Help from "../help/Help.svelte";
-	import Score from "../score/Score.svelte";
+	import Text from "../text/Text.svelte";
 	import Next from "../next/Next.svelte";
 	import Scene from "../scene/Scene.svelte";
 
@@ -113,7 +113,7 @@
         <div id="scene-container">
             <div id="side-container">
                 <Next type={fig} rnd={v}/>
-                <Score text={text}/>
+                <Text text={text}/>
             </div>
             <Scene/>
         </div>

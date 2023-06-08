@@ -31,3 +31,13 @@ body {
 	margin: 0 auto;
 	display: flex;
 }
+
+a {
+	text-decoration: none;
+	transition: all .2s ease;
+}
+
+a:hover, a:active, a:focus {
+	text-decoration: underline;
+	outline: none;
+}

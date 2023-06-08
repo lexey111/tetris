@@ -1,14 +1,15 @@
 <script lang="ts">
-	import {onMount} from "svelte";
+	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
 	import type {TThreeFrame} from "../world/world-globals";
 	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
 	import {renderLetter} from "../symbols/font-utils";
 
 	export let text = 'TETRIS';
+	export let scale = 8;
+	export let colors = [];
 
 	let Frame: TThreeFrame;
-	const scale = 8;
 
 	let sizeX;
 	const sizeY = scale * SymbolHeight / 2;
@@ -22,11 +23,24 @@
 		updateScene();
 	});
 
+	onDestroy(() => {
+		if (!Frame) {
+			return;
+		}
+		let id = window.requestAnimationFrame(function () {
+			//
+		});
+		while (id--) {
+			window.cancelAnimationFrame(id);
+		}
+		Frame.renderer.dispose();
+	});
+
 	function updateScene() {
 		if (!Frame) {
 			return;
 		}
-		drawText();
+		drawText(colors);
 		Frame.renderer.setSize(sizeX, sizeY);
 		(Frame.camera as THREE.OrthographicCamera).left = sizeX / -2;
 		(Frame.camera as THREE.OrthographicCamera).right = sizeX / 2;
@@ -62,7 +76,7 @@
 		// World.frames.push(Frame);
 	}
 
-	function drawText() {
+	function drawText(colors) {
 		if (!Frame) {
 			return;
 		}
@@ -70,7 +84,7 @@
 		const xOffset = text.length * SymbolWidth / 2;
 
 		text.split('').forEach((sym, idx) => {
-			const symbol = renderLetter(sym);
+			const symbol = renderLetter(sym, colors);
 			if (symbol) {
 				symbol.position.x = idx * SymbolWidth - xOffset;
 				Frame.scene.add(symbol);
@@ -98,7 +112,7 @@
 
 <style>
 	#score {
-        margin-top: 20px;
+		margin-top: 20px;
 	}
 </style>
 
