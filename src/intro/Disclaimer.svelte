@@ -145,8 +145,8 @@
                 </li>
             </ul>
             <div id="keyset">
-                <Key size={80} keyColor={0x888888} textColor={0x444444}/>
-                <p>or click anywhere to return.</p>
+                <Key size={80} keyColor={0x888888} textColor={0x444444} rotate={true}/>
+                <p>or click anywhere to return</p>
             </div>
         </div>
     </div>

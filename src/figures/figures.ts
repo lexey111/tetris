@@ -38,7 +38,6 @@ export const Figures: Record<string, Array<string>> = {
 		' # ',
 		' # ',
 		' # ',
-		' # ',
 	],
 	'e' : [
 		'###',
@@ -56,7 +55,7 @@ export const Figures: Record<string, Array<string>> = {
 	],
 	'i' : [
 		'#',
-		'#',
+		' ',
 		'#',
 		'#',
 		'#',

@@ -180,7 +180,7 @@
 		font-size: 14px;
 		font-variant: all-petite-caps;
 		transition: font .2s ease;
-		line-height: 2;
+		line-height: 1.6;
 		display: flex;
 		flex-flow: column nowrap;
 		height: 100%;
@@ -191,7 +191,7 @@
 		font-weight: bold;
 		text-shadow: -1px 1px 0 rgba(0, 0, 0, 0.2);
 		display: inline-block;
-		border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+		border-bottom: 1px dashed rgba(255, 255, 255, 0.7);
 	}
 
 	.page a:hover, .page a:active, .page a:focus {
@@ -204,8 +204,9 @@
 	.page i {
 		font-style: normal;
 		display: inline;
-		padding: 2px 6px;
-		border: 1px dashed rgba(255, 255, 255, 0.3);
+		padding: 1px 4px;
+		background: rgba(255, 255, 255, .2);
+		/*border: 1px dashed rgba(255, 255, 255, 0.3);*/
 		border-radius: 3px;
 	}
 
@@ -265,29 +266,20 @@
 	.go-link a {
 		border: none !important;
 	}
-
-	.paragraph::first-letter {
-		background: linear-gradient(to bottom right, rgba(255, 255, 255, .5), rgba(255, 255, 255, .2));
-		border-radius: 18px;
-		padding: 6px;
-		min-width: 1em;
-		width: 1em;
-		text-align: center;
-		font-size: 5.5vw;
-		font-weight: bold;
+	.big-letter {
 		float: left;
-		line-height: 1;
+		background: linear-gradient(to bottom right, rgba(255, 255, 255, .5), rgba(255, 255, 255, .2));
+		box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.2);
+		border-radius: 18px;
+		padding: 16px;
 		margin-right: 10px;
-		margin-left: -5px;
+		margin-left: -10px;
 		margin-top: -5px;
-		text-shadow: -1px 1px 0 rgba(0, 0, 0, 0.1);
-		box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.1);
-		color: rgba(255, 255, 255, .7);
 	}
 
-    #bouncer-container {
-        height: 100%;
-    }
+	#bouncer-container {
+		height: 100%;
+	}
 
 	#next-container {
 		position: relative;
@@ -295,15 +287,15 @@
 		cursor: pointer;
 	}
 
-    #layer-2 .text-3d {
-	    justify-content: flex-end;
-        bottom: -40px;
-        transform: none !important;
-    }
+	#layer-2 .text-3d {
+		justify-content: flex-end;
+		bottom: -40px;
+		transform: none !important;
+	}
 
-    #layer-3 .text-3d {
-        justify-content: flex-start;
-    }
+	#layer-3 .text-3d {
+		justify-content: flex-start;
+	}
 
 	@media screen and (max-width: 1280px) {
 		#layer-1 {
@@ -351,9 +343,9 @@
 			width: 100%;
 			border: none;
 			border-radius: 0;
-            min-height: unset;
-            height: 100%;
-            overflow: hidden;
+			min-height: unset;
+			height: 100%;
+			overflow: hidden;
 		}
 
 		.page:after {
@@ -366,8 +358,11 @@
 <div id="intro">
     <div id="layer-1" class="page">
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
-            <p class="paragraph">
-                <b>TTetris</b> is a puzzle video game created by the Soviet software engineer Alexey
+            <p>
+                <span class="big-letter">
+                    <Text text='T' colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={20}/>
+                </span>
+                <b>Tetris</b> is a puzzle video game created by the Soviet software engineer Alexey
                 Pajitnov in <b>1985</b>. It has been published by several companies for multiple platforms, most
                 prominently during a dispute over the appropriation of the rights in the late <b>1980</b>s.
             </p>
@@ -390,12 +385,15 @@
                 <Bouncer/>
             </div>
         </div>
-        <div class="text-3d" style:transform="skew(0, {angle}deg)">Tet </div>
+        <div class="text-3d" style:transform="skew(0, {angle}deg)">Tet</div>
     </div>
     <div id="layer-3" class="page">
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
-            <p class="paragraph">
-                OOnce I decided to learn something completely new, as far as possible from my usual "enterprisish"
+            <p>
+                <span class="big-letter">
+                    <Text text='O' colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={20}/>
+                </span>
+                Once I decided to learn something completely new, as far as possible from my usual "enterprisish"
                 life with <i>clouds</i>, <i>microfrontends</i>, <i>React</i>, <i>Angular</i>, <i>Agile</i> and,
                 especially, <i>Scrum</i>.
             </p>
@@ -417,8 +415,11 @@
     </div>
     <div id="layer-4" class="page">
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
-            <p class="paragraph">
-                WWebGL with <a href="https://threejs.org/" target="_blank">ThreeJS</a> is used here as an engine. HTML,
+            <p>
+                <span class="big-letter">
+                    <Text text='W' colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={20}/>
+                </span>
+                WebGL with <a href="https://threejs.org/" target="_blank">ThreeJS</a> is used here as an engine. HTML,
                 CSS,
                 <a href="https://svelte.dev/" target="_blank">Svelte</a> as a logic driver, <a
                     href="https://vitejs.dev/" target="_blank">Vite</a> as a bundler... nothing too complex, very usual

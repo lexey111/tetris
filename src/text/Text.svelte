@@ -10,6 +10,7 @@
 	export let colors = [];
 
 	let Frame: TThreeFrame;
+	let canvas;
 
 	let sizeX;
 	const sizeY = scale * SymbolHeight / 2;
@@ -42,7 +43,7 @@
 
 	function initScene() {
 		Frame = {
-			container: document.getElementById('score'),
+			container: canvas,
 			scene: new THREE.Scene(),
 			renderer: new THREE.WebGLRenderer({alpha: true, antialias: false}),
 			camera: new THREE.OrthographicCamera(sizeX / -2, sizeX / 2, sizeY / 2, sizeY / -2, -10, 20000),
@@ -107,4 +108,4 @@
 	}
 </style>
 
-<div id="score"></div>
+<div bind:this={canvas}></div>
