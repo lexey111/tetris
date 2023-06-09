@@ -21,8 +21,8 @@ function extrudeSVG(id, color, SVGScale, sizeL) {
 	const material = new THREE.MeshStandardMaterial({
 		color,
 		// transparent: true,
-		// opacity: 0.9,
-		// side: THREE.DoubleSide
+		// opacity: 0.4,
+		//side: THREE.DoubleSide
 	});
 
 	svgData.paths.forEach(path => {
@@ -83,6 +83,7 @@ export function createKey({
 	} else {
 		arrow.scale.set(.8, -.8, .4);
 	}
+	arrow.position.z = -.1;
 
 	grpKey.add(arrow);
 	grpKey.add(key);

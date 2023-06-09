@@ -180,11 +180,23 @@
 		padding: 40px;
 		font-size: 14px;
 		font-variant: all-petite-caps;
-		transition: font .2s ease;
 		line-height: 1.6;
 		display: flex;
 		flex-flow: column nowrap;
-		height: 100%;
+	}
+
+	.layer-content.bouncer {
+		position: absolute;
+		top: 40px;
+		left: 0;
+		bottom: 30px;
+		right: 20px;
+		width: unset;
+		height: unset;
+		overflow: hidden;
+		display: flex;
+		flex-flow: column wrap;
+		padding: 0;
 	}
 
 	.page a {
@@ -258,24 +270,62 @@
 		transform: scale(.8);
 	}
 
-	#start-button p {
-		text-align: center;
-        padding-left: 6px;
+	#start-button {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		margin: 10px 0;
+	}
+
+	#start-button .go-link {
+		margin: 0;
+		padding: 0;
 	}
 
 	#start-button a {
 		color: #fff;
+		padding: 12px 40px !important;
 	}
 
 	.go-link {
 		margin-top: 2em;
 		border: 2px solid rgba(255, 255, 255, .4);
 		border-radius: 40px;
-		padding: 6px 0 6px 12px;
+		position: relative;
+		transition: all .2s ease;
+        overflow: hidden;
+	}
+
+	.go-link:before {
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 0;
+		bottom: 0;
+		background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04));
+		transition: all .2s ease-in-out;
+		border-radius: 40px;
+        opacity: 0;
+		z-index: -1;
+	}
+
+	.go-link:hover {
+		border: 2px solid rgba(255, 255, 255, .8);
+	}
+
+	.go-link:hover:before {
+		opacity: 1;
+		width: 100%;
 	}
 
 	.go-link a {
 		border: none !important;
+		padding: 6px 0 6px 12px;
+		display: block;
+		width: 100%;
+		height: 100%;
 	}
 
 	.big-letter {
@@ -290,7 +340,11 @@
 	}
 
 	#bouncer-container {
-		height: 100%;
+		flex-grow: 2;
+		margin-top: 130px;
+		margin-bottom: 20px;
+		margin-right: 20px;
+		position: relative;
 	}
 
 	#next-container {
@@ -360,6 +414,17 @@
 			overflow: hidden;
 		}
 
+		.layer-content.bouncer {
+			top: 40px;
+			left: 0;
+			bottom: 10px;
+			right: 0;
+		}
+
+		#bouncer-container {
+			margin-right: 0;
+		}
+
 		.page:after {
 			display: none;
 		}
@@ -389,7 +454,7 @@
         <div class="text-3d" style:transform="skew(0, {angle}deg)">3D</div>
     </div>
     <div id="layer-2" class="page" on:click={onStart}>
-        <div class="layer-content" style:transform="skew(0, {angle}deg)">
+        <div class="layer-content bouncer" style:transform="skew(0, {angle}deg)">
             <div id="tetris-text">
                 <Text text={text} colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={10}/>
             </div>
@@ -398,9 +463,9 @@
                     <a href="#">START</a>
                 </p>
             </div>
-            <div id="bouncer-container">
-                <Bouncer/>
-            </div>
+        </div>
+        <div id="bouncer-container">
+            <Bouncer/>
         </div>
         <div class="text-3d" style:transform="skew(0, {angle}deg)">Tet</div>
     </div>

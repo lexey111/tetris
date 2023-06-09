@@ -23,7 +23,6 @@
 
 	$: {
 		if (Frame && type && (oldType !== type || oldRnd !== rnd)) {
-			console.log('= figure changed...', oldType, '->', type);
 			// mark all the current content to be removed
 			markAllToRemove();
 
@@ -122,9 +121,10 @@
 					needCleanup = true;
 				}
 
-				if (figures[i].position.y > -1.5) {
+				if (figures[i].position.y > -2.5) {
 					// first go down...
-					figures[i].position.y -= dY;
+					figures[i].position.y -= dY * 2;
+					figures[i].position.z -= dY * 3;
 				} else {
 					// ...then decompose
 					animateParts(i);
@@ -166,6 +166,7 @@
 		Frame.scene.traverse(function (node) {
 			if (node instanceof THREE.Mesh) {
 				node['markToRemove'] = true;
+				// node.position.z -= 5;
 			}
 		});
 	}
@@ -207,6 +208,7 @@
 		overflow: hidden;
 		transition: opacity 2s ease;
 		position: relative;
+		border-top: 2px solid var(--next-accent);
 		border-bottom: 2px solid var(--next-accent);
 		justify-content: center;
 		width: 100%;

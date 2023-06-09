@@ -81,7 +81,7 @@
 		font-weight: normal;
 		text-transform: uppercase;
 		font-size: 4em;
-        color: #FF0088;
+		color: #FF0088;
 	}
 
 	p {
@@ -96,7 +96,7 @@
 	li::marker {
 		content: '—  ';
 		font-size: 1.2em;
-        color: #FF0088;
+		color: #FF0088;
 	}
 
 	ul li {
@@ -112,14 +112,26 @@
 		align-content: center;
 		justify-content: center;
 		margin-top: 4em;
-        padding-top: 2em;
-        border-top: 2px dotted #FF0088;
+		padding-top: 2em;
+		border-top: 2px dotted #FF0088;
+		opacity: 0;
+		animation: show 3s forwards running ease-in;
+	}
+
+	@keyframes show {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
 	}
 
 	#keyset p {
 		margin: 1em 0 0 0;
-        color: #FF0088;
+		color: #FF0088;
 	}
+
 </style>
 
 <div id="disclaimer-container" on:click={onHide}>
@@ -145,7 +157,7 @@
                 </li>
             </ul>
             <div id="keyset">
-                <Key size={80} keyColor={0x888888} textColor={0x444444} rotate={true}/>
+                <Key size={80} keyColor={0xeeeeee} textColor={0x888888} rotate={true}/>
                 <p>or click anywhere to return</p>
             </div>
         </div>
