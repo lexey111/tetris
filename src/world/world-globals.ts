@@ -1,11 +1,11 @@
 import * as THREE from "three";
 
+// TODO: clean unused
 export type TThreeFrame = {
-	isMain?: boolean
-	container: HTMLElement
+	container?: HTMLElement
 	renderer: THREE.WebGLRenderer
 	scene: THREE.Scene
-	camera?: THREE.OrthographicCamera | THREE.PerspectiveCamera
+	camera: THREE.OrthographicCamera | THREE.PerspectiveCamera
 	sizeX?: number
 	sizeY?: number
 }

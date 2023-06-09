@@ -5,6 +5,7 @@
 	import Next from "../next/Next.svelte";
 	import Disclaimer from "./Disclaimer.svelte";
 	import Bouncer from "./Bouncer.svelte";
+	import BigLetter from "./BigLetter.svelte";
 
 	export let onStart;
 
@@ -254,6 +255,7 @@
 		align-content: center;
 		justify-content: center;
 		margin-bottom: 40px;
+        transform: scale(.8);
 	}
 
 	.go-link {
@@ -271,7 +273,7 @@
 		background: linear-gradient(to bottom right, rgba(255, 255, 255, .5), rgba(255, 255, 255, .2));
 		box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.2);
 		border-radius: 18px;
-		padding: 16px;
+		padding: 4px;
 		margin-right: 10px;
 		margin-left: -10px;
 		margin-top: -5px;
@@ -360,7 +362,7 @@
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
             <p>
                 <span class="big-letter">
-                    <Text text='T' colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={20}/>
+                    <BigLetter letter="T"/>
                 </span>
                 <b>Tetris</b> is a puzzle video game created by the Soviet software engineer Alexey
                 Pajitnov in <b>1985</b>. It has been published by several companies for multiple platforms, most
@@ -379,7 +381,7 @@
     <div id="layer-2" class="page" on:click={onStart}>
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
             <div id="tetris-text">
-                <Text text={text} colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={11}/>
+                <Text text={text} colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={10}/>
             </div>
             <div id="bouncer-container">
                 <Bouncer/>
@@ -391,7 +393,7 @@
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
             <p>
                 <span class="big-letter">
-                    <Text text='O' colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={20}/>
+                    <BigLetter letter="O"/>
                 </span>
                 Once I decided to learn something completely new, as far as possible from my usual "enterprisish"
                 life with <i>clouds</i>, <i>microfrontends</i>, <i>React</i>, <i>Angular</i>, <i>Agile</i> and,
@@ -417,7 +419,7 @@
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
             <p>
                 <span class="big-letter">
-                    <Text text='W' colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={20}/>
+                    <BigLetter letter="W"/>
                 </span>
                 WebGL with <a href="https://threejs.org/" target="_blank">ThreeJS</a> is used here as an engine. HTML,
                 CSS,
@@ -425,9 +427,11 @@
                     href="https://vitejs.dev/" target="_blank">Vite</a> as a bundler... nothing too complex, very usual
                 set for small web-apps.
             </p>
+
             <div id="next-container" on:click={onStart}>
                 <Next accent={'#FF0088'} type={fig} rnd={v}/>
             </div>
+
             <p class="go-link">
                 <a href="#" on:click={showDisclaimer}>&uparrow; Disclaimer</a>
             </p>

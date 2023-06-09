@@ -9,7 +9,7 @@
 	export let size = 80;
 	export let keyColor = 0x223344;
 	export let textColor = 0xdd5555;
-	export let rotate = false;
+	export let rotate = false; // show rotation animation
 
 	const sizeX = size;
 	const sizeY = size;
@@ -17,9 +17,11 @@
 	const sizeL = 3; // 3x3 cells per key
 	const sizePixel = 512; // base size of svg
 	const SVGScale = sizeL / sizePixel;
+	let canvas;
+
 	let key;
 
-	let myReq;
+	let animationReq;
 
 	onMount(() => {
 		initScene();
@@ -43,23 +45,22 @@
 	let rotation = 0.05;
 
 	function animate() {
-		myReq = requestAnimationFrame(animate);
-
-		if (!Frame) {
+		if (!rotation || !Frame) {
 			return;
 		}
 
 		key.rotation.x += rotation;
 		Frame.renderer.render(Frame.scene, Frame.camera);
+
+		animationReq = requestAnimationFrame(animate);
 	}
 
 	function clearAnimation() {
-		cancelAnimationFrame(myReq);
+		cancelAnimationFrame(animationReq);
 	}
 
 	function initScene() {
 		Frame = {
-			container: document.getElementById('key-component'),
 			scene: new THREE.Scene(),
 			renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
 			camera: new THREE.PerspectiveCamera(75, sizeX / sizeY, 0.1, 500),
@@ -76,7 +77,7 @@
 		plight1.position.set(-5, 1, 5);
 		plight1.castShadow = true;
 		const plight2 = new THREE.PointLight(0xff0088, .8, 20);
-		plight2.position.set(2, -1, 1);
+		plight2.position.set(0, -1, 1);
 		plight2.castShadow = true;
 
 		Frame.scene.add(plight1);
@@ -96,7 +97,6 @@
 		Frame.scene.add(key);
 		key.rotation.x = -.6;
 
-		// set scene params
 		Frame.renderer.setSize(sizeX, sizeY);
 
 		Frame.camera.position.set(0, 0, 10);
@@ -105,9 +105,9 @@
 		Frame.camera.updateProjectionMatrix();
 
 		Frame.renderer.render(Frame.scene, Frame.camera);
-		Frame.container.appendChild(Frame.renderer.domElement);
+		canvas.appendChild(Frame.renderer.domElement);
 	}
 
 </script>
 
-<div id="key-component"></div>
+<div bind:this={canvas}></div>
