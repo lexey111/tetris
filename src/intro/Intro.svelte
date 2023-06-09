@@ -254,8 +254,17 @@
 		display: flex;
 		align-content: center;
 		justify-content: center;
-		margin-bottom: 40px;
-        transform: scale(.8);
+		margin-bottom: 10px;
+		transform: scale(.8);
+	}
+
+	#start-button p {
+		text-align: center;
+        padding-left: 6px;
+	}
+
+	#start-button a {
+		color: #fff;
 	}
 
 	.go-link {
@@ -268,6 +277,7 @@
 	.go-link a {
 		border: none !important;
 	}
+
 	.big-letter {
 		float: left;
 		background: linear-gradient(to bottom right, rgba(255, 255, 255, .5), rgba(255, 255, 255, .2));
@@ -383,6 +393,11 @@
             <div id="tetris-text">
                 <Text text={text} colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]} scale={10}/>
             </div>
+            <div id="start-button">
+                <p class="go-link">
+                    <a href="#">START</a>
+                </p>
+            </div>
             <div id="bouncer-container">
                 <Bouncer/>
             </div>
@@ -407,9 +422,6 @@
                 <a href="https://en.wikipedia.org/wiki/Tetris" target="_blank">Read details &rarr;</a>
             </p>
             <p>
-                &larr; Or better yet, just go and play. Press the button on the blue page and see how long you last.
-            </p>
-            <p>
                 &copy; {year}, Oleksii Koshkin
             </p>
         </div>
@@ -425,7 +437,7 @@
                 CSS,
                 <a href="https://svelte.dev/" target="_blank">Svelte</a> as a logic driver, <a
                     href="https://vitejs.dev/" target="_blank">Vite</a> as a bundler... nothing too complex, very usual
-                set for small web-apps.
+                set for small web-apps. Responsive and adaptive design, of course, as usual.
             </p>
 
             <div id="next-container" on:click={onStart}>

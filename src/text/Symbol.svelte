@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
-	import {Group} from "three";
 	import type {TThreeFrame} from "../world/world-globals";
 	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
 	import {renderLetter} from "../symbols/font-utils";
@@ -52,6 +51,18 @@
 		}
 
 		_letter.rotation.y += increment;
+        // wobby effect
+		_letter.children[0].children.forEach(cube => {
+			if (!cube['dir']) {
+				cube['dir'] = Math.random() > 0.5 ? 2 : -2;
+			}
+			cube.rotation.z += increment * cube['dir'];
+			cube.position.z += increment * cube['dir'];
+			cube.position.y += increment * cube['dir'] / 4;
+			if (Math.abs(cube.rotation.z) > .21) {
+				cube['dir'] *= -1;
+			}
+		});
 
 		Frame.renderer.render(Frame.scene, Frame.camera);
 
@@ -144,9 +155,7 @@
 		}
 		clearScene();
 
-		if (!_letter) {
-			_letter = new Group();
-		}
+		_letter = new THREE.Group();
 
 		const sym = renderLetter(letter, colors);
 		if (sym) {

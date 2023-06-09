@@ -7,14 +7,14 @@
 	import {setResizeCallback} from "../scene/scene-helpers";
 
 	let Frame: TThreeFrame;
+	let canvas;
+	let animationReq;
 	let cube;
-	let container;
 
 	onMount(() => {
-		container = document.getElementById('bouncer-component').parentElement;
 		initScene();
 
-		setResizeCallback(container, (width, height) => {
+		setResizeCallback(canvas, (width, height) => {
 			Frame.renderer.setSize(width, height);
 			(Frame.camera as THREE.PerspectiveCamera).aspect = width / height;
 			Frame.camera.updateProjectionMatrix()
@@ -30,12 +30,7 @@
 		if (!Frame) {
 			return;
 		}
-		let id = window.requestAnimationFrame(function () {
-			//
-		});
-		while (id--) {
-			window.cancelAnimationFrame(id);
-		}
+		cancelAnimationFrame(animationReq);
 		Frame.renderer.dispose();
 	});
 
@@ -46,12 +41,6 @@
 	const zoom = 0.01;
 
 	function animate() {
-		requestAnimationFrame(animate);
-
-		if (!Frame) {
-			return;
-		}
-
 		if (Frame.camera.zoom < 1) {
 			Frame.camera.zoom += zoom;
 			Frame.camera.updateProjectionMatrix();
@@ -74,20 +63,20 @@
 		}
 
 		Frame.renderer.render(Frame.scene, Frame.camera);
+
+		animationReq = requestAnimationFrame(animate);
 	}
 
 	function initScene() {
-		console.log('size', container.offsetWidth, container.offsetHeight)
+		console.log('size', canvas.offsetWidth, canvas.offsetHeight)
 
 		Frame = {
-			container: container,
 			scene: new THREE.Scene(),
 			renderer: new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'high-performance'}),
-			camera: new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 500),
+			camera: new THREE.PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 500),
 		};
 
-		Frame.renderer.setSize(container.offsetWidth, container.offsetHeight);
-		Frame.container.appendChild(Frame.renderer.domElement);
+		Frame.renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
 
 		cube = createCube();
 		cube.position.x = 0;
@@ -98,9 +87,6 @@
 
 		addLights(Frame.scene);
 
-		// const cube2 = createCube();
-		// Frame.scene.add(cube2);
-
 		Frame.camera.position.set(0, 0, 20);
 		Frame.camera.lookAt(new THREE.Vector3(0, 0, 0));
 		Frame.camera.zoom = 0.01;
@@ -109,10 +95,10 @@
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 		Frame.camera.updateProjectionMatrix();
-		Frame.container.appendChild(Frame.renderer.domElement);
 		Frame.renderer.render(Frame.scene, Frame.camera);
+		canvas.appendChild(Frame.renderer.domElement);
 	}
 
 </script>
 
-<div id="bouncer-component"></div>
+<div id="bouncer-component" bind:this={canvas} style="width: 100%; height: 100%;"></div>

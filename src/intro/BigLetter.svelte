@@ -2,7 +2,7 @@
 	import Symbol from "../text/Symbol.svelte";
 
 	export let letter = '';
-	const bigLetterSize = 30;
+	const bigLetterSize = 24;
 	let animation = false;
 	let increment;
 

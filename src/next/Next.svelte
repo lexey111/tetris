@@ -16,12 +16,14 @@
 	let oldRnd = -2;
 
 	let Frame: TThreeFrame;
+	let canvas;
+	let animationReq;
 
 	let figures = [];
 
 	$: {
 		if (Frame && type && (oldType !== type || oldRnd !== rnd)) {
-			console.log('= figure changes...', oldType, '->', type);
+			console.log('= figure changed...', oldType, '->', type);
 			// mark all the current content to be removed
 			markAllToRemove();
 
@@ -45,18 +47,12 @@
 		if (!Frame) {
 			return;
 		}
-		let id = window.requestAnimationFrame(function () {
-			//
-		});
-		while (id--) {
-			window.cancelAnimationFrame(id);
-		}
+		cancelAnimationFrame(animationReq);
 		Frame.renderer.dispose();
 	});
 
 	function initScene() {
 		Frame = {
-			container: document.getElementById('next'),
 			scene: new THREE.Scene(),
 			renderer: new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'high-performance'}),
 			camera: new THREE.PerspectiveCamera(75, size * 2 / size, 0.1, 500),
@@ -94,10 +90,10 @@
 
 		Frame.camera.updateProjectionMatrix();
 
-		Frame.container.appendChild(Frame.renderer.domElement);
+		canvas.appendChild(Frame.renderer.domElement);
 
 		setTimeout(() => {
-			Frame.container.style.opacity = '1';
+			canvas.style.opacity = '1';
 		}, 0);
 	}
 
@@ -137,7 +133,7 @@
 			needCleanup && cleanup();
 			Frame && Frame.renderer.render(Frame.scene, Frame.camera);
 		}
-		requestAnimationFrame(animate);
+		animationReq = requestAnimationFrame(animate);
 	}
 
 	function randomSign() {
@@ -206,7 +202,7 @@
 </script>
 
 <style>
-	#next {
+	.next-content {
 		opacity: 0;
 		overflow: hidden;
 		transition: opacity 2s ease;
@@ -220,5 +216,5 @@
 </style>
 
 <div style="--next-accent: {accent};">
-    <div id="next"></div>
+    <div bind:this={canvas} class="next-content"></div>
 </div>
