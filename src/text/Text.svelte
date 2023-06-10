@@ -2,7 +2,7 @@
 	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
 	import {Group} from "three";
-	import type {TThreeFrame} from "../world/world-globals";
+	import type {TThreeFrame} from "../game/game-globals";
 	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
 	import {renderLetter} from "../symbols/font-utils";
 	/*
@@ -11,6 +11,7 @@
 	export let text = '';
 	export let scale = 8;
 	export let colors = [];
+	export let className = '';
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -124,4 +125,4 @@
 	}
 </script>
 
-<div bind:this={canvas}></div>
+<div bind:this={canvas} class={className}></div>

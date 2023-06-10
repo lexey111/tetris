@@ -22,7 +22,7 @@ const materials = [
 ];
 const coloredMaterials = {};
 
-function renderSymbolToCache(letter, colors?) {
+function renderSymbolToCache(letter, cacheKey, colors?) {
 	const symbol = Font[letter];
 	if (!symbol) {
 		return;
@@ -69,16 +69,14 @@ function renderSymbolToCache(letter, colors?) {
 			}
 		}
 	}
-	FontCache[letter] = group;
+	FontCache[cacheKey] = group;
 }
 
-export function renderLetter(letter: string, color?) {
-	if (!FontCache[letter]) {
-		renderSymbolToCache(letter, color);
-	}
-	if (!FontCache[letter]) {
-		return null;
+export function renderLetter(letter: string, colors?) {
+	const cacheKey = letter + (colors ? colors.join('') : '_std');
+	if (!FontCache[cacheKey]) {
+		renderSymbolToCache(letter, cacheKey, colors);
 	}
 
-	return FontCache[letter].clone(); // .rotateZ(Math.random() > 0.5 ? 0.04 : -0.04);
+	return FontCache[cacheKey] ? FontCache[cacheKey].clone() : null; // .rotateZ(Math.random() > 0.5 ? 0.04 : -0.04);
 }

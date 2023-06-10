@@ -1,11 +1,11 @@
 <script lang="ts">
 	import WebGL from "three/examples/jsm/capabilities/WebGL";
 	import Intro from "./intro/Intro.svelte";
-	import World from "./world/World.svelte";
+	import Game from "./game/Game.svelte";
 
 	const isWebGL = WebGL.isWebGLAvailable();
 
-	let intro = true;
+	let intro = false;
 
 	function showGame() {
 		intro = false;
@@ -17,7 +17,7 @@
         {#if intro}
             <Intro onStart={showGame}/>
         {:else}
-            <World/>
+            <Game/>
         {/if}
     {:else }
         <h1>No WebGL available</h1>

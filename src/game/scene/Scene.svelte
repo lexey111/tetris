@@ -1,15 +1,13 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
+	import {addSpaceItems, addWalls, setResizeCallback} from "./scene-helpers.ts";
 	import * as THREE from "three";
-	import type {TThreeFrame} from "../game/world-globals";
-	import {createCube} from "../figures/figures-utils";
-	import {addLights} from "../game/scene/scene-lights";
-	import {setResizeCallback} from "../game/scene/scene-helpers";
+	import {addLights} from "./scene-lights.ts";
+	import type {TThreeFrame} from "../game-globals";
 
 	let Frame: TThreeFrame;
 	let canvas;
 	let animationReq;
-	let cube;
 
 	let sizeTimeout;
 
@@ -27,10 +25,7 @@
 				Frame.renderer.render(Frame.scene, Frame.camera);
 			}, 100);
 		});
-
-		setTimeout(() => {
-			animate();
-		}, 1500);
+        setTimeout(animate, 10);
 	});
 
 	onDestroy(() => {
@@ -74,32 +69,12 @@
 		camera.updateProjectionMatrix()
 	}
 
-	let verticalIncrement = 0.2;
-	let horizontalIncrement = 0.1;
-	let rotationY = 0.02;
-	let rotationX = 0.02;
 	const zoom = 0.01;
 
 	function animate() {
 		if (Frame.camera.zoom < 1) {
 			Frame.camera.zoom += zoom;
 			Frame.camera.updateProjectionMatrix();
-		}
-
-		cube.rotation.x += rotationX;
-		cube.rotation.y += rotationY;
-		cube.rotation.z -= 0.05;
-
-		cube.position.y += verticalIncrement;
-		if (Math.abs(cube.position.y) > 7.5) {
-			verticalIncrement *= -1;
-			rotationY *= -1;
-		}
-
-		cube.position.x += horizontalIncrement;
-		if (Math.abs(cube.position.x) > 2.5) {
-			horizontalIncrement *= -1;
-			rotationX *= -1;
 		}
 
 		Frame.renderer.render(Frame.scene, Frame.camera);
@@ -116,43 +91,31 @@
 
 		Frame.renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
 
-		cube = createCube();
-		cube.position.x = 0;
-		cube.position.y = 0;
-		cube.scale.set(5, 5, 5)
+		Frame.camera.zoom = -0.01;
 
-		Frame.scene.add(cube);
-
-		// const material = new THREE.MeshStandardMaterial({
-		// 	color: 0xdddddd,
-		// 	transparent: true,
-		// 	opacity: 0.3,
-		// 	side: THREE.DoubleSide
-		// });
-		// const boxGeometry = new THREE.BoxGeometry(10, 20, 8);
-		// const hCube2 = new THREE.Mesh(boxGeometry, material);
-		// Frame.scene.add(hCube2);
-
-        Frame.camera.zoom = -0.01;
-
+		addWalls(Frame.scene);
+		addSpaceItems(Frame.scene);
 		addLights(Frame.scene);
+
+		// addHelper(Frame.scene);
 
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 		canvas.appendChild(Frame.renderer.domElement);
+		adjustPerspectiveCamera(Frame.camera as THREE.PerspectiveCamera, 0.8);
+		Frame.renderer.render(Frame.scene, Frame.camera);
 	}
-
 </script>
 
 <style>
-	#bouncer-component {
+	#scene {
 		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
 		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
 	}
 </style>
 
-<div id="bouncer-component" bind:this={canvas}></div>
+<div id="scene" bind:this={canvas}></div>

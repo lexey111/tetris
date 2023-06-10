@@ -1,10 +1,13 @@
-<script>
+<script lang="ts">
 	import Help from "../help/Help.svelte";
 	import Text from "../text/Text.svelte";
 	import Next from "../next/Next.svelte";
-	import Scene from "../scene/Scene.svelte";
+	import Scene from "./scene/Scene.svelte";
+	import {getRandomFigure} from "./game-utils.ts";
+	import type {TGameState} from "./game-globals.ts";
+	import Banner from "./banner/Banner.svelte";
 
-	const figs = 'SSS ZZZ II LLL TTT OO JJJ'.split('').filter(s => s !== ' '); // ['S', 'Z', 'I', 'L', 'T', 'O', 'J'];
+	let GameState: TGameState = 'PRE-START';
 	let fig = '';
 	let v = 0;
 
@@ -17,7 +20,7 @@
 	}, 5000);
 
 	setInterval(() => {
-		fig = figs[Math.floor(Math.random() * figs.length)];
+		fig = getRandomFigure(true);
 		v++; // for the same figures
 	}, 2000);
 </script>
@@ -88,6 +91,14 @@
 		background: linear-gradient(to bottom, #020b0c, transparent 90%);
 	}
 
+    #banner-container {
+	    position: absolute;
+	    max-width: 100vw;
+	    top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+    }
+
 	@media screen and (max-width: 768px) {
 		#screen-content {
 			padding-bottom: 200px;
@@ -116,6 +127,9 @@
                 <Text text={text}/>
             </div>
             <Scene/>
+            <div id="banner-container">
+                <Banner textLine1="Ready?" textLine2="-3-"/>
+            </div>
         </div>
     </div>
     <div id="help-content">

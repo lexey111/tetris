@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
-	import {setResizeCallback} from "../scene/scene-helpers";
+	import {setResizeCallback} from "../game/scene/scene-helpers";
 	import Text from "../text/Text.svelte";
 	import Next from "../next/Next.svelte";
 	import Disclaimer from "./Disclaimer.svelte";
@@ -115,90 +115,6 @@
 		height: 100%;
 	}
 
-	#layer-1 {
-		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 20px), 0 calc(100% - 40px), 0% 20px);
-	}
-
-	#layer-2 {
-		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 40px), calc(100% - 20px) calc(100% - 20px), 0% calc(100% - 20px), 0% 0%);
-	}
-
-	#layer-2:after {
-		clip-path: none;
-		border-left: 1px dotted rgba(255, 255, 255, .2);
-		box-sizing: border-box;
-	}
-
-	#layer-3 {
-		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 20px), 0 calc(100% - 40px), 0% 0%);
-	}
-
-	#layer-4 {
-		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 20px), 0 calc(100% - 40px), 0% 20px);
-	}
-
-	#layer-4:after {
-		clip-path: none;
-	}
-
-	.page:after {
-		content: '';
-		display: block;
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		right: 0;
-		width: 22px;
-		background: linear-gradient(to bottom right, rgba(0, 0, 0, .1), rgba(0, 0, 0, 0.4));
-		clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 0%);
-		border-top-right-radius: 6px;
-	}
-
-	#layer-1 {
-		background: linear-gradient(to bottom right, #ffa600, #653d02);
-		border-top-left-radius: 26px;
-		color: #e7cea0;
-	}
-
-	#layer-2 {
-		background: linear-gradient(to bottom right, #034c80, #012d4b);
-		cursor: pointer;
-	}
-
-	#layer-3 {
-		background: linear-gradient(to bottom right, #aec42b, #687704);
-		border-top-right-radius: 26px;
-	}
-
-	#layer-4 {
-		background: linear-gradient(to bottom right, #ff0088, #6e023c);
-		border-top-right-radius: 26px;
-		border-top-left-radius: 10px 20px;
-	}
-
-	.layer-content {
-		padding: 40px;
-		font-size: 14px;
-		font-variant: all-petite-caps;
-		line-height: 1.6;
-		display: flex;
-		flex-flow: column nowrap;
-	}
-
-	.layer-content.bouncer {
-		position: absolute;
-		top: 40px;
-		left: 0;
-		bottom: 30px;
-		right: 20px;
-		width: unset;
-		height: unset;
-		overflow: hidden;
-		display: flex;
-		flex-flow: column wrap;
-		padding: 0;
-	}
-
 	.page a {
 		color: #f8daa6;
 		font-weight: bold;
@@ -223,17 +139,88 @@
 		border-radius: 3px;
 	}
 
+	#layer-1 {
+		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 20px), 0 calc(100% - 40px), 0% 20px);
+		background: linear-gradient(to bottom right, #ffa600, #653d02);
+		border-top-left-radius: 26px;
+		color: #e7cea0;
+	}
+
+	#layer-2 {
+		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 40px), calc(100% - 20px) calc(100% - 20px), 0% calc(100% - 20px), 0% 0%);
+		background: linear-gradient(to bottom right, #034c80, #012d4b);
+		cursor: pointer;
+	}
+
+	#layer-2:after {
+		clip-path: none;
+		border-left: 1px dotted rgba(255, 255, 255, .2);
+		box-sizing: border-box;
+	}
+
+	#layer-3 {
+		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 20px), 0 calc(100% - 40px), 0% 0%);
+		background: linear-gradient(to bottom right, #aec42b, #687704);
+		border-top-right-radius: 26px;
+	}
+
+	#layer-4 {
+		clip-path: polygon(0% 0%, calc(100% - 20px) 20px, 100% 0%, 100% calc(100% - 20px), 0 calc(100% - 40px), 0% 20px);
+		background: linear-gradient(to bottom right, #ff0088, #6e023c);
+		border-top-right-radius: 26px;
+		border-top-left-radius: 10px 20px;
+		justify-content: center;
+		align-self: center;
+	}
+
+	#layer-4:after {
+		clip-path: none;
+	}
+
+	.page:after {
+		content: '';
+		display: block;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		width: 22px;
+		background: linear-gradient(to bottom right, rgba(0, 0, 0, .1), rgba(0, 0, 0, 0.4));
+		clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 0%);
+		border-top-right-radius: 6px;
+	}
+
+
+	.layer-content {
+		padding: 40px;
+		font-size: 14px;
+		font-variant: all-petite-caps;
+		line-height: 1.6;
+		display: flex;
+		flex-flow: column nowrap;
+	}
+
+	.layer-content.bouncer {
+		position: absolute;
+		top: 40px;
+		left: 0;
+		bottom: 30px;
+		right: 20px;
+		width: unset;
+		height: unset;
+		overflow: hidden;
+		display: flex;
+		flex-flow: column wrap;
+		padding: 0;
+	}
+
+
 	#layer-3 a {
 		color: #cdfcaf;
 	}
 
 	#layer-4 a {
 		color: #fcafea;
-	}
-
-	#layer-4 {
-		justify-content: center;
-		align-self: center;
 	}
 
 	#layer-4 .layer-content {
@@ -259,6 +246,16 @@
 		font-weight: bold;
 		letter-spacing: -2vw;
 		z-index: -1;
+	}
+
+	#layer-2 .text-3d {
+		justify-content: flex-end;
+		bottom: -40px;
+		transform: none !important;
+	}
+
+	#layer-3 .text-3d {
+		justify-content: flex-start;
 	}
 
 	#tetris-text {
@@ -293,7 +290,7 @@
 		border-radius: 40px;
 		position: relative;
 		transition: all .2s ease;
-        overflow: hidden;
+		overflow: hidden;
 	}
 
 	.go-link:before {
@@ -307,7 +304,7 @@
 		background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04));
 		transition: all .2s ease-in-out;
 		border-radius: 40px;
-        opacity: 0;
+		opacity: 0;
 		z-index: -1;
 	}
 
@@ -353,15 +350,6 @@
 		cursor: pointer;
 	}
 
-	#layer-2 .text-3d {
-		justify-content: flex-end;
-		bottom: -40px;
-		transform: none !important;
-	}
-
-	#layer-3 .text-3d {
-		justify-content: flex-start;
-	}
 
 	@media screen and (max-width: 1280px) {
 		#layer-1 {

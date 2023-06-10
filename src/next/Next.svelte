@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
-	import type {TThreeFrame} from "../world/world-globals";
+	import type {TThreeFrame} from "../game/game-globals";
 	import type {TFigureType} from "../figures/figures";
 	import {createFigure} from "../figures/figures-builder";
 

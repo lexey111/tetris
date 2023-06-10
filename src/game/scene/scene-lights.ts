@@ -1,9 +1,7 @@
 import * as THREE from "three";
-import {World} from "../world/world-globals";
 
 export function addLights(scene) {
 	const light = new THREE.DirectionalLight(0xffffff, 2);
-	World.light = light;
 	light.position.set(3, 40, 2);
 	light.castShadow = true;
 	light.rotateX(5);

@@ -2,7 +2,7 @@
 	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
 	import {createKey} from "../keys-utils";
-	import type {TThreeFrame} from "../../world/world-globals";
+	import type {TThreeFrame} from "../../game/game-globals";
 
 	let Frame: TThreeFrame;
 
