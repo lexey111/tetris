@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {onMount} from "svelte";
+	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
 	import type {TThreeFrame} from "../game/game-globals";
 	import {createKey} from "./keys-utils";
@@ -36,11 +36,21 @@
 		keyPause: false,
 		keySpace: false,
 	};
+	let canvas;
+	let animationReq;
+	let initialHandler;
 
 	onMount(() => {
 		initScene();
 		attachKeys();
-		setTimeout(animate, 500);
+
+		initialHandler = setTimeout(animate, 2500);
+	});
+
+	onDestroy(() => {
+		cancelAnimationFrame(animationReq);
+		clearTimeout(initialHandler);
+		Frame.renderer.dispose();
 	});
 
 	function attachKeys() {
@@ -107,7 +117,7 @@
 			}
 		}
 		Frame && Frame.renderer.render(Frame.scene, Frame.camera);
-		requestAnimationFrame(animate);
+		animationReq = requestAnimationFrame(animate);
 	}
 
 	function createKeys() {
@@ -160,7 +170,6 @@
 
 	function initScene() {
 		Frame = {
-			container: document.getElementById('keys'),
 			scene: new THREE.Scene(),
 			renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
 			camera: new THREE.PerspectiveCamera(90, sizeX / sizeY, 0.1, 500),
@@ -192,9 +201,6 @@
 		Frame.camera.lookAt(new THREE.Vector3(0, .5, 0));
 		Frame.camera.zoom = 1;
 
-		// const axesHelper = new THREE.AxesHelper(15);
-		// Frame.scene.add(axesHelper);
-
 		// add geometry
 		keysGrp = createKeys();
 		Frame.scene.add(keysGrp);
@@ -202,7 +208,7 @@
 
 		Frame.camera.updateProjectionMatrix();
 
-		Frame.container.appendChild(Frame.renderer.domElement);
+		canvas.appendChild(Frame.renderer.domElement);
 	}
 
 </script>
@@ -210,4 +216,4 @@
 <style>
 </style>
 
-<div id="keys"></div>
+<div bind:this={canvas}></div>

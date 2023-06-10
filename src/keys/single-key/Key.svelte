@@ -17,10 +17,9 @@
 	const sizeL = 3; // 3x3 cells per key
 	const sizePixel = 512; // base size of svg
 	const SVGScale = sizeL / sizePixel;
-	let canvas;
-
 	let key;
 
+	let canvas;
 	let animationReq;
 
 	onMount(() => {
