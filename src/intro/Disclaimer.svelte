@@ -86,6 +86,7 @@
 
 	p {
 		margin-top: 4em;
+		color: #FF0088;
 	}
 
 	ul {
@@ -111,25 +112,35 @@
 		justify-items: center;
 		align-content: center;
 		justify-content: center;
-		margin-top: 4em;
+		margin-top: 2em;
 		padding-top: 2em;
 		border-top: 2px dotted #FF0088;
-		opacity: 0;
-		animation: show 3s forwards running ease-in;
+		/*opacity: 0;*/
+        overflow: hidden;
+        /*transition: all 1s ease;*/
 	}
+
+    :global(#keyset canvas) {
+        height: 80px;
+	    animation: show 2s forwards running ease-in;
+    }
 
 	@keyframes show {
 		0% {
-			opacity: 0;
+			opacity: 1;
+			max-height: 0;
 		}
 		100% {
 			opacity: 1;
+			height: 80px;
+			max-height: 200px;
 		}
 	}
 
-	#keyset p {
+	p.aftertext {
 		margin: 1em 0 0 0;
 		color: #FF0088;
+        text-align: center;
 	}
 
 </style>
@@ -157,9 +168,9 @@
                 </li>
             </ul>
             <div id="keyset">
-                <Key size={80} keyColor={0xeeeeee} textColor={0x888888} rotate={true}/>
-                <p>or click anywhere to return</p>
+                <Key size={80} keyColor={0xeeeeee} textColor={0x888888} rotate={true} delay={500}/>
             </div>
+            <p class="aftertext">or click anywhere to return</p>
         </div>
     </div>
 </div>

@@ -10,6 +10,7 @@
 	export let keyColor = 0x223344;
 	export let textColor = 0xdd5555;
 	export let rotate = false; // show rotation animation
+    export let delay = 0;
 
 	const sizeX = size;
 	const sizeY = size;
@@ -21,12 +22,18 @@
 
 	let canvas;
 	let animationReq;
+	let initialHandler;
 
 	onMount(() => {
-		initScene();
+		if (!delay) {
+			initScene();
+		} else {
+			initialHandler = setTimeout(initScene, delay);
+        }
 	});
 
 	onDestroy(() => {
+		clearTimeout(initialHandler);
 		clearAnimation();
 		Frame.renderer.dispose();
 	});

@@ -1,6 +1,8 @@
 import * as THREE from "three";
+import {Group} from "three";
 import {XToScene, YToScene} from "./scene-utils";
-import type {TThreeFrame} from "../game-globals";
+import {renderLetter} from "../../symbols/font-utils";
+import {SymbolHeight, SymbolWidth} from "../../symbols/font-globals";
 
 export function setResizeCallback(container: HTMLElement, callbackFn: (width: number, height: number) => void) {
 	const resizeObserver = new ResizeObserver(entries => {
@@ -30,32 +32,32 @@ function createWallBrick(x, y, z) {
 export function addWalls(scene) {
 	// left
 	const verticalWall = new THREE.Group();
-	for (let i = 0; i < 22; i++) {
+	for (let i = 0; i < 20; i++) {
 		verticalWall.add(createWallBrick(0, i, 0));
 	}
 	// right
 	const verticalWall2 = verticalWall.clone();
 	verticalWall.position.setX(-5 - .5);
-	verticalWall.position.setY(-10 - .5);
+	verticalWall.position.setY(-9 - .5);
 
 	verticalWall2.position.setX(5 + .5);
-	verticalWall2.position.setY(-10 - .5);
+	verticalWall2.position.setY(-9 - .5);
 
 	scene.add(verticalWall);
 	scene.add(verticalWall2);
 
 	// bottom
 	const bottomWall = new THREE.Group();
-	for (let i = 0; i < 10; i++) {
+	for (let i = 0; i < 12; i++) {
 		bottomWall.add(createWallBrick(i, 0, 0));
 	}
-	bottomWall.position.setX(-5 + .5);
+	bottomWall.position.setX(-6 + .5);
 	bottomWall.position.setY(-10 - .5);
 	scene.add(bottomWall);
 
 	const topWall = bottomWall.clone();
 	topWall.position.setY(10 + .5);
-	topWall.position.setX(-5 + .5);
+	topWall.position.setX(-6 + .5);
 	scene.add(topWall);
 }
 
@@ -80,7 +82,90 @@ export function addSpaceItems(scene) {
 	scene.add(spaceGroup);
 }
 
-export function addHelper(scene:THREE.Scene){
+function drawText(text: string) {
+	const textGroup = new Group();
+
+	const xOffset = text.length * SymbolWidth / 2;
+	text.split('').forEach((sym, idx) => {
+		const symbol = renderLetter(sym, [0xeeeeff]);
+		if (symbol) {
+			symbol.position.x = idx * SymbolWidth - xOffset;
+			symbol.position.y = -SymbolHeight / 2;
+
+			textGroup.add(symbol);
+		}
+	});
+
+	return textGroup;
+}
+
+export const BannerMaterials = [
+	new THREE.MeshStandardMaterial({
+		color: 0x0065AA,
+		transparent: true,
+		opacity: 0.8,
+		// side: THREE.DoubleSide
+	}),
+	new THREE.MeshStandardMaterial({
+		color: 0x021B20,
+		transparent: true,
+		opacity: 0.9,
+		// side: THREE.DoubleSide
+	}),
+	new THREE.MeshStandardMaterial({
+		color: 0xff0088,
+		transparent: true,
+		opacity: .7,
+		side: THREE.DoubleSide
+	})
+];
+
+export function addBanner() {
+	const bannerGroup = new Group();
+	const boxGeometry = new THREE.BoxGeometry(9, 18, .01);
+
+	const bannerReadyBg = new THREE.Mesh(boxGeometry, BannerMaterials[0]);
+	bannerReadyBg.position.setZ(2.5);
+	bannerGroup.add(bannerReadyBg);
+
+	// -----------------------------------------------------------------------------------------------------------------
+	const bannerTextReady = drawText('READY?');
+
+	bannerTextReady.scale.set(.15, .15, .5);
+	bannerTextReady.position.z = 2.5;
+
+	bannerGroup.add(bannerTextReady);
+	bannerTextReady.visible = false;
+
+	// -----------------------------------------------------------------------------------------------------------------
+	const bannerTextPause = drawText('PAUSE');
+
+	bannerTextPause.scale.set(.15, .15, .5);
+	bannerTextPause.position.z = 2.5;
+
+	bannerGroup.add(bannerTextPause);
+	bannerTextPause.visible = false;
+
+	// -----------------------------------------------------------------------------------------------------------------
+	const bannerGameOver = drawText('GAME');
+	const bannerOver = drawText('OVER');
+
+	bannerOver.position.y = -10;
+
+	bannerGameOver.scale.set(.15, .15, .5);
+	bannerGameOver.position.z = 2.5;
+	bannerGameOver.position.y = 1;
+
+	bannerGameOver.add(bannerOver);
+	bannerGroup.add(bannerGameOver);
+
+	bannerGameOver.visible = false;
+
+	bannerGroup.visible = false;
+	return bannerGroup;
+}
+
+export function addHelper(scene: THREE.Scene) {
 	const material = new THREE.MeshStandardMaterial({
 		color: 0xdddddd,
 		transparent: true,

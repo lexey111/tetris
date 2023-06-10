@@ -5,7 +5,6 @@
 	import Scene from "./scene/Scene.svelte";
 	import {getRandomFigure} from "./game-utils.ts";
 	import type {TGameState} from "./game-globals.ts";
-	import Banner from "./banner/Banner.svelte";
 
 	let GameState: TGameState = 'PRE-START';
 	let fig = '';
@@ -91,14 +90,6 @@
 		background: linear-gradient(to bottom, #020b0c, transparent 90%);
 	}
 
-    #banner-container {
-	    position: absolute;
-	    max-width: 100vw;
-	    top: 50%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%);
-    }
-
 	@media screen and (max-width: 768px) {
 		#screen-content {
 			padding-bottom: 200px;
@@ -127,9 +118,6 @@
                 <Text text={text}/>
             </div>
             <Scene/>
-            <div id="banner-container">
-                <Banner textLine1="Ready?" textLine2="-3-"/>
-            </div>
         </div>
     </div>
     <div id="help-content">

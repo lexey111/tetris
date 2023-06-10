@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
-	import {addSpaceItems, addWalls, setResizeCallback} from "./scene-helpers.ts";
+	import {addBanner, addSpaceItems, addWalls, BannerMaterials, setResizeCallback} from "./scene-helpers.ts";
 	import * as THREE from "three";
 	import {addLights} from "./scene-lights.ts";
 	import type {TThreeFrame} from "../game-globals";
@@ -10,6 +10,8 @@
 	let animationReq;
 
 	let sizeTimeout;
+
+	let banner;
 
 	onMount(() => {
 		initScene();
@@ -25,8 +27,34 @@
 				Frame.renderer.render(Frame.scene, Frame.camera);
 			}, 100);
 		});
-        setTimeout(animate, 10);
+		setTimeout(animate, 10);
+
+		showBanner('READY');
 	});
+
+	function showBanner(text: 'READY' | 'PAUSE' | 'OVER') {
+		banner.visible = true;
+		let idx = 1;
+		switch (text) {
+			case "READY": {
+				idx = 1;
+				break
+			}
+			case "PAUSE": {
+				idx = 2;
+				break;
+			}
+			case "OVER":
+				idx = 3;
+		}
+
+		banner.children[0].material = BannerMaterials[idx - 1];
+		banner.children.forEach((text, i) => text.visible = idx === i || i === 0);
+	}
+
+	function hideBanner() {
+		banner.visible = false;
+	}
 
 	onDestroy(() => {
 		clearTimeout(sizeTimeout);
@@ -69,12 +97,17 @@
 		camera.updateProjectionMatrix()
 	}
 
-	const zoom = 0.01;
+	const zoom = 0.05;
+	let bannerRotation = 0.005;
 
 	function animate() {
 		if (Frame.camera.zoom < 1) {
 			Frame.camera.zoom += zoom;
 			Frame.camera.updateProjectionMatrix();
+		}
+		banner.rotation.x += bannerRotation;
+		if (Math.abs(banner.rotation.x) >= 0.02) {
+			bannerRotation *= -1;
 		}
 
 		Frame.renderer.render(Frame.scene, Frame.camera);
@@ -96,6 +129,9 @@
 		addWalls(Frame.scene);
 		addSpaceItems(Frame.scene);
 		addLights(Frame.scene);
+
+		banner = addBanner();
+		Frame.scene.add(banner);
 
 		// addHelper(Frame.scene);
 

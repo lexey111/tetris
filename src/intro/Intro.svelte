@@ -469,7 +469,7 @@
             </p>
             <p>
                 This page was created just for fun and relaxation from enterprise software development,
-                but you can consider this as my CV :)
+                kind of refresher, but you can consider this as one of my CV.
             </p>
             <p class="go-link">
                 <a href="https://en.wikipedia.org/wiki/Tetris" target="_blank">Read details &rarr;</a>

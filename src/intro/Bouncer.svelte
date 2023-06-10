@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
-	import type {TThreeFrame} from "../game/world-globals";
+	import type {TThreeFrame} from "../game/game-globals";
 	import {createCube} from "../figures/figures-utils";
 	import {addLights} from "../game/scene/scene-lights";
 	import {setResizeCallback} from "../game/scene/scene-helpers";
@@ -91,7 +91,7 @@
 		cube.rotation.z -= 0.05;
 
 		cube.position.y += verticalIncrement;
-		if (Math.abs(cube.position.y) > 7.5) {
+		if (Math.abs(cube.position.y) > 8) {
 			verticalIncrement *= -1;
 			rotationY *= -1;
 		}
