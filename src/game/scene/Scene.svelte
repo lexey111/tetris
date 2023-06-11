@@ -4,6 +4,7 @@
 	import * as THREE from "three";
 	import {addLights} from "./scene-lights.ts";
 	import type {TThreeFrame} from "../game-globals";
+	import {AnimationManager} from "./scene-animator";
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -12,6 +13,31 @@
 	let sizeTimeout;
 
 	let banner;
+	let space;
+	let walls;
+	const animationManager = new AnimationManager();
+
+	const ReadyAnimation = {
+		delay: 500, duration: 800, repeatCount: 3,
+		prepareFn: prepareReadyBanner,
+		animationFn: dribbleBanner,
+		onCycleFn: onReadyCycle,
+		finishFn: endReadyBanner
+	};
+
+	const RunAnimation = {
+		duration: 400,
+		delay: 200,
+		animationFn: runAnimation,
+		finishFn: endRunAnimation
+	};
+
+	const SpaceAnimation = {
+		duration: 1000,
+		delay: 500,
+		animationFn: spaceAnimation,
+		finishFn: endSpaceAnimation
+	};
 
 	onMount(() => {
 		initScene();
@@ -27,9 +53,10 @@
 				Frame.renderer.render(Frame.scene, Frame.camera);
 			}, 100);
 		});
-		setTimeout(animate, 10);
 
-		showBanner('READY');
+		setTimeout(animate, 0);
+
+		animationManager.add(ReadyAnimation);
 	});
 
 	function showBanner(text: 'READY' | 'PAUSE' | 'OVER') {
@@ -50,6 +77,61 @@
 
 		banner.children[0].material = BannerMaterials[idx - 1];
 		banner.children.forEach((text, i) => text.visible = idx === i || i === 0);
+	}
+
+	function spaceAnimation(percentage) {
+		space.children[0].material.opacity = percentage / 100;
+	}
+
+	function endSpaceAnimation() {
+		space.children[0].material.opacity = 1;
+		// run!
+	}
+
+	function runAnimation(percentage) {
+		banner.position.y = -percentage / 4;
+		walls.children[3].position.y = 10.5 + percentage / 10;
+	}
+
+	function endRunAnimation() {
+		hideBanner();
+		banner.position.y = 0;
+	}
+
+	function prepareReadyBanner() {
+		showBanner('READY');
+		banner.children[1].children[6].visible = true; // ready? 1
+	}
+
+	function dribbleBanner(percentage) {
+		const distance = 3 * 2 * Math.PI;
+		const currentRotation = (distance * percentage) / 100;
+
+		banner.children[1].children.forEach(chld => {
+			chld.position.z = Math.sin(currentRotation) * .25;
+        })
+		// banner.rotation.x = Math.sin(currentRotation) * 0.04;
+	}
+
+	function onReadyCycle(cycle) {
+		// hardcoded access to numbers
+		banner.children[1].children[6].visible = cycle === 0; // ready? 2
+		banner.children[1].children[7].visible = cycle === 1; // ready? 2
+		banner.children[1].children[8].visible = cycle === 2; // ready? 3
+	}
+
+	function endReadyBanner() {
+		// hardcoded access to numbers
+		banner.children[1].children[6].visible = false; // ready? 1
+		banner.children[1].children[7].visible = false; // ready? 2
+		banner.children[1].children[8].visible = false; // ready? 3
+		banner.rotation.x = 0;
+		banner.children[1].children.forEach(chld => {
+			chld.position.z = 0;
+		})
+
+		animationManager.add(RunAnimation);
+		animationManager.add(SpaceAnimation);
 	}
 
 	function hideBanner() {
@@ -98,20 +180,16 @@
 	}
 
 	const zoom = 0.05;
-	let bannerRotation = 0.005;
 
 	function animate() {
 		if (Frame.camera.zoom < 1) {
 			Frame.camera.zoom += zoom;
 			Frame.camera.updateProjectionMatrix();
 		}
-		banner.rotation.x += bannerRotation;
-		if (Math.abs(banner.rotation.x) >= 0.02) {
-			bannerRotation *= -1;
-		}
+
+		animationManager.play();
 
 		Frame.renderer.render(Frame.scene, Frame.camera);
-
 		animationReq = requestAnimationFrame(animate);
 	}
 
@@ -126,8 +204,13 @@
 
 		Frame.camera.zoom = -0.01;
 
-		addWalls(Frame.scene);
-		addSpaceItems(Frame.scene);
+		walls = addWalls(Frame.scene);
+		Frame.scene.add(walls);
+
+		space = addSpaceItems(Frame.scene);
+		space.children[0].material.opacity = 0;
+		Frame.scene.add(space);
+
 		addLights(Frame.scene);
 
 		banner = addBanner();

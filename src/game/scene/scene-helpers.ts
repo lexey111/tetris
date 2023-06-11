@@ -30,6 +30,7 @@ function createWallBrick(x, y, z) {
 }
 
 export function addWalls(scene) {
+	const wallGroup = new Group();
 	// left
 	const verticalWall = new THREE.Group();
 	for (let i = 0; i < 20; i++) {
@@ -43,8 +44,8 @@ export function addWalls(scene) {
 	verticalWall2.position.setX(5 + .5);
 	verticalWall2.position.setY(-9 - .5);
 
-	scene.add(verticalWall);
-	scene.add(verticalWall2);
+	wallGroup.add(verticalWall);
+	wallGroup.add(verticalWall2);
 
 	// bottom
 	const bottomWall = new THREE.Group();
@@ -53,16 +54,18 @@ export function addWalls(scene) {
 	}
 	bottomWall.position.setX(-6 + .5);
 	bottomWall.position.setY(-10 - .5);
-	scene.add(bottomWall);
+	wallGroup.add(bottomWall);
 
 	const topWall = bottomWall.clone();
 	topWall.position.setY(10 + .5);
 	topWall.position.setX(-6 + .5);
-	scene.add(topWall);
+	wallGroup.add(topWall);
+
+	return wallGroup;
 }
 
 const spaceGeometry = new THREE.SphereGeometry(0.05, 4, 4);
-const spaceMaterial = new THREE.MeshStandardMaterial({color: 0x00889E, transparent: true, opacity: 0.8});
+const spaceMaterial = new THREE.MeshStandardMaterial({color: 0x00889E, transparent: true, opacity: 0.1});
 
 export function addSpaceItems(scene) {
 	const spaceGroup = new THREE.Group();
@@ -79,7 +82,7 @@ export function addSpaceItems(scene) {
 	spaceGroup.position.setX(-5 + .5);
 	spaceGroup.position.setY(-10 + .5);
 
-	scene.add(spaceGroup);
+	return spaceGroup;
 }
 
 function drawText(text: string) {
@@ -130,9 +133,27 @@ export function addBanner() {
 
 	// -----------------------------------------------------------------------------------------------------------------
 	const bannerTextReady = drawText('READY?');
+	bannerTextReady.position.y = 1;
+
+	const bannerTextReady1 = drawText('3');
+	bannerTextReady1.position.y = -15;
+	bannerTextReady.add(bannerTextReady1);
+
+	const bannerTextReady2 = drawText('2');
+	bannerTextReady2.position.y = -15;
+	bannerTextReady.add(bannerTextReady2);
+
+	const bannerTextReady3 = drawText('1');
+	bannerTextReady3.position.y = -15;
+	bannerTextReady.add(bannerTextReady3);
 
 	bannerTextReady.scale.set(.15, .15, .5);
+
 	bannerTextReady.position.z = 2.5;
+
+	bannerTextReady1.visible = false;
+	bannerTextReady2.visible = false;
+	bannerTextReady3.visible = false;
 
 	bannerGroup.add(bannerTextReady);
 	bannerTextReady.visible = false;

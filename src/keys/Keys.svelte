@@ -44,7 +44,7 @@
 		initScene();
 		attachKeys();
 
-		initialHandler = setTimeout(animate, 2500);
+		initialHandler = setTimeout(animate, 1000);
 	});
 
 	onDestroy(() => {
