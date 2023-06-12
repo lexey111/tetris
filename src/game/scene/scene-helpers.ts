@@ -16,7 +16,7 @@ export function setResizeCallback(container: HTMLElement, callbackFn: (width: nu
 	return () => resizeObserver.unobserve(container);
 }
 
-const wallGeometry = new THREE.BoxGeometry(0.9, 0.9, 0.9);
+const wallGeometry = new THREE.BoxGeometry(0.9, 0.9, 1.5);
 const wallCubeMaterial = new THREE.MeshStandardMaterial({color: 0x0095DD});
 const wallCube = new THREE.Mesh(wallGeometry, wallCubeMaterial);
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
-	import {addBanner, addSpaceItems, addWalls, BannerMaterials, setResizeCallback} from "./scene-helpers.ts";
+	import {addBanner, addSpaceItems, addWalls, setResizeCallback} from "./scene-helpers.ts";
 	import * as THREE from "three";
 	import {addLights} from "./scene-lights.ts";
 	import type {TThreeFrame} from "../game-globals";
@@ -8,6 +8,15 @@
 	import {SpaceAnimations} from "./space-animations";
 	import {BannerAnimations} from "./banner-animations";
 	import {OpenFieldAnimations} from "./open-field-animations";
+	import {createCube} from "../../figures/figures-utils";
+	import {TCellState} from "../game-globals";
+	import {FilledRowAnimations} from "./filled-row-animations";
+	import {FallingAnimations} from "./falling-animations";
+
+
+	export let onEvent: (event: string) => void;
+	export let field = [];
+	export let tick = 0; // force redraw
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -18,20 +27,32 @@
 	let banner;
 	let space;
 	let walls;
+	let gameField = new THREE.Group();
 
 	const animationManager = new AnimationManager();
 	let spaceAnimations;
 	let bannerAnimations;
 	let openFieldAnimations;
 
+	let filledAnimations = new FilledRowAnimations(gameField, 250);
+	let fallingAnimations = new FallingAnimations(gameField, 250);
+
+	$: {
+		if (field && field.length > 0 && tick > 0) {
+			drawField();
+		}
+	}
+
 	onMount(() => {
 		initScene();
 		// init animations
-		spaceAnimations = new SpaceAnimations(space);
+		spaceAnimations = new SpaceAnimations(space, () => {
+			onEvent('STARTED')
+		});
 		openFieldAnimations = new OpenFieldAnimations(banner, walls, () => {
 			// forward ref
 			bannerAnimations.hideBanner();
-        });
+		});
 
 		bannerAnimations = new BannerAnimations(banner, () => {
 			animationManager.add(openFieldAnimations.getAnimation());
@@ -136,12 +157,95 @@
 
 		// addHelper(Frame.scene);
 
+		gameField.position.x = -5 + .5;
+		gameField.position.y = -10 + .5;
+		gameField.position.z = 0;
+		Frame.scene.add(gameField);
+
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 		canvas.appendChild(Frame.renderer.domElement);
 		adjustPerspectiveCamera(Frame.camera as THREE.PerspectiveCamera, 0.8);
 		Frame.renderer.render(Frame.scene, Frame.camera);
+	}
+
+	const solidMaterial = new THREE.MeshStandardMaterial({
+		color: 0x88FF88,
+		transparent: false,
+		// opacity: 0.9,
+		// side: THREE.DoubleSide
+	});
+	const fallingMaterial = new THREE.MeshStandardMaterial({
+		color: 0xFF8888,
+		transparent: false,
+		// opacity: 0.9,
+		// side: THREE.DoubleSide
+	});
+	const deletingMaterial = new THREE.MeshStandardMaterial({
+		color: 0x8888FF,
+		transparent: true,
+		opacity: 0.8,
+		// side: THREE.DoubleSide
+	});
+
+	let prevTick = tick;
+	function drawField() {
+		if (prevTick === tick) {
+			return;
+        }
+		prevTick = tick;
+		console.log('DRAW', tick)
+
+		const objectsToRemove = [];
+		gameField.traverse(node => {
+			if (node instanceof THREE.Mesh) {
+				objectsToRemove.push(node);
+			}
+		});
+
+		objectsToRemove.forEach(node => {
+			node.parent.remove(node);
+		});
+
+		let hasDeleting = false;
+		let hasFalling = false;
+		for (let i = 0; i < field.length - 4; i++) { // vertical
+			for (let j = 0; j < field[i].length; j++) { // horizontal
+				if (field[i][j] !== TCellState.Empty) {
+
+					let cube;
+
+					if (field[i][j] === TCellState.MarkedDelete) {
+						cube = createCube(deletingMaterial);
+						hasDeleting = true;
+						cube['deleting'] = true;
+					} else {
+						if (field[i][j] === TCellState.MarkedFalling) {
+							cube = createCube(fallingMaterial);
+							hasFalling = true;
+							cube['falling'] = true;
+						}
+					}
+
+					if (!cube) {
+						cube = createCube();
+                    }
+
+					cube.position.x = j;
+					cube.position.y = i;
+
+					gameField.add(cube);
+				}
+			}
+		}
+		if (hasDeleting) {
+			animationManager.add(filledAnimations.getAnimation());
+		}
+
+		if (hasFalling) {
+			animationManager.add(fallingAnimations.getAnimation());
+		}
 	}
 </script>
 

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-const material = new THREE.MeshStandardMaterial({
+const defaultMaterial = new THREE.MeshStandardMaterial({
 	color: 0xdddddd,
 	transparent: false,
 	// opacity: 0.9,
@@ -19,17 +19,17 @@ const horizontal1PillarGeometry = new THREE.BoxGeometry(0.2, 0.2, 1);
 const horizontal2PillarGeometry = new THREE.BoxGeometry(1, 0.2, 0.2);
 const verticalPillarGeometry = new THREE.BoxGeometry(0.2, 1, 0.2);
 
-export function createCube() {
+export function createCube(material?) {
 	const group = new THREE.Group();
-	const hCube1 = new THREE.Mesh(horizontal1PillarGeometry, material);
+	const hCube1 = new THREE.Mesh(horizontal1PillarGeometry, material || defaultMaterial);
 	hCube1.castShadow = true;
 	hCube1.receiveShadow = true;
 
-	const hCube2 = new THREE.Mesh(horizontal2PillarGeometry, material);
+	const hCube2 = new THREE.Mesh(horizontal2PillarGeometry, material || defaultMaterial);
 	hCube2.castShadow = true;
 	hCube2.receiveShadow = true;
 
-	const vCube = new THREE.Mesh(verticalPillarGeometry, material);
+	const vCube = new THREE.Mesh(verticalPillarGeometry, material || defaultMaterial);
 	vCube.castShadow = true;
 	vCube.receiveShadow = true;
 

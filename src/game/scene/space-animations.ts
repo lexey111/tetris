@@ -1,7 +1,7 @@
 import type {TAnimations} from "../../shared/Animations";
 
 export class SpaceAnimations implements TAnimations {
-	constructor(private space) {
+	constructor(private space, private onFinishedFn) {
 		//
 	}
 
@@ -21,5 +21,6 @@ export class SpaceAnimations implements TAnimations {
 
 	private endSpaceAnimation = () => {
 		this.space.children[0].material.opacity = 1;
+		this.onFinishedFn();
 	}
 }
