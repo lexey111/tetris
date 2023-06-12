@@ -3,6 +3,8 @@
 	import * as THREE from "three";
 	import type {TThreeFrame} from "../game/game-globals";
 	import {createKey} from "./keys-utils";
+	import {AnimationManager} from "../shared/animation-manager";
+	import {KeysAnimations} from "./keys-animations";
 
 	let Frame: TThreeFrame;
 
@@ -14,6 +16,9 @@
 	const SVGScale = sizeL / sizePixel;
 
 	let keysGrp;
+
+	let animationManager = new AnimationManager();
+	let keysAnimation;
 
 	const keyboardKeys: Record<string, any> = {
 		keyArrowLeft: undefined,
@@ -38,18 +43,33 @@
 	};
 	let canvas;
 	let animationReq;
-	let initialHandler;
 
 	onMount(() => {
 		initScene();
 		attachKeys();
 
-		initialHandler = setTimeout(animate, 1000);
+		keysAnimation = new KeysAnimations(
+			Frame.camera, keysGrp,
+			() => {
+				// on finishing zoom - start rotating
+				animationManager.add(keysAnimation.getAnimation('rotate'));
+			},
+			() => {
+				setTimeout(() => {
+					animationManager.dispose();
+					cancelAnimationFrame(animationReq);
+				}, 100);
+
+			}
+		);
+
+		animationManager.add(keysAnimation.getAnimation('zoom'));
+		animate();
 	});
 
 	onDestroy(() => {
 		cancelAnimationFrame(animationReq);
-		clearTimeout(initialHandler);
+		animationManager.dispose();
 		Frame.renderer.dispose();
 	});
 
@@ -82,11 +102,6 @@
 		});
 	}
 
-	const dR = 0.04;
-	const zoomDelta = 0.8;
-	let animationDone = false;
-	const maxZoom = 10;
-	const maxAngle = -Math.PI / 6;
 
 	function updateState() {
 		Object.keys(keyboardKeysPressed).forEach(key => {
@@ -99,22 +114,8 @@
 	}
 
 	function animate() {
-		if (animationDone) {
-			return;
-		}
 		if (Frame && keysGrp) {
-			if (keysGrp.rotation.x < maxAngle) {
-				keysGrp.rotation.x += dR;
-			}
-
-			if (Frame.camera.zoom < maxZoom) {
-				Frame.camera.zoom += zoomDelta;
-				Frame.camera.updateProjectionMatrix();
-			}
-
-			if (keysGrp.rotation.x >= maxAngle && Frame.camera.zoom >= maxZoom) {
-				animationDone = true;
-			}
+			animationManager.play();
 		}
 		Frame && Frame.renderer.render(Frame.scene, Frame.camera);
 		animationReq = requestAnimationFrame(animate);

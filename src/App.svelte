@@ -5,7 +5,7 @@
 
 	const isWebGL = WebGL.isWebGLAvailable();
 
-	let intro = true;
+	let intro = false;
 
 	function showGame() {
 		intro = false;
