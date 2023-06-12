@@ -111,4 +111,8 @@ export class AnimationManager {
 			}
 		}
 	}
+
+	public dispose() {
+		this.animations.length = 0;
+	}
 }

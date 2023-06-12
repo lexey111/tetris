@@ -4,7 +4,10 @@
 	import * as THREE from "three";
 	import {addLights} from "./scene-lights.ts";
 	import type {TThreeFrame} from "../game-globals";
-	import {AnimationManager} from "./scene-animator";
+	import {AnimationManager} from "../../shared/animation-manager";
+	import {SpaceAnimations} from "./space-animations";
+	import {BannerAnimations} from "./banner-animations";
+	import {OpenFieldAnimations} from "./open-field-animations";
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -15,32 +18,25 @@
 	let banner;
 	let space;
 	let walls;
+
 	const animationManager = new AnimationManager();
-
-	const ReadyAnimation = {
-		delay: 500, duration: 800, repeatCount: 3,
-		prepareFn: prepareReadyBanner,
-		animationFn: dribbleBanner,
-		onCycleFn: onReadyCycle,
-		finishFn: endReadyBanner
-	};
-
-	const RunAnimation = {
-		duration: 400,
-		delay: 200,
-		animationFn: runAnimation,
-		finishFn: endRunAnimation
-	};
-
-	const SpaceAnimation = {
-		duration: 1000,
-		delay: 500,
-		animationFn: spaceAnimation,
-		finishFn: endSpaceAnimation
-	};
+	let spaceAnimations;
+	let bannerAnimations;
+	let openFieldAnimations;
 
 	onMount(() => {
 		initScene();
+		// init animations
+		spaceAnimations = new SpaceAnimations(space);
+		openFieldAnimations = new OpenFieldAnimations(banner, walls, () => {
+			// forward ref
+			bannerAnimations.hideBanner();
+        });
+
+		bannerAnimations = new BannerAnimations(banner, () => {
+			animationManager.add(openFieldAnimations.getAnimation());
+			animationManager.add(spaceAnimations.getAnimation());
+		});
 
 		setResizeCallback(canvas, (width, height) => {
 			clearTimeout(sizeTimeout);
@@ -56,95 +52,17 @@
 
 		setTimeout(animate, 0);
 
-		animationManager.add(ReadyAnimation);
+		// add first animation
+		animationManager.add(bannerAnimations.getAnimation());
 	});
-
-	function showBanner(text: 'READY' | 'PAUSE' | 'OVER') {
-		banner.visible = true;
-		let idx = 1;
-		switch (text) {
-			case "READY": {
-				idx = 1;
-				break
-			}
-			case "PAUSE": {
-				idx = 2;
-				break;
-			}
-			case "OVER":
-				idx = 3;
-		}
-
-		banner.children[0].material = BannerMaterials[idx - 1];
-		banner.children.forEach((text, i) => text.visible = idx === i || i === 0);
-	}
-
-	function spaceAnimation(percentage) {
-		space.children[0].material.opacity = percentage / 100;
-	}
-
-	function endSpaceAnimation() {
-		space.children[0].material.opacity = 1;
-		// run!
-	}
-
-	function runAnimation(percentage) {
-		banner.position.y = -percentage / 4;
-		walls.children[3].position.y = 10.5 + percentage / 10;
-	}
-
-	function endRunAnimation() {
-		hideBanner();
-		banner.position.y = 0;
-	}
-
-	function prepareReadyBanner() {
-		showBanner('READY');
-		banner.children[1].children[6].visible = true; // ready? 1
-	}
-
-	function dribbleBanner(percentage) {
-		const distance = 3 * 2 * Math.PI;
-		const currentRotation = (distance * percentage) / 100;
-
-		banner.children[1].children.forEach(chld => {
-			chld.position.z = Math.sin(currentRotation) * .25;
-        })
-		// banner.rotation.x = Math.sin(currentRotation) * 0.04;
-	}
-
-	function onReadyCycle(cycle) {
-		// hardcoded access to numbers
-		banner.children[1].children[6].visible = cycle === 0; // ready? 2
-		banner.children[1].children[7].visible = cycle === 1; // ready? 2
-		banner.children[1].children[8].visible = cycle === 2; // ready? 3
-	}
-
-	function endReadyBanner() {
-		// hardcoded access to numbers
-		banner.children[1].children[6].visible = false; // ready? 1
-		banner.children[1].children[7].visible = false; // ready? 2
-		banner.children[1].children[8].visible = false; // ready? 3
-		banner.rotation.x = 0;
-		banner.children[1].children.forEach(chld => {
-			chld.position.z = 0;
-		})
-
-		animationManager.add(RunAnimation);
-		animationManager.add(SpaceAnimation);
-	}
-
-	function hideBanner() {
-		banner.visible = false;
-	}
 
 	onDestroy(() => {
 		clearTimeout(sizeTimeout);
-		if (!Frame) {
-			return;
-		}
+
+		animationManager.dispose();
+
 		cancelAnimationFrame(animationReq);
-		Frame.renderer.dispose();
+		Frame && Frame.renderer.dispose();
 	});
 
 	function adjustPerspectiveCamera(camera: THREE.PerspectiveCamera, offset) {
