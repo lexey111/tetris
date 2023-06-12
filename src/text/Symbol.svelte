@@ -4,6 +4,8 @@
 	import type {TThreeFrame} from "../game/game-globals";
 	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
 	import {renderLetter} from "../symbols/font-utils";
+	import {AnimationManager} from "../shared/animation-manager";
+	import {SymbolAnimations} from "./symbol-animations";
 	/*
     One symbols 8x8 only
      */
@@ -11,7 +13,7 @@
 	export let scale = 8;
 	export let colors = [];
 	export let animation = false;
-	export let increment = 0.02;
+	export let direction: 'CW' | 'CCW' = 'CW';
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -24,24 +26,32 @@
 
 	const initialRotation = 0.1;
 
+	let symbolAnimations;
+	let animationManager = new AnimationManager();
+
 	$: {
 		sizeX = scale * SymbolWidth / 2;
 
 		updateScene();
 		if (animation) {
+			symbolAnimations.setDirection(direction);
+			animationManager.add(symbolAnimations.getAnimation());
 			animate();
 		} else {
+			animationManager.dispose();
 			clearAnimation();
 		}
 	}
 
 	onMount(() => {
 		initScene();
+		symbolAnimations = new SymbolAnimations(_letter, initialRotation)
 		updateScene();
 	});
 
 	onDestroy(() => {
 		clearAnimation();
+		animationManager.dispose();
 		Frame && Frame.renderer.dispose();
 	});
 
@@ -49,32 +59,18 @@
 		if (!animation || !Frame) {
 			return;
 		}
-
-		_letter.rotation.y += increment;
-        // wobby effect
-		_letter.children[0].children.forEach(cube => {
-			if (!cube['dir']) {
-				cube['dir'] = Math.random() > 0.5 ? 2 : -2;
-			}
-			cube.rotation.z += increment * cube['dir'];
-			cube.position.z += increment * cube['dir'];
-			cube.position.y += increment * cube['dir'] / 4;
-			if (Math.abs(cube.rotation.z) > .21) {
-				cube['dir'] *= -1;
-			}
-		});
+		animationManager.play();
 
 		Frame.renderer.render(Frame.scene, Frame.camera);
-
 		animationReq = requestAnimationFrame(animate);
 	}
 
 	function clearAnimation() {
 		cancelAnimationFrame(animationReq);
-		if (_letter) {
-			_letter.rotation.y = initialRotation;
-			Frame.renderer.render(Frame.scene, Frame.camera);
-		}
+		// if (_letter) {
+		// 	_letter.rotation.y = initialRotation;
+		// }
+		Frame && Frame.renderer.render(Frame.scene, Frame.camera);
 	}
 
 	function adjustPerspectiveCamera(camera: THREE.PerspectiveCamera, object, offset) {
@@ -168,6 +164,7 @@
 			_letter.rotation.y = initialRotation;
 		}
 		Frame.scene.add(_letter);
+		symbolAnimations.setLetter(_letter);
 	}
 
 	function clearScene() {
@@ -187,8 +184,5 @@
 		});
 	}
 </script>
-
-<style>
-</style>
 
 <div bind:this={canvas}></div>

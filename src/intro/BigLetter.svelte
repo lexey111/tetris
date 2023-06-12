@@ -4,11 +4,11 @@
 	export let letter = '';
 	const bigLetterSize = 24;
 	let animation = false;
-	let increment;
+	let direction = 'CW';
 
 	function startAnimation() {
 		animation = true;
-		increment = Math.random() > 0.5 ? 0.02 : -0.03;
+		direction = Math.random() > 0.5 ? 'CW' : 'CCW';
 	}
 
 	function stopAnimation() {
@@ -19,7 +19,7 @@
 <div on:mouseenter={startAnimation} on:mouseleave={stopAnimation}>
     <Symbol {letter}
             {animation}
-            {increment}
+            {direction}
             colors={[0xEEEEEE, 0x88AAEE, 0xFFA600]}
             scale={bigLetterSize}/>
 </div>
