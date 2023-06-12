@@ -1,6 +1,8 @@
+import type {TAnimations} from "../shared/Animations";
+
 let increment = 0.02;
 
-export class SymbolAnimations {
+export class SymbolAnimations implements TAnimations {
 	private direction = 1;
 
 	constructor(private letter, private initialRotation) {
@@ -19,6 +21,7 @@ export class SymbolAnimations {
 	public setLetter = (lt) => {
 		this.letter = lt;
 	}
+
 	public setDirection = (dir) => {
 		if (dir === 'CW') {
 			this.direction = 1;

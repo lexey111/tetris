@@ -1,4 +1,6 @@
-export class KeyAnimations {
+import type {TAnimations} from "../../shared/Animations";
+
+export class KeyAnimations implements TAnimations {
 	constructor(private key) {
 		//
 	}

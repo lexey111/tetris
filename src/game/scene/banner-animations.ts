@@ -1,6 +1,7 @@
 import {BannerMaterials} from "./scene-helpers";
+import type {TAnimations} from "../../shared/Animations";
 
-export class BannerAnimations {
+export class BannerAnimations implements TAnimations {
 
 	constructor(private banner, private finalizeFn) {
 		//

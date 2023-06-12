@@ -1,4 +1,6 @@
-export class OpenFieldAnimations {
+import type {TAnimations} from "../../shared/Animations";
+
+export class OpenFieldAnimations implements TAnimations {
 	constructor(private banner, private walls, private finalizeFn) {
 		//
 	}
