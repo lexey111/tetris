@@ -1,0 +1,26 @@
+export class KeyAnimations {
+	constructor(private key) {
+		//
+	}
+
+	public getAnimation = () => {
+		return {
+			duration: 2000,
+			repeatCount: 400,
+			delayBetween: 200,
+			animationFn: this.keyAnimation,
+			finishFn: this.endKeyAnimation
+		};
+
+	}
+
+	private keyAnimation = (percentage) => {
+		const distance = Math.PI * 2;
+		const currentRotation = (distance * percentage) / 100;
+
+		this.key.rotation.x = currentRotation;
+	}
+	private endKeyAnimation = () => {
+		this.key.rotation.x = 0;
+	}
+}

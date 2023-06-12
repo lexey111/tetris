@@ -3,6 +3,8 @@
 	import * as THREE from "three";
 	import {createKey} from "../keys-utils";
 	import type {TThreeFrame} from "../../game/game-globals";
+	import {AnimationManager} from "../../shared/animation-manager";
+	import {KeyAnimations} from "./key-animations";
 
 	let Frame: TThreeFrame;
 
@@ -10,7 +12,7 @@
 	export let keyColor = 0x223344;
 	export let textColor = 0xdd5555;
 	export let rotate = false; // show rotation animation
-    export let delay = 0;
+	export let delay = 0;
 
 	const sizeX = size;
 	const sizeY = size;
@@ -24,12 +26,15 @@
 	let animationReq;
 	let initialHandler;
 
+	let animationManager = new AnimationManager();
+	let keyAnimations;
+
 	onMount(() => {
 		if (!delay) {
 			initScene();
 		} else {
 			initialHandler = setTimeout(initScene, delay);
-        }
+		}
 	});
 
 	onDestroy(() => {
@@ -41,6 +46,7 @@
 	$: {
 		if (Frame) {
 			if (rotate) {
+				animationManager.add(keyAnimations.getAnimation());
 				animate();
 			} else {
 				clearAnimation();
@@ -48,21 +54,20 @@
 		}
 	}
 
-	let rotation = 0.05;
-
 	function animate() {
-		if (!rotation || !Frame) {
+		if (!Frame) {
 			return;
 		}
 
-		key.rotation.x += rotation;
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		animationManager.play();
 
+		Frame.renderer.render(Frame.scene, Frame.camera);
 		animationReq = requestAnimationFrame(animate);
 	}
 
 	function clearAnimation() {
 		cancelAnimationFrame(animationReq);
+		animationManager.dispose();
 	}
 
 	function initScene() {
@@ -112,6 +117,8 @@
 
 		Frame.renderer.render(Frame.scene, Frame.camera);
 		canvas.appendChild(Frame.renderer.domElement);
+
+		keyAnimations = new KeyAnimations(key);
 	}
 
 </script>
