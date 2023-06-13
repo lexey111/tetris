@@ -8,12 +8,13 @@ const defaultMaterial = new THREE.MeshStandardMaterial({
 });
 
 const boxMaterial = new THREE.MeshStandardMaterial({
-	color: 0xdddddd,
-	transparent: true,
-	opacity: 0.4,
-	side: THREE.DoubleSide
+	color: 0x034c80,
+	// transparent: true,
+	// opacity: 0.9,
+	// side: THREE.DoubleSide
 });
-const boxGeometry = new THREE.BoxGeometry(.6, .6, .6);
+//const boxGeometry = new THREE.BoxGeometry(.6, .6, .6);
+const boxGeometry = new THREE.SphereGeometry(.5, 12, 12);
 
 const horizontal1PillarGeometry = new THREE.BoxGeometry(0.2, 0.2, 1);
 const horizontal2PillarGeometry = new THREE.BoxGeometry(1, 0.2, 0.2);
@@ -21,15 +22,15 @@ const verticalPillarGeometry = new THREE.BoxGeometry(0.2, 1, 0.2);
 
 export function createCube(material?) {
 	const group = new THREE.Group();
-	const hCube1 = new THREE.Mesh(horizontal1PillarGeometry, material || defaultMaterial);
+	const hCube1 = new THREE.Mesh(horizontal1PillarGeometry, defaultMaterial);
 	hCube1.castShadow = true;
 	hCube1.receiveShadow = true;
 
-	const hCube2 = new THREE.Mesh(horizontal2PillarGeometry, material || defaultMaterial);
+	const hCube2 = new THREE.Mesh(horizontal2PillarGeometry, defaultMaterial);
 	hCube2.castShadow = true;
 	hCube2.receiveShadow = true;
 
-	const vCube = new THREE.Mesh(verticalPillarGeometry, material || defaultMaterial);
+	const vCube = new THREE.Mesh(verticalPillarGeometry, defaultMaterial);
 	vCube.castShadow = true;
 	vCube.receiveShadow = true;
 
@@ -75,7 +76,7 @@ export function createCube(material?) {
 	group.add(x3);
 	group.add(x4);
 
-	const box = new THREE.Mesh(boxGeometry, boxMaterial);
+	const box = new THREE.Mesh(boxGeometry, material || boxMaterial);
 	box.castShadow = true;
 	box.receiveShadow = true;
 	group.add(box);

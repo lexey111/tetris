@@ -15,8 +15,7 @@ export enum TCellState {
 }
 
 export type TCell = {
-	state: TCellState
-	goingToStill?: boolean
-	animationPercentage?: number
-	object3d?: any
+	falling?: boolean // still in free fall
+	solid?: boolean // solid block, no move
+	markToRemove?: boolean
 }
