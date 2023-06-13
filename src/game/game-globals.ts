@@ -9,8 +9,14 @@ export type TThreeFrame = {
 }
 
 export enum TCellState {
-	Empty = 0,
-	Solid = 1,
-	MarkedDelete = 2,
-	MarkedFalling = 3
+	Falling = 1,
+	Solid = 2,
+	MarkedDelete = 3,
+}
+
+export type TCell = {
+	state: TCellState
+	goingToStill?: boolean
+	animationPercentage?: number
+	object3d?: any
 }

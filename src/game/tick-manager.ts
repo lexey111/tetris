@@ -1,17 +1,13 @@
 export class TickManager {
 	private tasks = [];
 	private intervalHandler;
-	private phase = 1;
 
 	constructor(private tickDuration) {
 
 	}
 
-	public addTask = (task: () => void, phase: number) => {
-		this.tasks.push({
-			task,
-			phase
-		});
+	public addTask = (task: () => void) => {
+		this.tasks.push(task);
 	}
 
 	public run = () => {
@@ -42,16 +38,8 @@ export class TickManager {
 	}
 
 	private process = () => {
-		this.tasks.forEach(item => {
-			if (item.phase === this.phase) {
-				item.task();
-			}
+		this.tasks.forEach(task => {
+				task();
 		});
-
-		if (this.phase === 1) {
-			this.phase = 2;
-		} else {
-			this.phase = 1;
-		}
 	}
 }

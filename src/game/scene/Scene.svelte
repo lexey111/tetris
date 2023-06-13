@@ -189,14 +189,7 @@
 		// side: THREE.DoubleSide
 	});
 
-	let prevTick = tick;
 	function drawField() {
-		if (prevTick === tick) {
-			return;
-        }
-		prevTick = tick;
-		console.log('DRAW', tick)
-
 		const objectsToRemove = [];
 		gameField.traverse(node => {
 			if (node instanceof THREE.Mesh) {
@@ -212,17 +205,23 @@
 		let hasFalling = false;
 		for (let i = 0; i < field.length - 4; i++) { // vertical
 			for (let j = 0; j < field[i].length; j++) { // horizontal
-				if (field[i][j] !== TCellState.Empty) {
-
+				if (field[i][j]) {
 					let cube;
 
-					if (field[i][j] === TCellState.MarkedDelete) {
+					if (field[i][j].state === TCellState.MarkedDelete) {
 						cube = createCube(deletingMaterial);
 						hasDeleting = true;
 						cube['deleting'] = true;
-					} else {
-						if (field[i][j] === TCellState.MarkedFalling) {
+						cube['falling'] = true;
+					}
+					if (!cube) {
+						if (field[i][j].state === TCellState.Falling) {
 							cube = createCube(fallingMaterial);
+							hasFalling = true;
+							cube['falling'] = true;
+						}
+						if (! cube && field[i][j].goingToStill) {
+							cube = createCube(solidMaterial);
 							hasFalling = true;
 							cube['falling'] = true;
 						}

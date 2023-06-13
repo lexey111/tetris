@@ -7,7 +7,8 @@ export class FilledRowAnimations implements TAnimations {
 
 	public getAnimation = () => {
 		return {
-			duration: this.duration,
+			duration: this.duration / 2,
+			delay: this.duration / 2,
 			animationFn: this.linesAnimation,
 		};
 
@@ -24,6 +25,7 @@ export class FilledRowAnimations implements TAnimations {
 				cube.scale.y = scale;
 				cube.scale.x = scale;
 				cube.scale.z = scale;
+				cube.position.z = -scale;
 			}
 		});
 	}
