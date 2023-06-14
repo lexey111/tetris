@@ -241,6 +241,11 @@
 					if (!cube) {
 						cube = createCube();
 					}
+
+					if (field[i][j].fallAsRemove) {
+						cube['falling-remove'] = true;
+					}
+
 					cube.position.x = j;
 					cube.position.y = i;
 

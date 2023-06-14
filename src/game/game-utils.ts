@@ -50,6 +50,13 @@ export function fallDown(GameField) {
 
 		if (filled) {
 			line.forEach(cell => cell.markToRemove = true);
+			for (let y = rowIdx; y < 20; y++) {
+				for (let x = 0; x < GameField[y].length; x++) {
+					if (GameField[y][x]?.solid) {
+						GameField[y][x].fallAsRemove = true;
+					}
+				}
+			}
 		}
 	}
 }
@@ -74,6 +81,12 @@ export function removeFilledLines(GameField) {
 			rowIdx--; // step backward
 		}
 	}
+
+	traverseBottomTop(GameField, (y, x) => {
+		if (GameField[y][x]) {
+			GameField[y][x].fallAsRemove = undefined;
+		}
+	});
 }
 
 

@@ -28,5 +28,14 @@ export class FallingAnimations implements TAnimations {
 				}
 				cube.position.y = cube['initialY'] + distance;
 			});
+
+		this.field.children
+			.filter(cube => cube['falling-remove'] === true)
+			.forEach(cube => {
+				if (cube['initialY-fr'] === undefined) {
+					cube['initialY-fr'] = cube.position.y;
+				}
+				cube.position.y = cube['initialY-fr'] + distance - 1;
+			});
 	}
 }
