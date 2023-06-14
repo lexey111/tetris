@@ -61,11 +61,12 @@ export function addWalls(scene) {
 	topWall.position.setX(-6 + .5);
 	wallGroup.add(topWall);
 
+	wallGroup.position.z = -1;
 	return wallGroup;
 }
 
-const spaceGeometry = new THREE.SphereGeometry(0.05, 4, 4);
-const spaceMaterial = new THREE.MeshStandardMaterial({color: 0x00889E, transparent: true, opacity: 0.1});
+const spaceGeometry = new THREE.SphereGeometry(0.03, 4, 4);
+const spaceMaterial = new THREE.MeshStandardMaterial({color: 0x9999FF, transparent: true, opacity: .1});
 
 export function addSpaceItems(scene) {
 	const spaceGroup = new THREE.Group();
@@ -74,23 +75,24 @@ export function addSpaceItems(scene) {
 		for (let j = 0; j <= 19; j++) {
 			const item = new THREE.Mesh(spaceGeometry, spaceMaterial);
 			item.position.set(i, j, 0);
-			item.castShadow = true;
-			item.receiveShadow = true;
+			// item.castShadow = true;
+			// item.receiveShadow = true;
 			spaceGroup.add(item);
 		}
 	}
 	spaceGroup.position.setX(-5 + .5);
 	spaceGroup.position.setY(-10 + .5);
+	spaceGroup.position.setZ(8);
 
 	return spaceGroup;
 }
 
-function drawText(text: string) {
+function drawText(text: string, colors?) {
 	const textGroup = new Group();
 
 	const xOffset = text.length * SymbolWidth / 2;
 	text.split('').forEach((sym, idx) => {
-		const symbol = renderLetter(sym, [0xeeeeff]);
+		const symbol = renderLetter(sym, colors || [0xeeeeff]);
 		if (symbol) {
 			symbol.position.x = idx * SymbolWidth - xOffset;
 			symbol.position.y = -SymbolHeight / 2;
@@ -103,18 +105,20 @@ function drawText(text: string) {
 }
 
 export const BannerMaterials = [
+	// ready
 	new THREE.MeshStandardMaterial({
 		color: 0x0065AA,
-		transparent: true,
-		opacity: 0.8,
-		// side: THREE.DoubleSide
-	}),
-	new THREE.MeshStandardMaterial({
-		color: 0x021B20,
 		transparent: true,
 		opacity: 0.9,
 		// side: THREE.DoubleSide
 	}),
+	// pause
+	new THREE.MeshStandardMaterial({
+		color: 0x0065AA,
+		transparent: true,
+		opacity: 0.9,
+	}),
+	// over
 	new THREE.MeshStandardMaterial({
 		color: 0xff0088,
 		transparent: true,
@@ -159,7 +163,7 @@ export function addBanner() {
 	bannerTextReady.visible = false;
 
 	// -----------------------------------------------------------------------------------------------------------------
-	const bannerTextPause = drawText('PAUSE');
+	const bannerTextPause = drawText('PAUSE', [0xCCCCFA, 0xFFA600]);
 
 	bannerTextPause.scale.set(.15, .15, .5);
 	bannerTextPause.position.z = 2.5;

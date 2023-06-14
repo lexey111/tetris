@@ -2,9 +2,16 @@ export class TickManager {
 	private tasks = [];
 	private intervalHandler;
 	private phase = 1;
+	private paused = false;
 
 	constructor(private tickDuration) {
 
+	}
+
+	public isPause = () => this.paused;
+
+	public setPause(state: boolean) {
+		this.paused = state;
 	}
 
 	public addTask = (task: () => void, phase) => {
@@ -39,6 +46,10 @@ export class TickManager {
 	}
 
 	private process = () => {
+		if (this.paused) {
+			return;
+		}
+
 		this.tasks.forEach(task => {
 			if (task.phase === this.phase) {
 				task.task();

@@ -16,6 +16,7 @@
 	export let onEvent: (event: string) => void;
 	export let field = [];
 	export let tick = 0; // force redraw
+	export let paused = false;
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -40,12 +41,21 @@
 		if (field && field.length > 0 && tick > 0) {
 			drawField();
 		}
+		if (bannerAnimations) {
+			if (paused) {
+				bannerAnimations.showBanner('PAUSE');
+				animationManager.dispose();
+				animationManager.add(bannerAnimations.getAnimation('pause'));
+			} else {
+				bannerAnimations.hideBanner();
+			}
+		}
 	}
 
 	onMount(() => {
 		initScene();
 		// init animations
-		spaceAnimations = new SpaceAnimations(space, () => {
+		spaceAnimations = new SpaceAnimations(space, walls, () => {
 			onEvent('STARTED')
 		});
 		openFieldAnimations = new OpenFieldAnimations(banner, walls, () => {
@@ -169,12 +179,6 @@
 		Frame.renderer.render(Frame.scene, Frame.camera);
 	}
 
-	const solidMaterial = new THREE.MeshStandardMaterial({
-		color: 0x88FF88,
-		transparent: false,
-		// opacity: 0.9,
-		// side: THREE.DoubleSide
-	});
 	const fallingMaterial = new THREE.MeshStandardMaterial({
 		color: 0xffa600,
 		transparent: true,

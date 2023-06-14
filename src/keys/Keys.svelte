@@ -2,11 +2,18 @@
 	import {onDestroy, onMount} from "svelte";
 	import * as THREE from "three";
 	import type {TThreeFrame} from "../game/game-globals";
-	import {createKey} from "./keys-utils";
+	import {
+		BrightKeyMaterial,
+		BrightTextMaterial,
+		createKey,
+		StandardKeyMaterial,
+		StandardTextMaterial
+	} from "./keys-utils";
 	import {AnimationManager} from "../shared/animation-manager";
 	import {KeysAnimations} from "./keys-animations";
 
 	let Frame: TThreeFrame;
+	export let paused = false;
 
 	const sizeX = 390; // 14 cells
 	const sizeY = 80; // 2 cells, 100px - paddings
@@ -67,6 +74,21 @@
 		animate();
 	});
 
+	$: {
+		if (keyboardKeys.keyPause) {
+			if (paused) {
+				keyboardKeys.keyPause.children[0].children.forEach(item => item.material = BrightTextMaterial);
+				keyboardKeys.keyPause.children[1].children.forEach(item => item.material = BrightKeyMaterial);
+				keyboardKeysPressed.keyPause = true;
+			} else {
+				keyboardKeys.keyPause.children[0].children.forEach(item => item.material = StandardTextMaterial);
+				keyboardKeys.keyPause.children[1].children.forEach(item => item.material = StandardKeyMaterial);
+				keyboardKeysPressed.keyPause = false;
+			}
+			updateState();
+		}
+	}
+
 	onDestroy(() => {
 		cancelAnimationFrame(animationReq);
 		animationManager.dispose();
@@ -79,9 +101,6 @@
 			if (e === ' ') {
 				e = 'Space';
 			}
-			if (ev.keyCode === 80) {
-				e = 'Pause'; // P
-			}
 			if (keyboardKeys['key' + e]) {
 				keyboardKeysPressed['key' + e] = true;
 				updateState();
@@ -92,16 +111,12 @@
 			if (e === ' ') {
 				e = 'Space';
 			}
-			if (ev.keyCode === 80) {
-				e = 'Pause'; // P
-			}
 			if (keyboardKeys['key' + e]) {
 				keyboardKeysPressed['key' + e] = false;
 				updateState();
 			}
 		});
 	}
-
 
 	function updateState() {
 		Object.keys(keyboardKeysPressed).forEach(key => {

@@ -2,6 +2,28 @@ import {SVGLoader} from "three/examples/jsm/loaders/SVGLoader";
 import * as THREE from "three";
 const loader = new SVGLoader();
 
+export const StandardTextMaterial = new THREE.MeshStandardMaterial({
+	color: 0x777788,
+	// transparent: true,
+});
+
+export const StandardKeyMaterial = new THREE.MeshStandardMaterial({
+	color: 0x223344,
+	// transparent: true,
+});
+
+export const BrightKeyMaterial = new THREE.MeshStandardMaterial({
+	color: 0xEEEEEE,
+	// transparent: true,
+	// opacity:.9,
+	// side: THREE.DoubleSide
+});
+
+export const BrightTextMaterial = new THREE.MeshStandardMaterial({
+	color: 0xCF7600,
+	// transparent: true,
+});
+
 const SVGCache = {};
 function extrudeSVG(id, color, SVGScale, sizeL) {
 	// https://muffinman.io/blog/three-js-extrude-svg-path/
@@ -20,7 +42,7 @@ function extrudeSVG(id, color, SVGScale, sizeL) {
 	const svgGroup = new THREE.Group();
 	const material = new THREE.MeshStandardMaterial({
 		color,
-		// transparent: true,
+		transparent: true,
 		// opacity: 0.4,
 		//side: THREE.DoubleSide
 	});

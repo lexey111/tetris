@@ -7,17 +7,28 @@ export class BannerAnimations implements TAnimations {
 		//
 	}
 
-	public getAnimation = () => {
-		return {
-			delay: 500, duration: 800, repeatCount: 3,
-			prepareFn: this.prepareReadyBanner,
-			animationFn: this.dribbleBanner,
-			onCycleFn: this.onReadyCycle,
-			finishFn: this.endReadyBanner
-		};
+	public getAnimation = (name) => {
+		if (!name) {
+			return {
+				delay: 500, duration: 800, repeatCount: 3,
+				prepareFn: this.prepareReadyBanner,
+				animationFn: this.dribbleBanner,
+				onCycleFn: this.onReadyCycle,
+				finishFn: this.endBannerAnimation
+			};
+		}
+		if (name === 'pause') {
+			return {
+				duration: 2000, repeatCount: 300,
+				prepareFn: this.preparePauseBanner,
+				animationFn: this.dribblePauseBanner,
+				finishFn: this.endBannerAnimation
+			};
+		}
 	}
 	public hideBanner = () => {
 		this.banner.visible = false;
+		this.banner.children[0].scale.set(1, 1, 1);
 	}
 
 
@@ -38,14 +49,20 @@ export class BannerAnimations implements TAnimations {
 		}
 
 		this.banner.children[0].material = BannerMaterials[idx - 1];
-		this.banner.children.forEach((text, i) => text.visible = idx === i || i === 0);
+		this.banner.children.forEach((str, i) => str.visible = idx === i || i === 0);
 	}
 
+	private preparePauseBanner = () => {
+		this.showBanner('PAUSE');
+		this.banner.children[0].scale.set(4, 4, 1);
+		this.banner.children[1].children[6].visible = true;
+	}
 
 	private prepareReadyBanner = () => {
 		this.showBanner('READY');
 		this.banner.children[1].children[6].visible = true; // ready? 1
 	}
+
 	private onReadyCycle = (cycle) => {
 		// hardcoded access to numbers
 		this.banner.children[1].children[6].visible = cycle === 0; // ready? 2
@@ -59,16 +76,29 @@ export class BannerAnimations implements TAnimations {
 
 		this.banner.children[1].children.forEach(chld => {
 			chld.position.z = Math.sin(currentRotation) * .25;
-		})
-		// banner.rotation.x = Math.sin(currentRotation) * 0.04;
+		});
+		// this.banner.rotation.z = Math.sin(currentRotation) * 0.05;
 	}
 
-	private endReadyBanner = () => {
+	private dribblePauseBanner = (percentage) => {
+		const distance = 2 * Math.PI;
+		const currentRotation = (distance * percentage) / 100;
+
+		this.banner.children[2].children.forEach(chld => {
+			chld.position.z = Math.sin(currentRotation) * .6;
+		});
+	}
+
+	private endBannerAnimation = () => {
 		// hardcoded access to numbers
 		this.banner.children[1].children[6].visible = false; // ready? 1
 		this.banner.children[1].children[7].visible = false; // ready? 2
 		this.banner.children[1].children[8].visible = false; // ready? 3
+
 		this.banner.rotation.x = 0;
+		this.banner.rotation.y = 0;
+		this.banner.rotation.z = 0;
+
 		this.banner.children[1].children.forEach(child => {
 			child.position.z = 0;
 		});
