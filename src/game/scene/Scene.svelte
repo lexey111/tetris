@@ -1,22 +1,27 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
-	import {addBanner, addSpaceItems, addWalls, setResizeCallback} from "./scene-helpers.ts";
+	import {setResizeCallback} from "./helpers/scene-helpers.ts";
 	import * as THREE from "three";
-	import {addLights} from "./scene-lights.ts";
+	import {addLights} from "./helpers/scene-lights.ts";
 	import type {TThreeFrame} from "../game-globals";
 	import {AnimationManager} from "../../shared/animation-manager";
-	import {SpaceAnimations} from "./space-animations";
-	import {BannerAnimations} from "./banner-animations";
-	import {OpenFieldAnimations} from "./open-field-animations";
+	import {SpaceAnimations} from "./animations/space-animations";
+	import {BannerAnimations} from "./animations/banner-animations";
+	import {OpenFieldAnimations} from "./animations/open-field-animations";
 	import {createCube} from "../../figures/figures-utils";
-	import {FilledRowAnimations} from "./filled-row-animations";
-	import {FallingAnimations} from "./falling-animations";
+	import {FilledRowAnimations} from "./animations/filled-row-animations";
+	import {FallingAnimations} from "./animations/falling-animations";
+	import {addSpaceItems} from "./helpers/scene-space";
+	import {addWalls} from "./helpers/scene-walls";
+	import {addBanner} from "./helpers/scene-banner";
 
 
 	export let onEvent: (event: string) => void;
 	export let field = [];
-	export let tick = 0; // force redraw
+	export let tick = 0; // new turn
+	export let tack = 0; // force redraw
 	export let paused = false;
+	export let started = false;
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -39,15 +44,27 @@
 
 	$: {
 		if (field && field.length > 0 && tick > 0) {
+			animationManager.dispose();
 			drawField();
+			runFieldAnimations();
 		}
-		if (bannerAnimations) {
+
+		if (bannerAnimations && started) {
 			if (paused) {
+				gameField.visible = false;
+				walls.visible = false;
+				space.visible = false;
+
 				bannerAnimations.showBanner('PAUSE');
 				animationManager.dispose();
 				animationManager.add(bannerAnimations.getAnimation('pause'));
 			} else {
+				gameField.visible = true;
+				walls.visible = true;
+				space.visible = true;
+
 				bannerAnimations.hideBanner();
+				drawField();
 			}
 		}
 	}
@@ -193,8 +210,6 @@
 	});
 
 	function drawField() {
-		animationManager.dispose();
-
 		const objectsToRemove = [];
 		gameField.traverse(node => {
 			if (node instanceof THREE.Mesh) {
@@ -206,17 +221,13 @@
 			node.parent.remove(node);
 		});
 
-		let hasDeleting = false;
-		let hasFalling = false;
-
 		for (let i = 0; i < 24; i++) { // vertical
 			for (let j = 0; j < field[i].length; j++) { // horizontal
 				if (field[i][j]) {
-					let cube; // = createCube();
+					let cube;
 
 					if (field[i][j].markToRemove) {
 						cube = createCube(deletingMaterial);
-						hasDeleting = true;
 						cube['deleting'] = true;
 					}
 
@@ -224,8 +235,6 @@
 						if (!cube) {
 							cube = createCube(fallingMaterial);
 						}
-						// cube = createCube(fallingMaterial);
-						hasFalling = true;
 						cube['falling'] = true;
 					}
 
@@ -239,13 +248,11 @@
 				}
 			}
 		}
-		if (hasDeleting) {
-			animationManager.add(filledAnimations.getAnimation());
-		}
+	}
 
-		if (hasFalling) {
-			animationManager.add(fallingAnimations.getAnimation());
-		}
+	function runFieldAnimations() {
+		animationManager.add(filledAnimations.getAnimation());
+		animationManager.add(fallingAnimations.getAnimation());
 	}
 </script>
 

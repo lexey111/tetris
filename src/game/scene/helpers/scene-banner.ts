@@ -1,94 +1,10 @@
 import * as THREE from "three";
-import {Group} from "three";
 import {XToScene, YToScene} from "./scene-utils";
-import {renderLetter} from "../../symbols/font-utils";
-import {SymbolHeight, SymbolWidth} from "../../symbols/font-globals";
-
-export function setResizeCallback(container: HTMLElement, callbackFn: (width: number, height: number) => void) {
-	const resizeObserver = new ResizeObserver(entries => {
-		const entry = entries.at(0);
-		const {width, height} = entry.contentRect;
-		callbackFn(width, height);
-	});
-
-	resizeObserver.observe(container);
-
-	return () => resizeObserver.unobserve(container);
-}
-
-const wallGeometry = new THREE.BoxGeometry(0.9, 0.9, 1.5);
-const wallCubeMaterial = new THREE.MeshStandardMaterial({color: 0x0095DD});
-const wallCube = new THREE.Mesh(wallGeometry, wallCubeMaterial);
-
-function createWallBrick(x, y, z) {
-	const cube = wallCube.clone();
-	cube.position.set(x, y, z);
-	cube.castShadow = true;
-	cube.receiveShadow = true;
-
-	return cube;
-}
-
-export function addWalls(scene) {
-	const wallGroup = new Group();
-	// left
-	const verticalWall = new THREE.Group();
-	for (let i = 0; i < 20; i++) {
-		verticalWall.add(createWallBrick(0, i, 0));
-	}
-	// right
-	const verticalWall2 = verticalWall.clone();
-	verticalWall.position.setX(-5 - .5);
-	verticalWall.position.setY(-9 - .5);
-
-	verticalWall2.position.setX(5 + .5);
-	verticalWall2.position.setY(-9 - .5);
-
-	wallGroup.add(verticalWall);
-	wallGroup.add(verticalWall2);
-
-	// bottom
-	const bottomWall = new THREE.Group();
-	for (let i = 0; i < 12; i++) {
-		bottomWall.add(createWallBrick(i, 0, 0));
-	}
-	bottomWall.position.setX(-6 + .5);
-	bottomWall.position.setY(-10 - .5);
-	wallGroup.add(bottomWall);
-
-	const topWall = bottomWall.clone();
-	topWall.position.setY(10 + .5);
-	topWall.position.setX(-6 + .5);
-	wallGroup.add(topWall);
-
-	wallGroup.position.z = -1;
-	return wallGroup;
-}
-
-const spaceGeometry = new THREE.SphereGeometry(0.03, 4, 4);
-const spaceMaterial = new THREE.MeshStandardMaterial({color: 0x9999FF, transparent: true, opacity: .1});
-
-export function addSpaceItems(scene) {
-	const spaceGroup = new THREE.Group();
-
-	for (let i = 0; i <= 9; i++) {
-		for (let j = 0; j <= 19; j++) {
-			const item = new THREE.Mesh(spaceGeometry, spaceMaterial);
-			item.position.set(i, j, 0);
-			// item.castShadow = true;
-			// item.receiveShadow = true;
-			spaceGroup.add(item);
-		}
-	}
-	spaceGroup.position.setX(-5 + .5);
-	spaceGroup.position.setY(-10 + .5);
-	spaceGroup.position.setZ(8);
-
-	return spaceGroup;
-}
+import {renderLetter} from "../../../symbols/font-utils";
+import {SymbolHeight, SymbolWidth} from "../../../symbols/font-globals";
 
 function drawText(text: string, colors?) {
-	const textGroup = new Group();
+	const textGroup = new THREE.Group();
 
 	const xOffset = text.length * SymbolWidth / 2;
 	text.split('').forEach((sym, idx) => {
@@ -128,7 +44,7 @@ export const BannerMaterials = [
 ];
 
 export function addBanner() {
-	const bannerGroup = new Group();
+	const bannerGroup = new THREE.Group();
 	const boxGeometry = new THREE.BoxGeometry(9, 18, .01);
 
 	const bannerReadyBg = new THREE.Mesh(boxGeometry, BannerMaterials[0]);
@@ -165,8 +81,8 @@ export function addBanner() {
 	// -----------------------------------------------------------------------------------------------------------------
 	const bannerTextPause = drawText('PAUSE', [0xCCCCFA, 0xFFA600]);
 
-	bannerTextPause.scale.set(.15, .15, .5);
-	bannerTextPause.position.z = 2.5;
+	bannerTextPause.scale.set(.15, .15, 1);
+	// bannerTextPause.position.z = 2.5;
 
 	bannerGroup.add(bannerTextPause);
 	bannerTextPause.visible = false;

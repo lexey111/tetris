@@ -5,7 +5,7 @@ const FontCache = [];
 
 const PixelOffset = 0.1; // distance of pixel's distraction
 
-const PixelGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+const PixelGeometry = new THREE.BoxGeometry(0.8, 0.8, 1.6);
 const materials = [
 	new THREE.MeshStandardMaterial({
 		color: new THREE.Color("rgb(100, 128, 160)"),

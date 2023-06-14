@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {onDestroy, onMount} from "svelte";
-	import {setResizeCallback} from "../game/scene/scene-helpers";
+	import {setResizeCallback} from "../game/scene/helpers/scene-helpers";
 	import Text from "../text/Text.svelte";
 	import Next from "../next/Next.svelte";
 	import Disclaimer from "./Disclaimer.svelte";

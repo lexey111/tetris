@@ -1,5 +1,5 @@
-import {BannerMaterials} from "./scene-helpers";
-import type {TAnimations} from "../../shared/Animations";
+import type {TAnimations} from "../../../shared/Animations";
+import {BannerMaterials} from "../helpers/scene-banner";
 
 export class BannerAnimations implements TAnimations {
 
@@ -19,7 +19,7 @@ export class BannerAnimations implements TAnimations {
 		}
 		if (name === 'pause') {
 			return {
-				duration: 2000, repeatCount: 300,
+				duration: 5000, repeatCount: 300,
 				prepareFn: this.preparePauseBanner,
 				animationFn: this.dribblePauseBanner,
 				finishFn: this.endBannerAnimation
@@ -48,13 +48,14 @@ export class BannerAnimations implements TAnimations {
 				idx = 3;
 		}
 
+		this.banner.children[0].visible = true;
 		this.banner.children[0].material = BannerMaterials[idx - 1];
 		this.banner.children.forEach((str, i) => str.visible = idx === i || i === 0);
 	}
 
 	private preparePauseBanner = () => {
 		this.showBanner('PAUSE');
-		this.banner.children[0].scale.set(4, 4, 1);
+		this.banner.children[0].visible = false;
 		this.banner.children[1].children[6].visible = true;
 	}
 
@@ -84,8 +85,14 @@ export class BannerAnimations implements TAnimations {
 		const distance = 2 * Math.PI;
 		const currentRotation = (distance * percentage) / 100;
 
-		this.banner.children[2].children.forEach(chld => {
-			chld.position.z = Math.sin(currentRotation) * .6;
+		this.banner.children[2].rotation.z = currentRotation;
+
+		this.banner.children[2].children.forEach((chld, idx) => {
+			chld.rotation.y = -currentRotation;
+			chld.rotation.x = currentRotation;
+			chld.children.forEach((chld, idx) => {
+				chld.position.z = -Math.cos(currentRotation) * idx / 8;
+			});
 		});
 	}
 

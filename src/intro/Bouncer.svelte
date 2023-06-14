@@ -3,8 +3,8 @@
 	import * as THREE from "three";
 	import type {TThreeFrame} from "../game/game-globals";
 	import {createCube} from "../figures/figures-utils";
-	import {addLights} from "../game/scene/scene-lights";
-	import {setResizeCallback} from "../game/scene/scene-helpers";
+	import {addLights} from "../game/scene/helpers/scene-lights";
+	import {setResizeCallback} from "../game/scene/helpers/scene-helpers";
 
 	let Frame: TThreeFrame;
 	let canvas;

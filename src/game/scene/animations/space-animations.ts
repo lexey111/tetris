@@ -1,4 +1,4 @@
-import type {TAnimations} from "../../shared/Animations";
+import type {TAnimations} from "../../../shared/Animations";
 
 export class SpaceAnimations implements TAnimations {
 	constructor(private space, private walls, private onFinishedFn) {

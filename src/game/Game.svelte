@@ -7,7 +7,8 @@
 	import Keys from "../keys/Keys.svelte";
 
 	let GameState: TGameState = 'PRE-START';
-	let tick = 0; // force redraw
+	let tick = 0; // each turn (after recalc field)
+	let tack = 0; // just force redraw
 
 	let fig = '';
 	let v = 0;
@@ -61,11 +62,7 @@
 		GameState = 'RUNNING';
 
 		tickManager.addTask(processTick, 1); // first - process + redraw
-		tickManager.addTask(() => {
-				removeFilledLines(GameField);
-				tick++;
-			}, 2
-		); // second - remove lines
+		tickManager.addTask(() => removeFilledLines(GameField), 2); // second - remove lines
 
 		tickManager.run();
 	}
@@ -78,6 +75,7 @@
 			falling: true
 		};
 		// printGame(GameField);
+        // tick - only after field recalc (newturn)
 		tick++;
 	}
 
@@ -232,7 +230,12 @@
                 <!--                    <Text text={text}/>-->
                 <!--                </div>-->
             {/if}
-            <Scene onEvent={handleSceneEvents} field={GameField} tick={tick} paused={paused}/>
+            <Scene onEvent={handleSceneEvents}
+                   field={GameField}
+                   {tick}
+                   {tack}
+                   {started}
+                   {paused} />
         </div>
     </div>
     <div id="help-content">

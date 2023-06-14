@@ -1,4 +1,4 @@
-import type {TAnimations} from "../../shared/Animations";
+import type {TAnimations} from "../../../shared/Animations";
 
 export class FilledRowAnimations implements TAnimations {
 	constructor(private field, private duration) {
