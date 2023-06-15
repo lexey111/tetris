@@ -1,18 +1,16 @@
 <script lang="ts">
 	import {fallDown, getRandomFigure, removeFilledLines} from "./game-utils.ts";
-	import type {TCell, TGameState} from "./game-globals.ts";
+	import type {TCell} from "./game-globals.ts";
 	import {TickManager} from "./tick-manager";
 	import {onDestroy, onMount} from "svelte";
 	import Keys from "../keys/Keys.svelte";
 	import Next from "../next/Next.svelte";
 	import Text from "../text/Text.svelte";
-	import {romanize} from "./game-utils.js";
 	import Banner from "./banner/Banner.svelte";
 	import Scene from "./scene/Scene.svelte";
 
 	export let onStop;
 
-	let GameState: TGameState = 'PRE-START';
 	let tick = 0; // each turn (after recalc field)
 	let tack = 0; // just force redraw
 
@@ -22,8 +20,9 @@
 	let score = 0;
 	let scoreText = '0';
 	let level = 1;
-	let levelText = romanize(level);
 	let removedOnLevel = 0;
+
+	let tickDuration = 400;
 
 	let started = false;
 	let paused = false;
@@ -35,27 +34,8 @@
 	for (let i = 0; i < GameField.length; i++) {
 		GameField[i] = new Array(10).fill(undefined);
 	}
-	GameField[20] = new Array(10).fill({falling: true});
 
-	// GameField[20] = new Array(10).fill({falling: true});
-	// GameField[21] = new Array(10).fill({falling: true});
-	// GameField[22] = new Array(10).fill({falling: true});
-	//
-	// GameField[20][1] = undefined;
-	// //GameField[20][0] = undefined;
-	//
-	// GameField[21][1] = undefined;
-	// // GameField[21][0] = undefined;
-	//
-	// GameField[22][1] = undefined;
-	// //
-	// GameField[24][1] = {falling: true};
-	// GameField[25][1] = {falling: true};
-	// GameField[26][1] = {falling: true};
-	//
-	GameField[25][4] = {falling: true};
-
-	const tickManager = new TickManager(250);
+	const tickManager = new TickManager(tickDuration);
 	onMount(() => {
 		document.addEventListener("keydown", processKeys);
 		startSession();
@@ -72,7 +52,7 @@
 
 	function startSession() {
 		coundownHandler = setInterval(() => {
-			bannerText = 'READY? ' + countDown;
+			bannerText = '..[' + countDown + ']..';
 			countDown--;
 
 			if (countDown < 0) {
@@ -87,7 +67,6 @@
 	function runGame() {
 		started = true;
 		paused = false;
-		GameState = 'RUNNING';
 
 		tickManager.addTask(processTick, 1); // first - process + redraw
 
@@ -101,16 +80,29 @@
 					scoreText = score.toString();
 				}
 
-				if (removedOnLevel === 10) {
-					level++;
-					removedOnLevel = 0;
-
-					levelText = romanize(level);
+				if (removedOnLevel >= 10) {
+					levelUp();
 				}
 			}, 2
 		); // second - remove lines and add score
 
 		tickManager.run();
+	}
+
+	function levelUp() {
+		level++;
+		removedOnLevel = 0;
+		tickDuration -= level < 3
+			? 100
+            : level < 7
+                ? 50
+                : 20;
+
+		if (tickDuration < 50) {
+			tickDuration = 50;
+		}
+
+		tickManager.updateTickDuration(tickDuration);
 	}
 
 	function processTick() {
@@ -120,8 +112,6 @@
 		GameField[21][Math.floor(Math.random() * 10)] = {
 			falling: true
 		};
-		// printGame(GameField);
-		// tick - only after field recalc (newturn)
 		tick++;
 	}
 
@@ -149,13 +139,11 @@
 	function togglePause() {
 		if (tickManager.isPause()) {
 			bannerText = '';
-			GameState = 'RUNNING';
 			tickManager.setPause(false);
 
 			paused = false;
 		} else {
 			bannerText = 'PAUSE';
-			GameState = 'PAUSED';
 			tickManager.setPause(true);
 
 			paused = true;
@@ -205,14 +193,18 @@
 		left: 0;
 		height: calc(100vh - 100px);
 		width: 100vw;
-		background: rgba(0, 0, 0, .8);
+		background: rgba(0, 0, 0, 0.5);
 		z-index: 10;
 		opacity: 1;
-		transition: opacity .5s ease;
+		transition: all .5s ease;
 	}
 
 	#banner-container.inactive {
 		opacity: 0;
+	}
+
+	#banner-container.paused {
+		background: rgba(3, 24, 30, 0.9);
 	}
 
 	#scene-container {
@@ -302,7 +294,7 @@
             <div id="scene-container">
                 <div id="side-container">
                     <Next type={fig} rnd={v} hideLines={true}/>
-                    <Text text="LEVEL {levelText}" scale={6} colors={[0xFAA600,0x855d22]}/>
+                    <Text text="SPEED [{level}]" scale={6} colors={[0xFAA600,0x855d22]}/>
                     <div class="stub"></div>
                     <Text text={scoreText} scale={12}/>
                 </div>
@@ -310,6 +302,7 @@
                        field={GameField}
                        {tick}
                        {tack}
+                       {tickDuration}
                        {started}
                        {paused}/>
             </div>
@@ -322,6 +315,6 @@
     </div>
 </div>
 
-<div id="banner-container" class="{bannerText? '': 'inactive'}">
+<div id="banner-container" class="{bannerText? '': 'inactive'}{paused ? ' paused' : ''}">
     <Banner text={bannerText}/>
 </div>

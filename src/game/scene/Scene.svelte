@@ -4,6 +4,7 @@
 	import * as THREE from "three";
 	import {addLights} from "./helpers/scene-lights.ts";
 	import type {TThreeFrame} from "../game-globals";
+	import {clear3d} from "../game-globals";
 	import {AnimationManager} from "../../shared/animation-manager";
 	import {SpaceAnimations} from "./animations/space-animations";
 	import {createCube} from "../../figures/figures-utils";
@@ -11,14 +12,12 @@
 	import {FallingAnimations} from "./animations/falling-animations";
 	import {addSpaceItems} from "./helpers/scene-space";
 	import {addWalls} from "./helpers/scene-walls";
-	import {clear3d} from "../game-globals";
 
 	export let onEvent: (event: string) => void;
+	export let tickDuration;
 	export let field = [];
 	export let tick = 0; // new turn
-	export let tack = 0; // force redraw
 	export let paused = false;
-	export let started = false;
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -36,6 +35,11 @@
 
 	let filledAnimations = new FilledRowAnimations(gameField, 500);
 	let fallingAnimations = new FallingAnimations(gameField, 250);
+
+	$: if (tickDuration) {
+		filledAnimations.setDuration(tickDuration);
+		fallingAnimations.setDuration(tickDuration * 2);
+	}
 
 	$: {
 		if (field && field.length > 0 && tick > 0 && !paused) {
@@ -60,7 +64,7 @@
 			sizeTimeout = setTimeout(() => {
 				if (!Frame.renderer) {
 					return;
-                }
+				}
 				Frame.renderer.setSize(width, height);
 				(Frame.camera as THREE.PerspectiveCamera).aspect = width / height;
 
@@ -179,7 +183,7 @@
 	function drawField() {
 		if (!Frame) {
 			return;
-        }
+		}
 
 		if (gameField) {
 			const objectsToRemove = [];

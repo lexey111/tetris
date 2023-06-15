@@ -5,7 +5,13 @@ export class TickManager {
 	private paused = false;
 
 	constructor(private tickDuration) {
+		//
+	}
 
+	public updateTickDuration = (newDuration) => {
+		this.tickDuration = newDuration;
+		this.stop();
+		this.run();
 	}
 
 	public isPause = () => this.paused;

@@ -14,7 +14,7 @@ export class KeysAnimations implements TAnimations {
 		if (name === 'zoom') {
 			return {
 				duration: 500,
-				delay: 1000,
+				delay: 3000,
 				prepareFn: this.zoomPrepare,
 				animationFn: this.zoomAnimation,
 				finishFn: this.endZoomAnimation

@@ -121,7 +121,7 @@
 
 	function updateState() {
 		Object.keys(keyboardKeysPressed).forEach(key => {
-			if (!keyboardKeys[key]) {
+			if (!keyboardKeys[key] || key === 'keyPause') {
 				return;
 			}
 			keyboardKeys[key].position.z = keyboardKeysPressed[key] ? -0.3 : 0;
