@@ -16,6 +16,9 @@ export class FallingAnimations implements TAnimations {
 	public setDuration = (duration) => {
 		this.duration = duration;
 	}
+	public setField = (field) => {
+		this.field = field;
+	}
 
 	private cellAnimation = (percentage) => {
 		const distance = (100 - percentage) / 100; // 1 down to 0

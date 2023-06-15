@@ -4,9 +4,12 @@
 	import type {TThreeFrame} from "../game/game-globals";
 	import type {TFigureType} from "../figures/figures";
 	import {createFigure} from "../figures/figures-builder";
+	import {clear3d} from "../game/game-globals";
 
 	export let type: TFigureType = 'S';
 	export let accent = '#09517E';
+	export let hideLines = false;
+
 	let hexAccent = parseInt(accent.replace('#', '0x'), 16);
 	export let rnd = -1;
 
@@ -18,6 +21,8 @@
 	let Frame: TThreeFrame;
 	let canvas;
 	let animationReq;
+
+	let initialTimeout;
 
 	let figures = [];
 
@@ -46,8 +51,9 @@
 		if (!Frame) {
 			return;
 		}
+		clearTimeout(initialTimeout);
 		cancelAnimationFrame(animationReq);
-		Frame.renderer.dispose();
+		clear3d(Frame);
 	});
 
 	function initScene() {
@@ -91,7 +97,7 @@
 
 		canvas.appendChild(Frame.renderer.domElement);
 
-		setTimeout(() => {
+		initialTimeout = setTimeout(() => {
 			canvas.style.opacity = '1';
 		}, 0);
 	}
@@ -131,7 +137,7 @@
 				}
 			}
 			needCleanup && cleanup();
-			Frame && Frame.renderer.render(Frame.scene, Frame.camera);
+			Frame && Frame.renderer?.render(Frame.scene, Frame.camera);
 		}
 		animationReq = requestAnimationFrame(animate);
 	}
@@ -215,8 +221,13 @@
 		display: flex;
 		flex-flow: row nowrap;
 	}
+
+	.next-content.no-borders {
+		border-top: none;
+        margin-bottom: 20px;
+	}
 </style>
 
 <div style="--next-accent: {accent};">
-    <div bind:this={canvas} class="next-content"></div>
+    <div bind:this={canvas} class="next-content {hideLines? 'no-borders' : ''}"></div>
 </div>

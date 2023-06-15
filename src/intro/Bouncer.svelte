@@ -5,6 +5,7 @@
 	import {createCube} from "../figures/figures-utils";
 	import {addLights} from "../game/scene/helpers/scene-lights";
 	import {setResizeCallback} from "../game/scene/helpers/scene-helpers";
+	import {clear3d} from "../game/game-globals";
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -20,11 +21,14 @@
 			clearTimeout(sizeTimeout);
 
 			sizeTimeout = setTimeout(() => {
+				if (!Frame.renderer) {
+					return;
+                }
 				Frame.renderer.setSize(width, height);
 				(Frame.camera as THREE.PerspectiveCamera).aspect = width / height;
 
 				adjustPerspectiveCamera(Frame.camera as THREE.PerspectiveCamera, 0.8);
-				Frame.renderer.render(Frame.scene, Frame.camera);
+				Frame.renderer?.render(Frame.scene, Frame.camera);
 			}, 100);
 		});
 
@@ -39,7 +43,7 @@
 			return;
 		}
 		cancelAnimationFrame(animationReq);
-		Frame.renderer.dispose();
+		clear3d(Frame);
 	});
 
 	function adjustPerspectiveCamera(camera: THREE.PerspectiveCamera, offset) {
@@ -102,7 +106,7 @@
 			rotationX *= -1;
 		}
 
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
 
 		animationReq = requestAnimationFrame(animate);
 	}

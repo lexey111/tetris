@@ -1,10 +1,16 @@
 <script lang="ts">
-	import Scene from "./scene/Scene.svelte";
 	import {fallDown, getRandomFigure, removeFilledLines} from "./game-utils.ts";
 	import type {TCell, TGameState} from "./game-globals.ts";
 	import {TickManager} from "./tick-manager";
 	import {onDestroy, onMount} from "svelte";
 	import Keys from "../keys/Keys.svelte";
+	import Next from "../next/Next.svelte";
+	import Text from "../text/Text.svelte";
+	import {romanize} from "./game-utils.js";
+	import Banner from "./banner/Banner.svelte";
+	import Scene from "./scene/Scene.svelte";
+
+	export let onStop;
 
 	let GameState: TGameState = 'PRE-START';
 	let tick = 0; // each turn (after recalc field)
@@ -13,11 +19,15 @@
 	let fig = '';
 	let v = 0;
 
-	let num = 7;
-	let text = 'START';
+	let score = 0;
+	let scoreText = '0';
+	let level = 1;
+	let levelText = romanize(level);
+	let removedOnLevel = 0;
 
 	let started = false;
 	let paused = false;
+	let bannerText = '';
 
 	// Game field has dimensions 10x(20+4)
 	// where 20 is vertical space (field) and 4 is a space for new figure
@@ -48,12 +58,30 @@
 	const tickManager = new TickManager(250);
 	onMount(() => {
 		document.addEventListener("keydown", processKeys);
+		startSession();
 	});
 
 	onDestroy(() => {
 		tickManager.dispose();
 		document.removeEventListener("keydown", processKeys);
 	});
+
+	let countDown = 3;
+	let coundownHandler;
+	let showScene = false;
+
+	function startSession() {
+		coundownHandler = setInterval(() => {
+			bannerText = 'READY? ' + countDown;
+			countDown--;
+
+			if (countDown < 0) {
+				clearInterval(coundownHandler);
+				bannerText = '';
+				showScene = true;
+			}
+		}, 1000);
+	}
 
 
 	function runGame() {
@@ -62,7 +90,25 @@
 		GameState = 'RUNNING';
 
 		tickManager.addTask(processTick, 1); // first - process + redraw
-		tickManager.addTask(() => removeFilledLines(GameField), 2); // second - remove lines
+
+		tickManager.addTask(() => {
+				const removed = removeFilledLines(GameField);
+
+				if (removed > 0) {
+					score += removed * level;
+					removedOnLevel += removed;
+
+					scoreText = score.toString();
+				}
+
+				if (removedOnLevel === 10) {
+					level++;
+					removedOnLevel = 0;
+
+					levelText = romanize(level);
+				}
+			}, 2
+		); // second - remove lines and add score
 
 		tickManager.run();
 	}
@@ -75,7 +121,7 @@
 			falling: true
 		};
 		// printGame(GameField);
-        // tick - only after field recalc (newturn)
+		// tick - only after field recalc (newturn)
 		tick++;
 	}
 
@@ -88,20 +134,33 @@
 			e = 'Pause'; // P
 		}
 
+		if (e === 'Escape') {
+			onStop && onStop();
+		}
+
 		if (e === 'Pause') {
 			if (!started) {
 				return;
 			}
+			togglePause();
+		}
+	}
 
-			if (tickManager.isPause()) {
-				GameState = 'RUNNING';
-				tickManager.setPause(false);
-				paused = false;
-			} else {
-				GameState = 'PAUSED';
-				tickManager.setPause(true);
-				paused = true;
-			}
+	function togglePause() {
+		if (tickManager.isPause()) {
+			bannerText = '';
+			GameState = 'RUNNING';
+			tickManager.setPause(false);
+
+			paused = false;
+		} else {
+			bannerText = 'PAUSE';
+			GameState = 'PAUSED';
+			tickManager.setPause(true);
+
+			paused = true;
+			fallDown(GameField);
+			tick++;
 		}
 	}
 
@@ -112,11 +171,6 @@
 		}
 		// tick += 1;
 	}
-
-	setInterval(() => {
-		text = '-' + num + '-';
-		num += Math.floor(Math.random() * 10);
-	}, 5000);
 
 	setInterval(() => {
 		fig = getRandomFigure(true);
@@ -145,6 +199,22 @@
 		flex-flow: column nowrap;
 	}
 
+	#banner-container {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: calc(100vh - 100px);
+		width: 100vw;
+		background: rgba(0, 0, 0, .8);
+		z-index: 10;
+		opacity: 1;
+		transition: opacity .5s ease;
+	}
+
+	#banner-container.inactive {
+		opacity: 0;
+	}
+
 	#scene-container {
 		width: auto;
 		aspect-ratio: 1 / 2;
@@ -155,14 +225,18 @@
 
 	#side-container {
 		position: absolute;
-		right: 0;
+		right: -20px;
 		top: 30px;
 		transform: translateX(100%);
-		width: 200px;
+		width: 240px;
 		display: flex;
 		flex-flow: column nowrap;
 		align-items: center;
 		padding-top: 40px;
+	}
+
+	#side-container .stub {
+		height: 30px;
 	}
 
 	#help-content {
@@ -210,6 +284,7 @@
 			left: 50%;
 			right: unset;
 			top: 100%;
+			padding-left: 0;
 			transform: translateX(-50%) translateY(-40px);
 		}
 	}
@@ -223,26 +298,30 @@
 
 <div id="screen-wrapper">
     <div id="screen-content">
-        <div id="scene-container">
-            {#if started}
-                <!--                <div id="side-container">-->
-                <!--                    <Next type={fig} rnd={v}/>-->
-                <!--                    <Text text={text}/>-->
-                <!--                </div>-->
-            {/if}
-            <Scene onEvent={handleSceneEvents}
-                   field={GameField}
-                   {tick}
-                   {tack}
-                   {started}
-                   {paused} />
-        </div>
-    </div>
-    <div id="help-content">
-        {#if started}
-            <div id="help">
-                <Keys paused={paused}/>
+        {#if showScene}
+            <div id="scene-container">
+                <div id="side-container">
+                    <Next type={fig} rnd={v} hideLines={true}/>
+                    <Text text="LEVEL {levelText}" scale={6} colors={[0xFAA600,0x855d22]}/>
+                    <div class="stub"></div>
+                    <Text text={scoreText} scale={12}/>
+                </div>
+                <Scene onEvent={handleSceneEvents}
+                       field={GameField}
+                       {tick}
+                       {tack}
+                       {started}
+                       {paused}/>
             </div>
         {/if}
     </div>
+    <div id="help-content">
+        <div id="help">
+            <Keys paused={paused}/>
+        </div>
+    </div>
+</div>
+
+<div id="banner-container" class="{bannerText? '': 'inactive'}">
+    <Banner text={bannerText}/>
 </div>

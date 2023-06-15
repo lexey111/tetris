@@ -6,15 +6,12 @@
 	import type {TThreeFrame} from "../game-globals";
 	import {AnimationManager} from "../../shared/animation-manager";
 	import {SpaceAnimations} from "./animations/space-animations";
-	import {BannerAnimations} from "./animations/banner-animations";
-	import {OpenFieldAnimations} from "./animations/open-field-animations";
 	import {createCube} from "../../figures/figures-utils";
 	import {FilledRowAnimations} from "./animations/filled-row-animations";
 	import {FallingAnimations} from "./animations/falling-animations";
 	import {addSpaceItems} from "./helpers/scene-space";
 	import {addWalls} from "./helpers/scene-walls";
-	import {addBanner} from "./helpers/scene-banner";
-
+	import {clear3d} from "../game-globals";
 
 	export let onEvent: (event: string) => void;
 	export let field = [];
@@ -29,43 +26,22 @@
 
 	let sizeTimeout;
 
-	let banner;
 	let space;
 	let walls;
 	let gameField = new THREE.Group();
 
 	const animationManager = new AnimationManager();
 	let spaceAnimations;
-	let bannerAnimations;
 	let openFieldAnimations;
 
 	let filledAnimations = new FilledRowAnimations(gameField, 500);
 	let fallingAnimations = new FallingAnimations(gameField, 250);
 
 	$: {
-		if (field && field.length > 0 && tick > 0) {
+		if (field && field.length > 0 && tick > 0 && !paused) {
 			animationManager.dispose();
 			drawField();
 			runFieldAnimations();
-		}
-
-		if (bannerAnimations && started) {
-			if (paused) {
-				gameField.visible = false;
-				walls.visible = false;
-				space.visible = false;
-
-				bannerAnimations.showBanner('PAUSE');
-				animationManager.dispose();
-				animationManager.add(bannerAnimations.getAnimation('pause'));
-			} else {
-				gameField.visible = true;
-				walls.visible = true;
-				space.visible = true;
-
-				bannerAnimations.hideBanner();
-				drawField();
-			}
 		}
 	}
 
@@ -75,32 +51,25 @@
 		spaceAnimations = new SpaceAnimations(space, walls, () => {
 			onEvent('STARTED')
 		});
-		openFieldAnimations = new OpenFieldAnimations(banner, walls, () => {
-			// forward ref
-			bannerAnimations.hideBanner();
-		});
 
-		bannerAnimations = new BannerAnimations(banner, () => {
-			animationManager.add(openFieldAnimations.getAnimation());
-			animationManager.add(spaceAnimations.getAnimation());
-		});
+		animationManager.add(spaceAnimations.getAnimation());
 
 		setResizeCallback(canvas, (width, height) => {
 			clearTimeout(sizeTimeout);
 
 			sizeTimeout = setTimeout(() => {
+				if (!Frame.renderer) {
+					return;
+                }
 				Frame.renderer.setSize(width, height);
 				(Frame.camera as THREE.PerspectiveCamera).aspect = width / height;
 
 				adjustPerspectiveCamera(Frame.camera as THREE.PerspectiveCamera, 0.8);
-				Frame.renderer.render(Frame.scene, Frame.camera);
+				Frame.renderer?.render(Frame.scene, Frame.camera);
 			}, 100);
 		});
 
 		setTimeout(animate, 0);
-
-		// add first animation
-		animationManager.add(bannerAnimations.getAnimation());
 	});
 
 	onDestroy(() => {
@@ -109,7 +78,7 @@
 		animationManager.dispose();
 
 		cancelAnimationFrame(animationReq);
-		Frame && Frame.renderer.dispose();
+		clear3d(Frame);
 	});
 
 	function adjustPerspectiveCamera(camera: THREE.PerspectiveCamera, offset) {
@@ -154,7 +123,7 @@
 
 		animationManager.play();
 
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
 		animationReq = requestAnimationFrame(animate);
 	}
 
@@ -178,9 +147,6 @@
 
 		addLights(Frame.scene);
 
-		banner = addBanner();
-		Frame.scene.add(banner);
-
 		// addHelper(Frame.scene);
 
 		gameField.position.x = -5 + .5;
@@ -193,33 +159,48 @@
 
 		canvas.appendChild(Frame.renderer.domElement);
 		adjustPerspectiveCamera(Frame.camera as THREE.PerspectiveCamera, 0.8);
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
 	}
 
 	const fallingMaterial = new THREE.MeshStandardMaterial({
 		color: 0xffa600,
-		transparent: true,
-		opacity: 0.5,
+		// transparent: true,
+		// opacity: 0.5,
 		// side: THREE.DoubleSide
 	});
+
 	const deletingMaterial = new THREE.MeshStandardMaterial({
 		color: 0xff0000,
-		transparent: true,
-		opacity: 0.8,
+		// transparent: true,
+		// opacity: 0.8,
 		// side: THREE.DoubleSide
 	});
 
 	function drawField() {
-		const objectsToRemove = [];
-		gameField.traverse(node => {
-			if (node instanceof THREE.Mesh) {
-				objectsToRemove.push(node);
-			}
-		});
+		if (!Frame) {
+			return;
+        }
 
-		objectsToRemove.forEach(node => {
-			node.parent.remove(node);
-		});
+		if (gameField) {
+			const objectsToRemove = [];
+
+			gameField.traverse(node => {
+				if (node instanceof THREE.Mesh) {
+					objectsToRemove.push(node);
+				}
+			});
+
+			objectsToRemove.forEach(node => {
+				node.parent.remove(node);
+			});
+			Frame.scene.remove(gameField);
+			gameField = null;
+		}
+		gameField = new THREE.Group();
+		gameField.position.x = -5 + .5;
+		gameField.position.y = -10 + .5;
+		gameField.position.z = 0;
+
 
 		for (let i = 0; i < 24; i++) { // vertical
 			for (let j = 0; j < field[i].length; j++) { // horizontal
@@ -253,6 +234,9 @@
 				}
 			}
 		}
+		fallingAnimations.setField(gameField);
+		filledAnimations.setField(gameField);
+		Frame.scene.add(gameField);
 	}
 
 	function runFieldAnimations() {

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import {XToScene, YToScene} from "./scene-utils";
+import {XToScene, YToScene} from "../../scene/helpers/scene-utils";
 import {renderLetter} from "../../../symbols/font-utils";
 import {SymbolHeight, SymbolWidth} from "../../../symbols/font-globals";
 
@@ -102,7 +102,7 @@ export function addBanner() {
 
 	bannerGameOver.visible = false;
 
-	bannerGroup.visible = false;
+	// bannerGroup.visible = false;
 	return bannerGroup;
 }
 

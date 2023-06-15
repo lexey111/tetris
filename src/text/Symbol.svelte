@@ -6,6 +6,7 @@
 	import {renderLetter} from "../symbols/font-utils";
 	import {AnimationManager} from "../shared/animation-manager";
 	import {SymbolAnimations} from "./symbol-animations";
+	import {clear3d} from "../game/game-globals";
 	/*
     One symbols 8x8 only
      */
@@ -52,7 +53,7 @@
 	onDestroy(() => {
 		clearAnimation();
 		animationManager.dispose();
-		Frame && Frame.renderer.dispose();
+		clear3d(Frame);
 	});
 
 	function animate() {
@@ -61,7 +62,7 @@
 		}
 		animationManager.play();
 
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
 		animationReq = requestAnimationFrame(animate);
 	}
 
@@ -70,7 +71,7 @@
 		// if (_letter) {
 		// 	_letter.rotation.y = initialRotation;
 		// }
-		Frame && Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame && Frame.renderer?.render(Frame.scene, Frame.camera);
 	}
 
 	function adjustPerspectiveCamera(camera: THREE.PerspectiveCamera, object, offset) {
@@ -108,7 +109,7 @@
 
 		adjustPerspectiveCamera(Frame.camera as THREE.PerspectiveCamera, _letter, 1.5);
 		Frame.camera.updateProjectionMatrix();
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
 	}
 
 	function initScene() {

@@ -1,4 +1,5 @@
 import type {TAnimation, TAnimationParams} from "./Animations";
+import {log} from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
 
 export class AnimationManager {
 	animations: Array<TAnimation> = [];

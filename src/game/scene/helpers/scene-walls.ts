@@ -40,11 +40,6 @@ export function addWalls(scene) {
 	bottomWall.position.setY(-10 - .5);
 	wallGroup.add(bottomWall);
 
-	const topWall = bottomWall.clone();
-	topWall.position.setY(10 + .5);
-	topWall.position.setX(-6 + .5);
-	wallGroup.add(topWall);
-
 	wallGroup.position.z = -1;
 	return wallGroup;
 }

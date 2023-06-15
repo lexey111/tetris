@@ -62,12 +62,14 @@ export function fallDown(GameField) {
 }
 
 export function removeFilledLines(GameField) {
+	let count = 0;
 	for (let rowIdx = 0; rowIdx < 20; rowIdx++) {
 		const line = GameField[rowIdx];
 		const filled = line.filter(cell => cell?.solid).length === line.length;
 
 		if (filled) {
 			GameField[rowIdx] = new Array(line.length).fill(undefined);
+			count++;
 
 			// move all the rows above down 1 cell
 			for (let i = rowIdx + 1; i < 20; i++) {
@@ -87,6 +89,8 @@ export function removeFilledLines(GameField) {
 			GameField[y][x].fallAsRemove = undefined;
 		}
 	});
+
+	return count;
 }
 
 
@@ -110,4 +114,18 @@ export function printGame(GameField) {
 		}
 		console.log(s);
 	}
+}
+
+export function romanize(num) {
+	if (isNaN(num))
+		return NaN;
+	var digits = String(+num).split(""),
+		key = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM",
+			"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC",
+			"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+		roman = "",
+		i = 3;
+	while (i--)
+		roman = (key[+digits.pop() + (i * 10)] || "") + roman;
+	return Array(+digits.join("") + 1).join("M") + roman;
 }

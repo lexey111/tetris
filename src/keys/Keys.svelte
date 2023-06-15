@@ -11,6 +11,7 @@
 	} from "./keys-utils";
 	import {AnimationManager} from "../shared/animation-manager";
 	import {KeysAnimations} from "./keys-animations";
+	import {clear3d} from "../game/game-globals";
 
 	let Frame: TThreeFrame;
 	export let paused = false;
@@ -92,7 +93,7 @@
 	onDestroy(() => {
 		cancelAnimationFrame(animationReq);
 		animationManager.dispose();
-		Frame.renderer.dispose();
+		clear3d(Frame);
 	});
 
 	function attachKeys() {
@@ -125,14 +126,14 @@
 			}
 			keyboardKeys[key].position.z = keyboardKeysPressed[key] ? -0.3 : 0;
 		});
-		Frame && Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame && Frame.renderer?.render(Frame.scene, Frame.camera);
 	}
 
 	function animate() {
 		if (Frame && keysGrp) {
 			animationManager.play();
 		}
-		Frame && Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame && Frame.renderer?.render(Frame.scene, Frame.camera);
 		animationReq = requestAnimationFrame(animate);
 	}
 

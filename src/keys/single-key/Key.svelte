@@ -5,6 +5,7 @@
 	import type {TThreeFrame} from "../../game/game-globals";
 	import {AnimationManager} from "../../shared/animation-manager";
 	import {KeyAnimations} from "./key-animations";
+	import {clear3d} from "../../game/game-globals";
 
 	let Frame: TThreeFrame;
 
@@ -40,7 +41,7 @@
 	onDestroy(() => {
 		clearTimeout(initialHandler);
 		clearAnimation();
-		Frame.renderer.dispose();
+		clear3d(Frame);
 	});
 
 	$: {
@@ -61,7 +62,7 @@
 
 		animationManager.play();
 
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
 		animationReq = requestAnimationFrame(animate);
 	}
 
@@ -115,7 +116,7 @@
 		Frame.camera.zoom = 3;
 		Frame.camera.updateProjectionMatrix();
 
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
 		canvas.appendChild(Frame.renderer.domElement);
 
 		keyAnimations = new KeyAnimations(key);

@@ -5,6 +5,7 @@
 	import type {TThreeFrame} from "../game/game-globals";
 	import {SymbolHeight, SymbolWidth} from "../symbols/font-globals";
 	import {renderLetter} from "../symbols/font-utils";
+	import {clear3d} from "../game/game-globals";
 	/*
     One line, symbols 8x8 only
      */
@@ -17,12 +18,9 @@
 	let canvas;
 
 	let _text;
-	let animationReq;
 
 	let sizeX;
 	const sizeY = scale * SymbolHeight / 2;
-
-	const initialRotation = 0.1;
 
 	$: {
 		sizeX = scale * text.length * SymbolWidth / 2;
@@ -36,7 +34,7 @@
 	});
 
 	onDestroy(() => {
-		Frame && Frame.renderer.dispose();
+		clear3d(Frame);
 	});
 
 
@@ -58,7 +56,7 @@
 		adjustOrthoCamera(Frame.camera as THREE.OrthographicCamera);
 
 		Frame.camera.updateProjectionMatrix();
-		Frame.renderer.render(Frame.scene, Frame.camera);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
 	}
 
 	function initScene() {

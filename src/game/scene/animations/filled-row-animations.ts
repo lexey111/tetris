@@ -16,6 +16,9 @@ export class FilledRowAnimations implements TAnimations {
 	public setDuration = (duration) => {
 		this.duration = duration;
 	}
+	public setField = (field) => {
+		this.field = field;
+	}
 
 	private linesAnimation = (percentage) => {
 		const scale = (100 - percentage) / 100; // down to 0

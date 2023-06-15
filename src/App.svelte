@@ -10,6 +10,10 @@
 	function showGame() {
 		intro = false;
 	}
+
+	function showIntro() {
+		intro = true;
+    }
 </script>
 
 <main>
@@ -17,7 +21,7 @@
         {#if intro}
             <Intro onStart={showGame}/>
         {:else}
-            <Game/>
+            <Game onStop={showIntro}/>
         {/if}
     {:else }
         <h1>No WebGL available</h1>
