@@ -22,3 +22,5 @@ export function clear3d(Frame: TThreeFrame) {
 	Frame.renderer.domElement = null;
 	Frame.renderer = null;
 }
+
+export const durations = [400, 300, 200, 150, 100, 80, 60];

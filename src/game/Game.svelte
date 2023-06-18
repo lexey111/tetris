@@ -1,6 +1,7 @@
 <script lang="ts">
-	import {addFigureToField, cleanField, fallDown, getRandomFigure, removeFilledLines} from "./game-utils.ts";
+	import {addFigureToField, cleanupGameField, fallDown, getRandomFigure, removeFilledLines} from "./game-utils.ts";
 	import type {TCell} from "./game-globals.ts";
+	import {durations} from "./game-globals.ts";
 	import {TickManager} from "./tick-manager";
 	import {onDestroy, onMount} from "svelte";
 	import Keys from "../keys/Keys.svelte";
@@ -21,13 +22,15 @@
 	let nextFigure = '';
 	let v = 0;
 
-	let tickDuration = 400;
+	let tickDuration = getTickDuration(level);
+	let isDropDown = false
 
 	let started = false;
 	let paused = false;
 	let gameIsOver = false;
 
-	let bannerText = '';
+	let bannerText = 'TETRIS';
+	let bannerText2 = '';
 
 	const GameField = new Array<Array<TCell>>(25);
 	for (let i = 0; i < GameField.length; i++) {
@@ -41,7 +44,7 @@
 	let showScene = false;
 
 	function initGame() {
-		cleanField(GameField);
+		cleanupGameField(GameField);
 
 		tick = 0;
 
@@ -53,25 +56,27 @@
 		nextFigure = '';
 		v = 0;
 
-		tickDuration = 400;
-
 		started = false;
 		paused = false;
 		gameIsOver = false;
 
 		bannerText = '';
+		bannerText2 = '';
 		countDown = 3;
 		showScene = false;
 	}
 
 	onMount(() => {
-		document.addEventListener("keydown", processKeys);
+		document.addEventListener("keydown", processKeysDown);
+		document.addEventListener("keyup", processKeysUp);
+
 		startSession();
 	});
 
 	onDestroy(() => {
 		tickManager.dispose();
-		document.removeEventListener("keydown", processKeys);
+		document.removeEventListener("keydown", processKeysDown);
+		document.removeEventListener("keyup", processKeysUp);
 	});
 
 	function startSession() {
@@ -98,6 +103,12 @@
 		addFigureToField(GameField, nextFigure);
 		nextFigure = getRandomFigure(level > 6);
 		v++;
+
+		if (isDropDown) {
+			// end drop down
+			isDropDown = false;
+			setTickDuration();
+		}
 	}
 
 	function runGame() {
@@ -106,8 +117,9 @@
 
 		startTurn();
 
-		tickManager.addTask(processTick, 1); // first - process + redraw
+		setTickDuration();
 
+		tickManager.addTask(processTick, 1); // first - process + redraw
 		tickManager.addTask(() => {
 				const removed = removeFilledLines(GameField);
 
@@ -130,17 +142,12 @@
 	function levelUp() {
 		level++;
 		linesRemovedOnLevel = 0;
-		tickDuration -= level < 3
-			? 100
-			: level < 7
-				? 50
-				: 20;
+		setTickDuration();
+	}
 
-		if (tickDuration < 50) {
-			tickDuration = 50;
-		}
 
-		tickManager.updateTickDuration(tickDuration);
+	function getTickDuration(gameLevel) {
+		return durations[gameLevel - 1] || 50;
 	}
 
 	function processTick() {
@@ -157,19 +164,23 @@
 
 	function gameOver() {
 		bannerText = 'GAME OVER';
+		bannerText2 = '-' + score.toString() + '-';
 		gameIsOver = true;
 		tickManager.dispose();
 	}
 
-	function processKeys(ev) {
+	function processKeysDown(ev) {
 		let e = ev.key;
 		if (e === ' ') {
 			e = 'Space';
 		}
+		// layout translation
+		// console.log('code', ev.keyCode, e)
 		if (ev.keyCode === 80) {
 			e = 'Pause'; // P
 		}
 
+		// processing
 		if (e === 'Escape') {
 			onStop && onStop();
 			return;
@@ -179,11 +190,37 @@
 			startSession();
 		}
 
+		if (e === 'Space') {
+			if (!started || paused) {
+				return;
+			}
+			isDropDown = true;
+			setTickDuration(5);
+			return;
+		}
+
+		if (e === 'ArrowDown') {
+			setTickDuration(20);
+			processTick();
+		}
+
 		if (e === 'Pause') {
 			if (!started) {
 				return;
 			}
 			togglePause();
+		}
+	}
+
+	function setTickDuration(duration?) {
+		tickDuration = duration && duration > 0 ? duration : getTickDuration(level);
+		tickManager.updateTickDuration(tickDuration);
+	}
+
+	function processKeysUp(ev) {
+		if (ev.key === 'ArrowDown') {
+			setTickDuration();
+			processTick();
 		}
 	}
 
@@ -249,6 +286,10 @@
 
 	#banner-container.paused {
 		background: rgba(3, 24, 30, 0.9);
+	}
+
+	#banner-container.over {
+		background: rgba(30, 18, 3, 0.9);
 	}
 
 	#scene-container {
@@ -340,7 +381,7 @@
                     <Next type={nextFigure} rnd={v} hideLines={true}/>
                     <Text text="SPEED [{level}]" scale={6} colors={[0xFAA600,0x855d22]}/>
                     <div class="stub"></div>
-                    <Text text={scoreText} scale={12}/>
+                    <Text text={scoreText} scale={12} colors={[0x00a6FF, 0xFFa600]}/>
                 </div>
                 <Scene onEvent={handleSceneEvents}
                        field={GameField}
@@ -357,6 +398,6 @@
     </div>
 </div>
 
-<div id="banner-container" class="{bannerText? '': 'inactive'}{paused ? ' paused' : ''}">
-    <Banner text={bannerText}/>
+<div id="banner-container" class="{bannerText? '': 'inactive'}{paused ? ' paused' : ''}{gameIsOver ? ' over' : ''}">
+    <Banner text={bannerText} text2={bannerText2}/>
 </div>

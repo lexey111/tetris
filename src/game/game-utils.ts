@@ -172,7 +172,7 @@ export function addFigureToField(GameField: Array<TCell[]>, type: string) {
 	}
 }
 
-export function cleanField(GameField) {
+export function cleanupGameField(GameField) {
 	traverseBottomTop(GameField, (row, col) => {
 		GameField[row][col] = undefined;
 	});

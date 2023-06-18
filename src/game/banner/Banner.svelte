@@ -14,6 +14,9 @@
 	export let text = '';
 	export let colors = [0x00a6FF, 0xFFa600];
 
+	export let text2 = '';
+	export let colors2 = [0xFFFFa6, 0xa6FF00];
+
 	let Frame: TThreeFrame;
 	let canvas;
 	let animationReq;
@@ -139,15 +142,16 @@
 			return;
 		}
 		clearText();
+
 		if (!banner) {
 			banner = new Group();
 		}
+
 		if (!text) {
 			return;
 		}
 
-		const xOffset = text.length * SymbolWidth / 2;
-
+		let xOffset = text.length * SymbolWidth / 2;
 
 		text.split('').forEach((sym, idx) => {
 			const symbol = renderLetter(sym, colors);
@@ -158,6 +162,22 @@
 				banner.add(symbol);
 			}
 		});
+
+		if (text2) {
+			xOffset = text2.length * SymbolWidth / 2;
+
+			text2.split('').forEach((sym, idx) => {
+				const symbol = renderLetter(sym, colors2);
+				if (symbol) {
+					symbol.position.x = idx * SymbolWidth - xOffset;
+					symbol.position.y = (-SymbolHeight / 2) - SymbolHeight * 1.4;
+
+					banner.add(symbol);
+				}
+			});
+        }
+
+
 		banner.scale.set(.25, .25, .15);
 		Frame.scene.add(banner);
 	}

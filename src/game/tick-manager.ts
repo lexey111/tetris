@@ -10,6 +10,7 @@ export class TickManager {
 
 	public updateTickDuration = (newDuration) => {
 		this.tickDuration = newDuration;
+
 		this.stop();
 		this.run();
 	}
@@ -61,6 +62,7 @@ export class TickManager {
 				task.task();
 			}
 		});
+
 		if (this.phase === 1) {
 			this.phase = 2;
 		} else {
