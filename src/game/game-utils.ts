@@ -10,41 +10,41 @@ export function getRandomFigure(complex = false) {
 		: standardFigs[Math.floor(Math.random() * standardFigs.length)];
 }
 
-function traverseBottomTop(GameField, callback: (row, col) => void) {
-	for (let i = 0; i < GameField.length; i++) {
-		for (let j = 0; j < GameField[i].length; j++) {
-			callback(i, j);
+function traverseBottomTop(field, callback: (row, col) => void) {
+	for (let row = 0; row < field.length; row++) {
+		for (let col = 0; col < field[row].length; col++) {
+			callback(row, col);
 		}
 	}
 }
 
-function traverseBottomTopRight(GameField, callback: (row, col) => void) {
-	for (let i = 0; i < GameField.length; i++) {
-		for (let j = GameField[i].length - 1; j >= 0; j--) {
-			callback(i, j);
+function traverseBottomTopRight(field, callback: (row, col) => void) {
+	for (let row = 0; row < field.length; row++) {
+		for (let col = field[row].length - 1; col >= 0; col--) {
+			callback(row, col);
 		}
 	}
 }
 
-function makeAllSolids(GameField) {
-	traverseBottomTop(GameField, (row, col) => {
-		const block = GameField[row][col];
+function makeAllSolids(field) {
+	traverseBottomTop(field, (row, col) => {
+		const block = field[row][col];
 
 		if (!block || !block.falling) {
 			// empty cell or solid block
 			return;
 		}
-		GameField[row][col].solid = true;
-		GameField[row][col].falling = false;
+		field[row][col].solid = true;
+		field[row][col].falling = false;
 	});
 }
 
-export function fallDown(GameField) {
+export function fallDown(field) {
 	let finished = false;
 	let stopRow = -1;
 
-	traverseBottomTop(GameField, (row, col) => {
-		const block = GameField[row][col];
+	traverseBottomTop(field, (row, col) => {
+		const block = field[row][col];
 
 		if (!block || !block.falling || block.solid) {
 			// empty cell or solid block
@@ -54,42 +54,42 @@ export function fallDown(GameField) {
 		if (row === 0 && block.falling) {
 			finished = true;
 			stopRow = row;
-			makeAllSolids(GameField);
+			makeAllSolids(field);
 			return;
 		}
 
-		const blockBelow = row > 0 ? GameField[row - 1][col] : undefined;
+		const blockBelow = row > 0 ? field[row - 1][col] : undefined;
 		if (block.falling && (blockBelow && !blockBelow.falling)) {
 			finished = true;
 			stopRow = row;
-			makeAllSolids(GameField);
+			makeAllSolids(field);
 		}
 	});
 
 	if (!finished) {
-		traverseBottomTop(GameField, (row, col) => {
-			const block = GameField[row][col];
+		traverseBottomTop(field, (row, col) => {
+			const block = field[row][col];
 
 			if (!block || !block.falling || block.solid) {
 				// empty cell or solid block
 				return;
 			}
 			// move it down!
-			GameField[row - 1][col] = {...block};
-			GameField[row][col] = undefined;
+			field[row - 1][col] = {...block};
+			field[row][col] = undefined;
 		});
 	}
 
 	for (let rowIdx = 0; rowIdx < 20; rowIdx++) {
-		const line = GameField[rowIdx];
+		const line = field[rowIdx];
 		const filled = line.filter(cell => cell?.solid).length === line.length;
 
 		if (filled) {
 			line.forEach(cell => cell.markToRemove = true);
 			for (let y = rowIdx; y < 20; y++) {
-				for (let x = 0; x < GameField[y].length; x++) {
-					if (GameField[y][x]?.solid) {
-						GameField[y][x].fallAsRemove = true;
+				for (let x = 0; x < field[y].length; x++) {
+					if (field[y][x]?.solid) {
+						field[y][x].fallAsRemove = true;
 					}
 				}
 			}
@@ -101,22 +101,22 @@ export function fallDown(GameField) {
 	};
 }
 
-export function removeFilledLines(GameField) {
+export function removeFilledLines(field) {
 	let count = 0;
 	for (let rowIdx = 0; rowIdx < 20; rowIdx++) {
-		const line = GameField[rowIdx];
+		const line = field[rowIdx];
 		const filled = line.filter(cell => cell?.solid).length === line.length;
 
 		if (filled) {
-			GameField[rowIdx] = new Array(line.length).fill(undefined);
+			field[rowIdx] = new Array(line.length).fill(undefined);
 			count++;
 
 			// move all the rows above down 1 cell
 			for (let i = rowIdx + 1; i < 20; i++) {
 				for (let j = 0; j < line.length; j++) {
-					if (GameField[i][j]?.solid) {
-						GameField[i - 1][j] = {...GameField[i][j]};
-						GameField[i][j] = undefined;
+					if (field[i][j]?.solid) {
+						field[i - 1][j] = {...field[i][j]};
+						field[i][j] = undefined;
 					}
 				}
 			}
@@ -124,9 +124,9 @@ export function removeFilledLines(GameField) {
 		}
 	}
 
-	traverseBottomTop(GameField, (y, x) => {
-		if (GameField[y][x]) {
-			GameField[y][x].fallAsRemove = undefined;
+	traverseBottomTop(field, (y, x) => {
+		if (field[y][x]) {
+			field[y][x].fallAsRemove = undefined;
 		}
 	});
 
@@ -253,4 +253,126 @@ export function moveFigureRight(GameField) {
 			GameField[row][col] = undefined;
 		}
 	});
+}
+
+export function rotateFigure(field) {
+	// 1. scan for figure
+	let figure = [];
+	let minIdx = field[0].length;
+	let maxIdx = 0;
+	let firstRow = -1;
+
+	for (let row = field.length - 1; row >= 0; row--) {
+		let line = '';
+		for (let col = 0; col < field[row].length; col++) {
+			if (field[row][col]?.falling) {
+				line += '#';
+				if (col < minIdx) {
+					minIdx = col;
+				}
+				if (col > maxIdx) {
+					maxIdx = col;
+				}
+				if (firstRow < row) {
+					firstRow = row;
+				}
+			} else {
+				line += ' ';
+			}
+		}
+		if (line.trim()) {
+			figure.push(line);
+		}
+	}
+	const rawWidth = maxIdx - minIdx + 1;
+	const rawHeight = figure.length;
+	if (rawWidth === rawHeight) {
+		// square, nothing to do
+		return false;
+	}
+
+	// 2. Transpond figure
+	figure = figure.map(line => line.substring(minIdx, minIdx + rawWidth));
+	if (firstRow > 22) {
+		return false;
+	}
+
+	const newFigure = [];
+	for (let i = 0; i < rawWidth; i++) {
+		newFigure[i] = new Array(rawHeight);
+	}
+
+	for (let row = 0; row < newFigure.length; row++) {
+		for (let col = 0; col < newFigure[row].length; col++) {
+			if (figure[col][row] !== ' ') {
+				newFigure[newFigure.length - row - 1][col] = '#';
+			}
+		}
+	}
+
+	// 3. Cleanup copy of field...
+	const tempField = copyField(field);
+
+	traverseBottomTop(tempField, (row, col) => {
+		if (tempField[row][col]?.falling) {
+			tempField[row][col] = undefined;
+		}
+	});
+
+	// 4. ...and put new figure there, if possible
+	let allow = true;
+	let nRow = 0;
+
+	for (let row = firstRow; row > firstRow - newFigure.length; row--) {
+		for (let col = minIdx; col < minIdx + rawHeight; col++) {
+			const nCol = col - minIdx;
+
+			if (nRow >= 0 && nRow < newFigure.length && nCol >= 0 && nCol < rawHeight) {
+				if (row < 0 || col < 0 || col >= tempField[0].length) {
+					allow = false;
+				}
+				if (newFigure[nRow][nCol]) {
+					if (tempField[row][col]?.solid) {
+						allow = false;
+					}
+					if (allow) {
+						tempField[row][col] = {falling: true};
+					}
+				}
+			}
+		}
+		nRow++;
+	}
+
+	// 5. If allowed, copy transponded figure to the real field
+	if (!allow) {
+		return false;
+	}
+	traverseBottomTop(field, (row, col) => {
+		if (tempField[row][col]) {
+			field[row][col] = {...tempField[row][col]};
+		} else {
+			field[row][col] = undefined;
+		}
+	});
+	return true;
+}
+
+export function createGameField() {
+	const field = new Array<Array<TCell>>(25);
+	for (let i = 0; i < field.length; i++) {
+		field[i] = new Array(10).fill(undefined);
+	}
+	return field;
+}
+
+function copyField(GameField) {
+	const tempField = createGameField()
+
+	traverseBottomTop(GameField, (row, col) => {
+		if (GameField[row][col]) {
+			tempField[row][col] = {...GameField[row][col]};
+		}
+	});
+	return tempField;
 }

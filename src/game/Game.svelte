@@ -2,13 +2,14 @@
 	import {
 		addFigureToField,
 		cleanupGameField,
+		createGameField,
 		fallDown,
 		getRandomFigure,
 		moveFigureLeft,
 		moveFigureRight,
-		removeFilledLines
+		removeFilledLines,
+		rotateFigure
 	} from "./game-utils.ts";
-	import type {TCell} from "./game-globals.ts";
 	import {durations} from "./game-globals.ts";
 	import {TickManager} from "./tick-manager";
 	import {onDestroy, onMount} from "svelte";
@@ -23,7 +24,6 @@
 	let tick = 0;
 
 	let score = 0;
-	let scoreText = '0';
 	let level = 1;
 	let linesRemovedOnLevel = 0;
 
@@ -39,10 +39,7 @@
 
 	let bannerText = ['TETRIS'];
 
-	const GameField = new Array<Array<TCell>>(25);
-	for (let i = 0; i < GameField.length; i++) {
-		GameField[i] = new Array(10).fill(undefined);
-	}
+	const GameField = createGameField();
 
 	const tickManager = new TickManager(tickDuration);
 
@@ -56,7 +53,6 @@
 		tick = 0;
 
 		score = 0;
-		scoreText = '0';
 		level = 1;
 		linesRemovedOnLevel = 0;
 
@@ -132,8 +128,6 @@
 				if (removed > 0) {
 					score += removed * level;
 					linesRemovedOnLevel += removed;
-
-					scoreText = score.toString();
 				}
 
 				if (linesRemovedOnLevel >= 10) {
@@ -170,9 +164,10 @@
 
 	function gameOver() {
 		bannerText = [
-			'GAME OVER',
-			'-' + score.toString() + '-',
-			'PRESS SPACE'
+			'-GAME OVER-',
+			score.toString(),
+			'SPD ' + level.toString(),
+			'-PRESS SPACE-'
 		];
 		gameIsOver = true;
 		started = false;
@@ -207,6 +202,7 @@
 			}
 			isDropDown = true;
 			setTickDuration(5);
+			score += 1;
 			return;
 		}
 
@@ -222,6 +218,10 @@
 
 		if (e === 'ArrowRight') {
 			moveRight();
+		}
+
+		if (e === 'ArrowUp') {
+			rotate();
 		}
 
 		if (e === 'Pause') {
@@ -248,6 +248,16 @@
 		tickManager.immediateRestart();
 	}
 
+	function rotate() {
+		if (paused || !started || gameIsOver) {
+			return;
+		}
+
+		if (rotateFigure(GameField)) {
+			tickManager.immediateRestart()
+		}
+	}
+
 	function setTickDuration(duration?) {
 		tickDuration = duration && duration > 0 ? duration : getTickDuration(level);
 		tickManager.updateTickDuration(tickDuration);
@@ -264,15 +274,13 @@
 		if (tickManager.isPause()) {
 			bannerText = [];
 			tickManager.setPause(false);
-
 			paused = false;
+			tickManager.immediateRestart();
 		} else {
 			bannerText = ['PAUSE'];
 			tickManager.setPause(true);
-
-			paused = true;
-			fallDown(GameField);
 			tick++;
+			paused = true;
 		}
 	}
 
@@ -415,9 +423,9 @@
             <div id="scene-container">
                 <div id="side-container">
                     <Next type={nextFigure} rnd={v} hideLines={true}/>
-                    <Text text="SPEED [{level}]" scale={6} colors={[0xFAA600,0x855d22]}/>
+                    <Text text="SPEED [{level}]" scale={6} colors={[0x158AD0, 0x057AC0]}/>
                     <div class="stub"></div>
-                    <Text text={scoreText} scale={12} colors={[0x00a6FF, 0xFFa600]}/>
+                    <Text text={score.toString()} scale={12} colors={[0x00a6FF, 0xFFa600]}/>
                 </div>
                 <Scene onEvent={handleSceneEvents}
                        {GameField}
@@ -434,6 +442,7 @@
     </div>
 </div>
 
-<div id="banner-container" class="{bannerText.length > 0? '': 'inactive'}{paused ? ' paused' : ''}{gameIsOver ? ' over' : ''}">
-    <Banner text={bannerText} />
+<div id="banner-container"
+     class="{bannerText.length > 0? '': 'inactive'}{paused ? ' paused' : ''}{gameIsOver ? ' over' : ''}">
+    <Banner text={bannerText}/>
 </div>

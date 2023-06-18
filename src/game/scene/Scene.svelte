@@ -42,7 +42,6 @@
 
 	$: if (tick) {
 		if (GameField && GameField.length > 0 && tick > 0 && !paused) {
-			console.log('Full tick')
 			animationManager.dispose();
 			drawField();
 			runFieldAnimations();

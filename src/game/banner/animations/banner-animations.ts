@@ -7,7 +7,7 @@ export class BannerAnimations implements TAnimations {
 
 	public getAnimation = () => {
 		return {
-			duration: 10000, repeatCount: 3000,
+			duration: 20000, repeatCount: 3000,
 			animationFn: this.dribblePauseBanner,
 		};
 	}
