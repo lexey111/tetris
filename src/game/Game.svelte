@@ -166,7 +166,7 @@
 		bannerText = [
 			'-GAME OVER-',
 			score.toString(),
-			'SPD ' + level.toString(),
+			'SPD.' + level.toString(),
 			'-PRESS SPACE-'
 		];
 		gameIsOver = true;
@@ -396,9 +396,19 @@
 		height: 100%;
 	}
 
+	@media screen and (max-width: 980px) {
+		#scene-container {
+            margin-left: -200px;
+		}
+	}
+
 	@media screen and (max-width: 768px) {
 		#screen-content {
-			padding-bottom: 200px;
+			padding-bottom: 300px;
+		}
+
+		#scene-container {
+			margin-left: 0;
 		}
 
 		#side-container {

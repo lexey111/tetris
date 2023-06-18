@@ -151,7 +151,7 @@
 				}
 				let xOffset = line.length * SymbolWidth / 2;
 				symbol.position.x = idx * SymbolWidth - xOffset;
-				symbol.position.y = yOffset - (rowIdx + 1) * (SymbolHeight * 1.6) + SymbolHeight / 2;
+				symbol.position.y = yOffset - (rowIdx + .2) * (SymbolHeight * 1.6) + SymbolHeight / 2;
 
 				banner.add(symbol);
 			});

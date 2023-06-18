@@ -170,7 +170,7 @@
             <div id="keyset">
                 <Key size={80} keyColor={0xeeeeee} textColor={0x888888} rotate={true} delay={500}/>
             </div>
-            <p class="aftertext">or click anywhere to return</p>
+            <p class="aftertext">or click anywhere to continue</p>
         </div>
     </div>
 </div>

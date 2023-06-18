@@ -469,13 +469,13 @@
             </p>
             <p>
                 This page was created just for fun and relaxation from enterprise software development,
-                kind of refresher, but you can consider this as one of my CV.
+                kind of refresher... and you can consider this as one of my CV.
             </p>
             <p class="go-link">
                 <a href="https://en.wikipedia.org/wiki/Tetris" target="_blank">Read details &rarr;</a>
             </p>
             <p>
-                &copy; {year}, Oleksii Koshkin
+                &copy; {year}, <a href="https://www.linkedin.com/in/oleksii-koshkin-2a293339/" target="_blank">Oleksii Koshkin</a>
             </p>
         </div>
         <div class="text-3d" style:transform="skew(0, {angle}deg)">&nbsp;ris</div>
