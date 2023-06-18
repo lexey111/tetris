@@ -18,6 +18,14 @@ function traverseBottomTop(GameField, callback: (row, col) => void) {
 	}
 }
 
+function traverseBottomTopRight(GameField, callback: (row, col) => void) {
+	for (let i = 0; i < GameField.length; i++) {
+		for (let j = GameField[i].length - 1; j >= 0; j--) {
+			callback(i, j);
+		}
+	}
+}
+
 function makeAllSolids(GameField) {
 	traverseBottomTop(GameField, (row, col) => {
 		const block = GameField[row][col];
@@ -175,5 +183,75 @@ export function addFigureToField(GameField: Array<TCell[]>, type: string) {
 export function cleanupGameField(GameField) {
 	traverseBottomTop(GameField, (row, col) => {
 		GameField[row][col] = undefined;
+	});
+}
+
+
+export function moveFigureLeft(GameField) {
+	let canMove = true;
+
+	traverseBottomTop(GameField, (row, col) => {
+		const block = GameField[row][col];
+
+		if (!block || !block.falling) {
+			return;
+		}
+
+		if (col === 0 || GameField[row][col - 1]?.solid) {
+			canMove = false;
+		}
+	});
+
+	if (!canMove) {
+		return;
+	}
+
+	traverseBottomTop(GameField, (row, col) => {
+		const block = GameField[row][col];
+
+		if (!block || !block.falling) {
+			return;
+		}
+
+		if (block.falling) {
+			GameField[row][col - 1] = {...GameField[row][col]};
+			GameField[row][col] = undefined;
+		}
+	});
+}
+
+export function moveFigureRight(GameField) {
+	let canMove = true;
+
+	const width = GameField[0].length;
+	console.log('width', width);
+
+	traverseBottomTop(GameField, (row, col) => {
+		const block = GameField[row][col];
+
+		if (!block || !block.falling) {
+			return;
+		}
+
+		if (col === width - 1 || GameField[row][col + 1]?.solid) {
+			canMove = false;
+		}
+	});
+
+	if (!canMove) {
+		return;
+	}
+
+	traverseBottomTopRight(GameField, (row, col) => {
+		const block = GameField[row][col];
+
+		if (!block || !block.falling) {
+			return;
+		}
+
+		if (block.falling) {
+			GameField[row][col + 1] = {...GameField[row][col]};
+			GameField[row][col] = undefined;
+		}
 	});
 }

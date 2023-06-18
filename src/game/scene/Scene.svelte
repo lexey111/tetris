@@ -15,7 +15,7 @@
 
 	export let onEvent: (event: string) => void;
 	export let tickDuration;
-	export let field = [];
+	export let GameField = [];
 	export let tick = 0; // new turn
 	export let paused = false;
 
@@ -27,14 +27,13 @@
 
 	let space;
 	let walls;
-	let gameField = new THREE.Group();
+	let renderField = new THREE.Group();
 
 	const animationManager = new AnimationManager();
 	let spaceAnimations;
-	let openFieldAnimations;
 
-	let filledAnimations = new FilledRowAnimations(gameField, 500);
-	let fallingAnimations = new FallingAnimations(gameField, 250);
+	let filledAnimations = new FilledRowAnimations(renderField, 500);
+	let fallingAnimations = new FallingAnimations(renderField, 250);
 
 	$: if (tickDuration) {
 		filledAnimations.setDuration(tickDuration);
@@ -42,7 +41,7 @@
 	}
 
 	$: {
-		if (field && field.length > 0 && tick > 0 && !paused) {
+		if (GameField && GameField.length > 0 && tick > 0 && !paused) {
 			animationManager.dispose();
 			drawField();
 			runFieldAnimations();
@@ -151,10 +150,10 @@
 
 		addLights(Frame.scene);
 
-		gameField.position.x = -5 + .5;
-		gameField.position.y = -10 + .5;
-		gameField.position.z = 0;
-		Frame.scene.add(gameField);
+		renderField.position.x = -5 + .5;
+		renderField.position.y = -10 + .5;
+		renderField.position.z = 0;
+		Frame.scene.add(renderField);
 
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -182,10 +181,10 @@
 			return;
 		}
 
-		if (gameField) {
+		if (renderField) {
 			const objectsToRemove = [];
 
-			gameField.traverse(node => {
+			renderField.traverse(node => {
 				if (node instanceof THREE.Mesh) {
 					objectsToRemove.push(node);
 				}
@@ -194,26 +193,23 @@
 			objectsToRemove.forEach(node => {
 				node.parent.remove(node);
 			});
-			Frame.scene.remove(gameField);
-			gameField = null;
+			Frame.scene.remove(renderField);
+			renderField = null;
 		}
-		gameField = new THREE.Group();
-		gameField.position.x = -5 + .5;
-		gameField.position.y = -10 + .5;
-		gameField.position.z = 0;
 
+		renderField = new THREE.Group();
 
-		for (let i = 0; i < 24; i++) { // vertical
-			for (let j = 0; j < field[i].length; j++) { // horizontal
-				if (field[i][j]) {
+		for (let row = 0; row < 24; row++) { // vertical
+			for (let col = 0; col < GameField[row].length; col++) { // horizontal
+				if (GameField[row][col]) {
 					let cube;
 
-					if (field[i][j].markToRemove) {
+					if (GameField[row][col].markToRemove) {
 						cube = createCube(deletingMaterial);
 						cube['deleting'] = true;
 					}
 
-					if (field[i][j].falling) {
+					if (GameField[row][col].falling) {
 						if (!cube) {
 							cube = createCube(fallingMaterial);
 						}
@@ -224,25 +220,30 @@
 						cube = createCube();
 					}
 
-					if (field[i][j].fallAsRemove) {
+					if (GameField[row][col].fallAsRemove) {
 						cube['falling-remove'] = true;
 					}
 
-					cube.position.x = j;
-					cube.position.y = i;
+					cube.position.x = col;
+					cube.position.y = row;
 
-					gameField.add(cube);
+					renderField.add(cube);
 				}
 			}
 		}
-		fallingAnimations.setField(gameField);
-		filledAnimations.setField(gameField);
-		Frame.scene.add(gameField);
+
+		fallingAnimations.setField(renderField);
+		filledAnimations.setField(renderField);
+
+		renderField.position.x = -5 + .5;
+		renderField.position.y = -10 + .5;
+		renderField.position.z = 0;
+		Frame.scene.add(renderField);
 	}
 
 	function runFieldAnimations() {
-		animationManager.add(filledAnimations.getAnimation());
-		animationManager.add(fallingAnimations.getAnimation());
+		// animationManager.add(filledAnimations.getAnimation());
+		// animationManager.add(fallingAnimations.getAnimation());
 	}
 </script>
 

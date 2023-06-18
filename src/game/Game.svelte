@@ -1,5 +1,13 @@
 <script lang="ts">
-	import {addFigureToField, cleanupGameField, fallDown, getRandomFigure, removeFilledLines} from "./game-utils.ts";
+	import {
+		addFigureToField,
+		cleanupGameField,
+		fallDown,
+		getRandomFigure,
+		moveFigureLeft,
+		moveFigureRight,
+		removeFilledLines
+	} from "./game-utils.ts";
 	import type {TCell} from "./game-globals.ts";
 	import {durations} from "./game-globals.ts";
 	import {TickManager} from "./tick-manager";
@@ -29,8 +37,7 @@
 	let paused = false;
 	let gameIsOver = false;
 
-	let bannerText = 'TETRIS';
-	let bannerText2 = '';
+	let bannerText = ['TETRIS'];
 
 	const GameField = new Array<Array<TCell>>(25);
 	for (let i = 0; i < GameField.length; i++) {
@@ -60,8 +67,7 @@
 		paused = false;
 		gameIsOver = false;
 
-		bannerText = '';
-		bannerText2 = '';
+		bannerText = ['TETRIS'];
 		countDown = 3;
 		showScene = false;
 	}
@@ -83,12 +89,12 @@
 		initGame();
 
 		countdownHandler = setInterval(() => {
-			bannerText = '..[' + countDown + ']..';
+			bannerText = ['..[' + countDown + ']..'];
 			countDown--;
 
 			if (countDown < 0) {
 				clearInterval(countdownHandler);
-				bannerText = '';
+				bannerText = [];
 				showScene = true;
 			}
 		}, 1000);
@@ -163,9 +169,13 @@
 	}
 
 	function gameOver() {
-		bannerText = 'GAME OVER';
-		bannerText2 = '-' + score.toString() + '-';
+		bannerText = [
+			'GAME OVER',
+			'-' + score.toString() + '-',
+			'PRESS SPACE'
+		];
 		gameIsOver = true;
+		started = false;
 		tickManager.dispose();
 	}
 
@@ -173,11 +183,6 @@
 		let e = ev.key;
 		if (e === ' ') {
 			e = 'Space';
-		}
-		// layout translation
-		// console.log('code', ev.keyCode, e)
-		if (ev.keyCode === 80) {
-			e = 'Pause'; // P
 		}
 
 		// processing
@@ -187,7 +192,13 @@
 		}
 
 		if (gameIsOver) {
-			startSession();
+			if (e === 'Space') {
+				startSession();
+			}
+		}
+
+		if (ev.keyCode === 80) {
+			e = 'Pause'; // P
 		}
 
 		if (e === 'Space') {
@@ -204,12 +215,36 @@
 			processTick();
 		}
 
+		if (e === 'ArrowLeft') {
+			moveLeft();
+		}
+
+		if (e === 'ArrowRight') {
+			moveRight();
+		}
+
 		if (e === 'Pause') {
 			if (!started) {
 				return;
 			}
 			togglePause();
 		}
+	}
+
+	function moveLeft() {
+		if (paused || !started || gameIsOver) {
+			return;
+		}
+		moveFigureLeft(GameField);
+		tick++;
+	}
+
+	function moveRight() {
+		if (paused || !started || gameIsOver) {
+			return;
+		}
+		moveFigureRight(GameField);
+		tick++;
 	}
 
 	function setTickDuration(duration?) {
@@ -226,12 +261,12 @@
 
 	function togglePause() {
 		if (tickManager.isPause()) {
-			bannerText = '';
+			bannerText = [];
 			tickManager.setPause(false);
 
 			paused = false;
 		} else {
-			bannerText = 'PAUSE';
+			bannerText = ['PAUSE'];
 			tickManager.setPause(true);
 
 			paused = true;
@@ -384,7 +419,7 @@
                     <Text text={scoreText} scale={12} colors={[0x00a6FF, 0xFFa600]}/>
                 </div>
                 <Scene onEvent={handleSceneEvents}
-                       field={GameField}
+                       {GameField}
                        {tick}
                        {tickDuration}
                        {paused}/>
@@ -398,6 +433,6 @@
     </div>
 </div>
 
-<div id="banner-container" class="{bannerText? '': 'inactive'}{paused ? ' paused' : ''}{gameIsOver ? ' over' : ''}">
-    <Banner text={bannerText} text2={bannerText2}/>
+<div id="banner-container" class="{bannerText.length > 0? '': 'inactive'}{paused ? ' paused' : ''}{gameIsOver ? ' over' : ''}">
+    <Banner text={bannerText} />
 </div>

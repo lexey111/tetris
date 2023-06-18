@@ -18,7 +18,7 @@ export class BannerAnimations implements TAnimations {
 		const currentRotation = (distance * percentage) / 100;
 
 		this.banner.children.forEach((chld, idx) => {
-			// chld.position.z = -Math.sin(percentage + idx) * 4;
+			chld.position.z = -Math.sin(percentage + idx) * 2;
 			if (!chld.position['y-initial']) {
 				chld.position['y-initial'] = chld.position.y;
 			}

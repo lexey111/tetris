@@ -7,15 +7,12 @@
 	import {Group} from "three";
 	import {addLights} from "../scene/helpers/scene-lights";
 	import type {TThreeFrame} from "../game-globals";
+	import {clear3d} from "../game-globals";
 	import {SymbolHeight, SymbolWidth} from "../../symbols/font-globals";
 	import {renderLetter} from "../../symbols/font-utils";
-	import {clear3d} from "../game-globals";
 
-	export let text = '';
+	export let text = [];
 	export let colors = [0x00a6FF, 0xFFa600];
-
-	export let text2 = '';
-	export let colors2 = [0xFFFFa6, 0xa6FF00];
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -45,7 +42,7 @@
 			sizeTimeout = setTimeout(() => {
 				if (!Frame.renderer) {
 					return;
-                }
+				}
 				Frame.renderer?.setSize(width, height);
 				(Frame.camera as THREE.PerspectiveCamera).aspect = width / height;
 
@@ -121,13 +118,6 @@
 
 		addLights(Frame.scene);
 
-		// banner = addBanner();
-		// Frame.scene.add(banner);
-
-		// const cube = createCube()
-		// cube.scale.set(5, 5, 5);
-		// Frame.scene.add(cube);
-
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -151,32 +141,21 @@
 			return;
 		}
 
-		let xOffset = text.length * SymbolWidth / 2;
+		const yOffset = text.length * SymbolHeight / 2;
 
-		text.split('').forEach((sym, idx) => {
-			const symbol = renderLetter(sym, colors);
-			if (symbol) {
-				symbol.position.x = idx * SymbolWidth - xOffset;
-
-				symbol.position.y = -SymbolHeight / 2;
-				banner.add(symbol);
-			}
-		});
-
-		if (text2) {
-			xOffset = text2.length * SymbolWidth / 2;
-
-			text2.split('').forEach((sym, idx) => {
-				const symbol = renderLetter(sym, colors2);
-				if (symbol) {
-					symbol.position.x = idx * SymbolWidth - xOffset;
-					symbol.position.y = (-SymbolHeight / 2) - SymbolHeight * 1.4;
-
-					banner.add(symbol);
+		text.forEach((line, rowIdx) => {
+			line.split('').forEach((sym, idx) => {
+				const symbol = renderLetter(sym, colors);
+				if (!symbol) {
+					return;
 				}
-			});
-        }
+				let xOffset = line.length * SymbolWidth / 2;
+				symbol.position.x = idx * SymbolWidth - xOffset;
+				symbol.position.y = yOffset - (rowIdx + 1) * (SymbolHeight * 1.6) + SymbolHeight / 2;
 
+				banner.add(symbol);
+			});
+		});
 
 		banner.scale.set(.25, .25, .15);
 		Frame.scene.add(banner);

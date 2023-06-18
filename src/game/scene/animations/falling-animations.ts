@@ -10,7 +10,6 @@ export class FallingAnimations implements TAnimations {
 			duration: this.duration,
 			animationFn: this.cellAnimation,
 		};
-
 	}
 
 	public setDuration = (duration) => {
