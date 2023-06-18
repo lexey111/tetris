@@ -8,6 +8,16 @@ export class TickManager {
 		//
 	}
 
+	public immediateRestart() {
+		this.stop();
+		this.run();
+		this.phase = 2;
+		this.process();
+
+		this.phase = 1;
+		this.process();
+	}
+
 	public updateTickDuration = (newDuration) => {
 		this.tickDuration = newDuration;
 

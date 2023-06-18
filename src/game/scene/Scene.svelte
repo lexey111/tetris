@@ -40,8 +40,9 @@
 		fallingAnimations.setDuration(tickDuration * 2);
 	}
 
-	$: {
+	$: if (tick) {
 		if (GameField && GameField.length > 0 && tick > 0 && !paused) {
+			console.log('Full tick')
 			animationManager.dispose();
 			drawField();
 			runFieldAnimations();
@@ -238,12 +239,13 @@
 		renderField.position.x = -5 + .5;
 		renderField.position.y = -10 + .5;
 		renderField.position.z = 0;
+
 		Frame.scene.add(renderField);
 	}
 
 	function runFieldAnimations() {
-		// animationManager.add(filledAnimations.getAnimation());
-		// animationManager.add(fallingAnimations.getAnimation());
+		animationManager.add(filledAnimations.getAnimation());
+		animationManager.add(fallingAnimations.getAnimation());
 	}
 </script>
 

@@ -224,7 +224,6 @@ export function moveFigureRight(GameField) {
 	let canMove = true;
 
 	const width = GameField[0].length;
-	console.log('width', width);
 
 	traverseBottomTop(GameField, (row, col) => {
 		const block = GameField[row][col];

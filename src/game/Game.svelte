@@ -213,6 +213,7 @@
 		if (e === 'ArrowDown') {
 			setTickDuration(20);
 			processTick();
+			tickManager.immediateRestart();
 		}
 
 		if (e === 'ArrowLeft') {
@@ -236,7 +237,7 @@
 			return;
 		}
 		moveFigureLeft(GameField);
-		tick++;
+		tickManager.immediateRestart();
 	}
 
 	function moveRight() {
@@ -244,7 +245,7 @@
 			return;
 		}
 		moveFigureRight(GameField);
-		tick++;
+		tickManager.immediateRestart();
 	}
 
 	function setTickDuration(duration?) {
