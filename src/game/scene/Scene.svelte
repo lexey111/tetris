@@ -151,8 +151,6 @@
 
 		addLights(Frame.scene);
 
-		// addHelper(Frame.scene);
-
 		gameField.position.x = -5 + .5;
 		gameField.position.y = -10 + .5;
 		gameField.position.z = 0;
@@ -163,7 +161,6 @@
 
 		canvas.appendChild(Frame.renderer.domElement);
 		adjustPerspectiveCamera(Frame.camera as THREE.PerspectiveCamera, 0.8);
-		Frame.renderer?.render(Frame.scene, Frame.camera);
 	}
 
 	const fallingMaterial = new THREE.MeshStandardMaterial({

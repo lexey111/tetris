@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {fallDown, getRandomFigure, removeFilledLines} from "./game-utils.ts";
+	import {addFigureToField, cleanField, fallDown, getRandomFigure, removeFilledLines} from "./game-utils.ts";
 	import type {TCell} from "./game-globals.ts";
 	import {TickManager} from "./tick-manager";
 	import {onDestroy, onMount} from "svelte";
@@ -11,31 +11,59 @@
 
 	export let onStop;
 
-	let tick = 0; // each turn (after recalc field)
-	let tack = 0; // just force redraw
-
-	let fig = '';
-	let v = 0;
+	let tick = 0;
 
 	let score = 0;
 	let scoreText = '0';
 	let level = 1;
-	let removedOnLevel = 0;
+	let linesRemovedOnLevel = 0;
+
+	let nextFigure = '';
+	let v = 0;
 
 	let tickDuration = 400;
 
 	let started = false;
 	let paused = false;
+	let gameIsOver = false;
+
 	let bannerText = '';
 
-	// Game field has dimensions 10x(20+4)
-	// where 20 is vertical space (field) and 4 is a space for new figure
-	const GameField = new Array<Array<TCell>>(27);
+	const GameField = new Array<Array<TCell>>(25);
 	for (let i = 0; i < GameField.length; i++) {
 		GameField[i] = new Array(10).fill(undefined);
 	}
 
 	const tickManager = new TickManager(tickDuration);
+
+	let countDown = 3;
+	let countdownHandler;
+	let showScene = false;
+
+	function initGame() {
+		cleanField(GameField);
+
+		tick = 0;
+
+		score = 0;
+		scoreText = '0';
+		level = 1;
+		linesRemovedOnLevel = 0;
+
+		nextFigure = '';
+		v = 0;
+
+		tickDuration = 400;
+
+		started = false;
+		paused = false;
+		gameIsOver = false;
+
+		bannerText = '';
+		countDown = 3;
+		showScene = false;
+	}
+
 	onMount(() => {
 		document.addEventListener("keydown", processKeys);
 		startSession();
@@ -46,27 +74,37 @@
 		document.removeEventListener("keydown", processKeys);
 	});
 
-	let countDown = 3;
-	let coundownHandler;
-	let showScene = false;
-
 	function startSession() {
-		coundownHandler = setInterval(() => {
+		initGame();
+
+		countdownHandler = setInterval(() => {
 			bannerText = '..[' + countDown + ']..';
 			countDown--;
 
 			if (countDown < 0) {
-				clearInterval(coundownHandler);
+				clearInterval(countdownHandler);
 				bannerText = '';
 				showScene = true;
 			}
 		}, 1000);
 	}
 
+	function startTurn() {
+		if (!nextFigure) {
+			// generate first figure
+			nextFigure = getRandomFigure(level > 6);
+		}
+
+		addFigureToField(GameField, nextFigure);
+		nextFigure = getRandomFigure(level > 6);
+		v++;
+	}
 
 	function runGame() {
 		started = true;
 		paused = false;
+
+		startTurn();
 
 		tickManager.addTask(processTick, 1); // first - process + redraw
 
@@ -75,12 +113,12 @@
 
 				if (removed > 0) {
 					score += removed * level;
-					removedOnLevel += removed;
+					linesRemovedOnLevel += removed;
 
 					scoreText = score.toString();
 				}
 
-				if (removedOnLevel >= 10) {
+				if (linesRemovedOnLevel >= 10) {
 					levelUp();
 				}
 			}, 2
@@ -91,12 +129,12 @@
 
 	function levelUp() {
 		level++;
-		removedOnLevel = 0;
+		linesRemovedOnLevel = 0;
 		tickDuration -= level < 3
 			? 100
-            : level < 7
-                ? 50
-                : 20;
+			: level < 7
+				? 50
+				: 20;
 
 		if (tickDuration < 50) {
 			tickDuration = 50;
@@ -106,13 +144,21 @@
 	}
 
 	function processTick() {
-		fallDown(GameField);
-
-		// add random cubes
-		GameField[21][Math.floor(Math.random() * 10)] = {
-			falling: true
-		};
+		const result = fallDown(GameField);
+		if (result.finished) {
+			if (result.stopRow <= 19) {
+				startTurn();
+			} else {
+				gameOver();
+			}
+		}
 		tick++;
+	}
+
+	function gameOver() {
+		bannerText = 'GAME OVER';
+		gameIsOver = true;
+		tickManager.dispose();
 	}
 
 	function processKeys(ev) {
@@ -126,6 +172,11 @@
 
 		if (e === 'Escape') {
 			onStop && onStop();
+			return;
+		}
+
+		if (gameIsOver) {
+			startSession();
 		}
 
 		if (e === 'Pause') {
@@ -153,17 +204,10 @@
 	}
 
 	function handleSceneEvents(event) {
-		console.log('event', event);
 		if (event === 'STARTED') {
 			runGame();
 		}
-		// tick += 1;
 	}
-
-	setInterval(() => {
-		fig = getRandomFigure(true);
-		v++; // for the same figures
-	}, 2000);
 </script>
 
 <style>
@@ -293,7 +337,7 @@
         {#if showScene}
             <div id="scene-container">
                 <div id="side-container">
-                    <Next type={fig} rnd={v} hideLines={true}/>
+                    <Next type={nextFigure} rnd={v} hideLines={true}/>
                     <Text text="SPEED [{level}]" scale={6} colors={[0xFAA600,0x855d22]}/>
                     <div class="stub"></div>
                     <Text text={scoreText} scale={12}/>
@@ -301,9 +345,7 @@
                 <Scene onEvent={handleSceneEvents}
                        field={GameField}
                        {tick}
-                       {tack}
                        {tickDuration}
-                       {started}
                        {paused}/>
             </div>
         {/if}

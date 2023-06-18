@@ -1,3 +1,6 @@
+import type {TCell} from "./game-globals";
+import {Figures} from "../figures/figures";
+
 const standardFigs = 'SZILTOJ'.split('').filter(s => s !== ' ');
 const complexFigs = 'SSS ZZZ II LLL TTT OO JJJ'.split('').filter(s => s !== ' ');
 
@@ -15,7 +18,23 @@ function traverseBottomTop(GameField, callback: (row, col) => void) {
 	}
 }
 
+function makeAllSolids(GameField) {
+	traverseBottomTop(GameField, (row, col) => {
+		const block = GameField[row][col];
+
+		if (!block || !block.falling) {
+			// empty cell or solid block
+			return;
+		}
+		GameField[row][col].solid = true;
+		GameField[row][col].falling = false;
+	});
+}
+
 export function fallDown(GameField) {
+	let finished = false;
+	let stopRow = -1;
+
 	traverseBottomTop(GameField, (row, col) => {
 		const block = GameField[row][col];
 
@@ -25,24 +44,33 @@ export function fallDown(GameField) {
 		}
 
 		if (row === 0 && block.falling) {
-			// the last line reached, make block solid
-			GameField[row][col].solid = true;
-			GameField[row][col].falling = false;
+			finished = true;
+			stopRow = row;
+			makeAllSolids(GameField);
 			return;
 		}
 
 		const blockBelow = row > 0 ? GameField[row - 1][col] : undefined;
 		if (block.falling && (blockBelow && !blockBelow.falling)) {
-			GameField[row][col].solid = true;
-			GameField[row][col].falling = false;
-
-			return;
+			finished = true;
+			stopRow = row;
+			makeAllSolids(GameField);
 		}
-
-		// move it down!
-		GameField[row - 1][col] = {...block};
-		GameField[row][col] = undefined;
 	});
+
+	if (!finished) {
+		traverseBottomTop(GameField, (row, col) => {
+			const block = GameField[row][col];
+
+			if (!block || !block.falling || block.solid) {
+				// empty cell or solid block
+				return;
+			}
+			// move it down!
+			GameField[row - 1][col] = {...block};
+			GameField[row][col] = undefined;
+		});
+	}
 
 	for (let rowIdx = 0; rowIdx < 20; rowIdx++) {
 		const line = GameField[rowIdx];
@@ -59,6 +87,10 @@ export function fallDown(GameField) {
 			}
 		}
 	}
+	return {
+		finished,
+		stopRow
+	};
 }
 
 export function removeFilledLines(GameField) {
@@ -114,4 +146,34 @@ export function printGame(GameField) {
 		}
 		console.log(s);
 	}
+}
+
+export function addFigureToField(GameField: Array<TCell[]>, type: string) {
+	const symbol = Figures[type];
+	if (!symbol) {
+		throw new Error(`Unknown figure "${type}"!`);
+	}
+
+	const maxHeight = symbol.length;
+	let maxWidth = symbol.reduce((prev, current) => {
+		return Math.max(prev, current.length);
+	}, 0);
+
+	const x = Math.floor(5 - maxWidth / 2);
+	const y = 20 + maxHeight;
+
+	for (let line = 0; line < maxHeight; line++) {
+		let matrix = symbol[line].split('');
+		for (let cell = 0; cell < matrix.length; cell++) {
+			if (matrix[cell] !== ' ') {
+				GameField[y - line][x + cell] = {falling: true}
+			}
+		}
+	}
+}
+
+export function cleanField(GameField) {
+	traverseBottomTop(GameField, (row, col) => {
+		GameField[row][col] = undefined;
+	});
 }
