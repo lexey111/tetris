@@ -10,10 +10,12 @@
 	export let accent = '#09517E';
 	export let hideLines = false;
 
+	export let scale = 20;
+
 	let hexAccent = parseInt(accent.replace('#', '0x'), 16);
 	export let rnd = -1;
 
-	const size = 6 * 20; // fixed scene size 6x6 cells with scale factor 20
+	const size = 6 * scale; // fixed scene size 6x6 cells with scale factor 20
 
 	let oldType = '';
 	let oldRnd = -2;
@@ -172,7 +174,6 @@
 		Frame.scene.traverse(function (node) {
 			if (node instanceof THREE.Mesh) {
 				node['markToRemove'] = true;
-				// node.position.z -= 5;
 			}
 		});
 	}

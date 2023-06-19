@@ -8,6 +8,7 @@
 	import BigLetter from "./BigLetter.svelte";
 
 	export let onStart;
+	export let onImageFacade;
 
 	let angle;
 
@@ -493,7 +494,7 @@
                 set for small web-apps. Responsive and adaptive design, of course, as usual.
             </p>
 
-            <div id="next-container" on:click={onStart}>
+            <div id="next-container" on:click={onImageFacade}>
                 <Next accent={'#FF0088'} type={fig} rnd={v}/>
             </div>
 

@@ -14,7 +14,7 @@ const boxMaterial = new THREE.MeshStandardMaterial({
 	// side: THREE.DoubleSide
 });
 //const boxGeometry = new THREE.BoxGeometry(.6, .6, .6);
-const boxGeometry = new THREE.SphereGeometry(.5, 12, 12);
+const boxGeometry = new THREE.SphereGeometry(.5, 24, 24);
 
 const horizontal1PillarGeometry = new THREE.BoxGeometry(0.2, 0.2, 1);
 const horizontal2PillarGeometry = new THREE.BoxGeometry(1, 0.2, 0.2);

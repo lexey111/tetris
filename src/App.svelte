@@ -2,26 +2,37 @@
 	import WebGL from "three/examples/jsm/capabilities/WebGL";
 	import Intro from "./intro/Intro.svelte";
 	import Game from "./game/Game.svelte";
+	import Facade from "./facade/Facade.svelte";
 
 	const isWebGL = WebGL.isWebGLAvailable();
 
-	let intro = true;
+	let mode: 'intro' | 'game' | 'facade' = 'intro'
 
 	function showGame() {
-		intro = false;
+		mode = 'game';
 	}
 
 	function showIntro() {
-		intro = true;
+		mode = 'intro';
+	}
+
+	function showFacade() {
+		mode = 'facade';
 	}
 </script>
 
 <main>
     {#if isWebGL}
-        {#if intro}
-            <Intro onStart={showGame}/>
-        {:else}
+        {#if (mode === 'intro')}
+            <Intro onStart={showGame} onImageFacade={showFacade}/>
+        {/if}
+
+        {#if (mode === 'game')}
             <Game onStop={showIntro}/>
+        {/if}
+
+        {#if (mode === 'facade')}
+            <Facade onStop={showIntro}/>
         {/if}
     {:else }
         <h1>No WebGL available</h1>
