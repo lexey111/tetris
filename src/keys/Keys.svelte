@@ -16,7 +16,7 @@
 	let Frame: TThreeFrame;
 	export let paused = false;
 
-	const sizeX = 390; // 14 cells
+	const sizeX = 420; // ±14 cells
 	const sizeY = 80; // 2 cells, 100px - paddings
 
 	const sizeL = 3; // 3 cells per key
@@ -37,6 +37,7 @@
 		keyEscape: undefined,
 		keyPause: undefined,
 		keySpace: undefined,
+		keySound: undefined,
 	};
 
 	const keyboardKeysPressed = {
@@ -48,6 +49,7 @@
 		keyEscape: false,
 		keyPause: false,
 		keySpace: false,
+		keySound: false,
 	};
 	let canvas;
 	let animationReq;
@@ -102,6 +104,9 @@
 			if (e === ' ') {
 				e = 'Space';
 			}
+			if (ev.keyCode === 83) {
+				e = 'Sound'; // S
+			}
 			if (keyboardKeys['key' + e]) {
 				keyboardKeysPressed['key' + e] = true;
 				updateState();
@@ -111,6 +116,9 @@
 			let e = ev.key;
 			if (e === ' ') {
 				e = 'Space';
+			}
+			if (ev.keyCode === 83) {
+				e = 'Sound'; // S
 			}
 			if (keyboardKeys['key' + e]) {
 				keyboardKeysPressed['key' + e] = false;
@@ -151,6 +159,7 @@
 			sizeL
 		});
 		keyboardKeys.keyPause = createKey({symbol: 'pause', SVGScale, sizeL});
+		keyboardKeys.keySound = createKey({symbol: 'sound', SVGScale, sizeL});
 		keyboardKeys.keySpace = createKey({symbol: 'drop', SVGScale, sizeL});
 
 		const keys = new THREE.Group();
@@ -179,8 +188,11 @@
 		keyboardKeys.keySpace.children[1].scale.x = 2;
 		keyboardKeys.keySpace.position.x = 13;
 
+		keys.add(keyboardKeys.keySound);
+		keyboardKeys.keySound.position.x = 18;
+
 		keys.position.y = -.5;
-		keys.position.x = -3.2;
+		keys.position.x = -5.0;
 
 		return keys;
 	}

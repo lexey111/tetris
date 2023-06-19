@@ -42,6 +42,7 @@ function makeAllSolids(field) {
 export function fallDown(field) {
 	let finished = false;
 	let stopRow = -1;
+	let hasToRemove = false;
 
 	traverseBottomTop(field, (row, col) => {
 		const block = field[row][col];
@@ -90,6 +91,7 @@ export function fallDown(field) {
 				for (let x = 0; x < field[y].length; x++) {
 					if (field[y][x]?.solid) {
 						field[y][x].fallAsRemove = true;
+						hasToRemove = true;
 					}
 				}
 			}
@@ -97,7 +99,8 @@ export function fallDown(field) {
 	}
 	return {
 		finished,
-		stopRow
+		stopRow,
+		hasToRemove
 	};
 }
 

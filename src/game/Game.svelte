@@ -18,6 +18,7 @@
 	import Text from "../text/Text.svelte";
 	import Banner from "./banner/Banner.svelte";
 	import Scene from "./scene/Scene.svelte";
+	import {Howl} from 'howler';
 
 	export let onStop;
 
@@ -37,7 +38,7 @@
 	let paused = false;
 	let gameIsOver = false;
 
-	let bannerText = ['TETRIS'];
+	let bannerText = ['TETRIS', 'WEBGL'];
 
 	const GameField = createGameField();
 
@@ -46,6 +47,11 @@
 	let countDown = 3;
 	let countdownHandler;
 	let showScene = false;
+
+	let soundEnabled = false;
+	let tickSound;
+	let tadaSound;
+	let thudSound;
 
 	function initGame() {
 		cleanupGameField(GameField);
@@ -63,7 +69,7 @@
 		paused = false;
 		gameIsOver = false;
 
-		bannerText = ['TETRIS'];
+		bannerText = ['TETRIS', 'WEB GL', '3D'];
 		countDown = 3;
 		showScene = false;
 	}
@@ -71,6 +77,18 @@
 	onMount(() => {
 		document.addEventListener("keydown", processKeysDown);
 		document.addEventListener("keyup", processKeysUp);
+
+		tickSound = new Howl({
+			src: ['tick.mp3']
+		});
+
+		tadaSound = new Howl({
+			src: ['tada.mp3']
+		});
+
+		thudSound = new Howl({
+			src: ['thud.mp3']
+		});
 
 		startSession();
 	});
@@ -96,7 +114,7 @@
 		}, 1000);
 	}
 
-	function startTurn() {
+	function startNewTurn() {
 		if (!nextFigure) {
 			// generate first figure
 			nextFigure = getRandomFigure(level > 6);
@@ -117,7 +135,7 @@
 		started = true;
 		paused = false;
 
-		startTurn();
+		startNewTurn();
 
 		setTickDuration();
 
@@ -126,13 +144,18 @@
 				const removed = removeFilledLines(GameField);
 
 				if (removed > 0) {
-					score += removed * level;
+					score += (removed * removed) * level;
 					linesRemovedOnLevel += removed;
 				}
 
 				if (linesRemovedOnLevel >= 10) {
+					if (soundEnabled) {
+						tadaSound.currentTime = 0;
+						tadaSound.play();
+					}
 					levelUp();
 				}
+
 			}, 2
 		); // second - remove lines and add score
 
@@ -152,9 +175,20 @@
 
 	function processTick() {
 		const result = fallDown(GameField);
+
+		if (result.hasToRemove && soundEnabled) {
+			thudSound.currentTime = 0;
+			thudSound.play();
+		}
+
 		if (result.finished) {
 			if (result.stopRow <= 19) {
-				startTurn();
+				startNewTurn();
+
+				if (!result.hasToRemove && soundEnabled) {
+					tickSound.currentTime = 0;
+					tickSound.play();
+				}
 			} else {
 				gameOver();
 			}
@@ -196,6 +230,10 @@
 			e = 'Pause'; // P
 		}
 
+		if (ev.keyCode === 83) {
+			e = 'Sound'; // S
+		}
+
 		if (e === 'Space') {
 			if (!started || paused) {
 				return;
@@ -230,6 +268,13 @@
 			}
 			togglePause();
 		}
+		if (e === 'Sound') {
+			toggleSound();
+		}
+	}
+
+	function toggleSound() {
+		soundEnabled = !soundEnabled;
 	}
 
 	function moveLeft() {
@@ -322,6 +367,7 @@
 		z-index: 10;
 		opacity: 1;
 		transition: all .5s ease;
+		pointer-events: none;
 	}
 
 	#banner-container.inactive {
@@ -358,6 +404,20 @@
 
 	#side-container .stub {
 		height: 30px;
+	}
+
+	#sound-switch {
+		position: absolute;
+		left: -20px;
+		top: 40px;
+		transform: translateX(-100%);
+		width: 20px;
+		height: 20px;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+		padding-top: 40px;
+		cursor: pointer;
 	}
 
 	#help-content {
@@ -398,7 +458,7 @@
 
 	@media screen and (max-width: 980px) {
 		#scene-container {
-            margin-left: -200px;
+			margin-left: -200px;
 		}
 	}
 
@@ -418,6 +478,13 @@
 			padding-left: 0;
 			transform: translateX(-50%) translateY(-40px);
 		}
+
+		#sound-switch {
+			left: 50%;
+			top: 100%;
+			padding-left: 0;
+			transform: translateX(-10px) translateY(-60px);
+		}
 	}
 
 	@media screen and (max-width: 400px) {
@@ -431,6 +498,12 @@
     <div id="screen-content">
         {#if showScene}
             <div id="scene-container">
+                {#if started}
+                    <div id="sound-switch" on:click={toggleSound}>
+                        <Text text="{soundEnabled? '*' : '#'}" scale={6}
+                              colors={soundEnabled ? [0x15FED0]: [0xFFAAAA]}/>
+                    </div>
+                {/if}
                 <div id="side-container">
                     <Next type={nextFigure} rnd={v} hideLines={true}/>
                     <Text text="SPEED [{level}]" scale={6} colors={[0x158AD0, 0x057AC0]}/>
