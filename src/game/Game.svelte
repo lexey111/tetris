@@ -79,15 +79,15 @@
 		document.addEventListener("keyup", processKeysUp);
 
 		tickSound = new Howl({
-			src: ['tick.mp3']
+			src: ['./sounds/tick.mp3']
 		});
 
 		tadaSound = new Howl({
-			src: ['tada.mp3']
+			src: ['./sounds/tada.mp3']
 		});
 
 		thudSound = new Howl({
-			src: ['thud.mp3']
+			src: ['./sounds/thud.mp3']
 		});
 
 		startSession();
