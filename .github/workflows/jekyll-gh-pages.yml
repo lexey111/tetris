@@ -21,14 +21,15 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
-strategy:
-  matrix:
-    node-version: [14.x, 16.x, 18.x]
-
 jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
