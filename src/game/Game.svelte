@@ -32,7 +32,7 @@
 	let v = 0;
 
 	let tickDuration = getTickDuration(level);
-	let isDropDown = false
+	let isDropDown = false;
 
 	let started = false;
 	let paused = false;

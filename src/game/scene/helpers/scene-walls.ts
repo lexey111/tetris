@@ -13,7 +13,7 @@ function createWallBrick(x, y, z) {
 	return cube;
 }
 
-export function addWalls(scene) {
+export function addWalls() {
 	const wallGroup = new THREE.Group();
 	// left
 	const verticalWall = new THREE.Group();

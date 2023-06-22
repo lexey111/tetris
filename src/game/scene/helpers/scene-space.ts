@@ -3,7 +3,7 @@ import * as THREE from "three";
 const spaceGeometry = new THREE.SphereGeometry(0.03, 4, 4);
 const spaceMaterial = new THREE.MeshStandardMaterial({color: 0x9999FF, transparent: true, opacity: .1});
 
-export function addSpaceItems(scene) {
+export function addSpaceItems() {
 	const spaceGroup = new THREE.Group();
 
 	for (let i = 0; i <= 9; i++) {

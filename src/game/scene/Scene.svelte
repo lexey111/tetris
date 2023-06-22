@@ -141,10 +141,10 @@
 
 		Frame.camera.zoom = -0.01;
 
-		walls = addWalls(Frame.scene);
+		walls = addWalls();
 		Frame.scene.add(walls);
 
-		space = addSpaceItems(Frame.scene);
+		space = addSpaceItems();
 		space.children[0].material.opacity = 0;
 		Frame.scene.add(space);
 
