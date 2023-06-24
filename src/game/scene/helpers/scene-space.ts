@@ -18,6 +18,7 @@ export function addSpaceItems() {
 	spaceGroup.position.setX(-5 + .5);
 	spaceGroup.position.setY(-10 + .5);
 	spaceGroup.position.setZ(8);
+	spaceGroup.rotation.y = -Math.PI / 2;
 
 	return spaceGroup;
 }

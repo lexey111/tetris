@@ -1,8 +1,19 @@
 import * as THREE from "three";
 
-const wallGeometry = new THREE.BoxGeometry(0.9, 0.9, 1.5);
-const wallCubeMaterial = new THREE.MeshStandardMaterial({color: 0x0095DD});
+const wallGeometry = new THREE.BoxGeometry(0.99, 0.99, 1.8);
+export const wallCubeMaterial = new THREE.MeshStandardMaterial({
+	color: 0x0095DD,
+	transparent: true,
+	opacity: .8,
+});
 const wallCube = new THREE.Mesh(wallGeometry, wallCubeMaterial);
+
+export const wallCubeProgressMaterial = new THREE.MeshStandardMaterial({
+	color: 0xFFA600,
+	transparent: true,
+	opacity: .8,
+});
+
 
 function createWallBrick(x, y, z) {
 	const cube = wallCube.clone();
@@ -41,5 +52,8 @@ export function addWalls() {
 	wallGroup.add(bottomWall);
 
 	wallGroup.position.z = -1;
+	wallGroup.rotation.y = Math.PI / 2;
+	wallGroup.scale.set(.5, .5, .5);
+
 	return wallGroup;
 }

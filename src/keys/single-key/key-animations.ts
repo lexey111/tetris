@@ -5,6 +5,10 @@ export class KeyAnimations implements TAnimations {
 		//
 	}
 
+	public setKey = (key) => {
+		this.key = key;
+	}
+
 	public getAnimation = () => {
 		return {
 			duration: 2000,

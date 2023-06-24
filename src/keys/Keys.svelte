@@ -15,6 +15,7 @@
 
 	let Frame: TThreeFrame;
 	export let paused = false;
+	export let sound = false;
 
 	const sizeX = 420; // ±14 cells
 	const sizeY = 80; // 2 cells, 100px - paddings
@@ -87,6 +88,18 @@
 				keyboardKeys.keyPause.children[0].children.forEach(item => item.material = StandardTextMaterial);
 				keyboardKeys.keyPause.children[1].children.forEach(item => item.material = StandardKeyMaterial);
 				keyboardKeysPressed.keyPause = false;
+			}
+			updateState();
+		}
+		if (keyboardKeys.keySound) {
+			if (sound) {
+				keyboardKeys.keySound.children[0].children.forEach(item => item.material = BrightTextMaterial);
+				keyboardKeys.keySound.children[1].children.forEach(item => item.material = BrightKeyMaterial);
+				keyboardKeysPressed.keySound = true;
+			} else {
+				keyboardKeys.keySound.children[0].children.forEach(item => item.material = StandardTextMaterial);
+				keyboardKeys.keySound.children[1].children.forEach(item => item.material = StandardKeyMaterial);
+				keyboardKeysPressed.keySound = false;
 			}
 			updateState();
 		}

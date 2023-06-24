@@ -3,17 +3,21 @@
 	import * as THREE from "three";
 	import {createKey} from "../keys-utils";
 	import type {TThreeFrame} from "../../game/game-globals";
+	import {clear3d} from "../../game/game-globals";
 	import {AnimationManager} from "../../shared/animation-manager";
 	import {KeyAnimations} from "./key-animations";
-	import {clear3d} from "../../game/game-globals";
 
 	let Frame: TThreeFrame;
 
+	export let symbol = 'escape';
 	export let size = 80;
 	export let keyColor = 0x223344;
 	export let textColor = 0xdd5555;
 	export let rotate = false; // show rotation animation
 	export let delay = 0;
+
+	export let angle = -0.6;
+	export let lights = true;
 
 	const sizeX = size;
 	const sizeY = size;
@@ -54,6 +58,38 @@
 			}
 		}
 	}
+	$: if (symbol && Frame) {
+		clearScene();
+		key = createKey({
+			symbol,
+			keyColor,
+			textColor,
+			SVGScale,
+			sizeL
+		});
+		key.rotation.x = angle;
+
+		Frame.scene.add(key);
+		Frame.renderer?.render(Frame.scene, Frame.camera);
+		keyAnimations.setKey(key);
+	}
+
+	function clearScene() {
+		if (!Frame) {
+			return;
+		}
+		const objectsToRemove = [];
+		Frame.scene.traverse(function (node) {
+			if (node instanceof THREE.Mesh) {
+				objectsToRemove.push(node);
+			}
+		});
+
+		objectsToRemove.forEach(node => {
+			let parent = node.parent;
+			parent.remove(node);
+		});
+	}
 
 	function animate() {
 		if (!Frame) {
@@ -85,21 +121,23 @@
 		light.castShadow = true;
 		Frame.scene.add(light);
 
-		const plight1 = new THREE.PointLight(0x8800ff, .2, 20);
-		plight1.position.set(-5, 1, 5);
-		plight1.castShadow = true;
-		const plight2 = new THREE.PointLight(0xff0088, .8, 20);
-		plight2.position.set(0, -1, 1);
-		plight2.castShadow = true;
+		if (lights) {
+			const plight1 = new THREE.PointLight(0x8800ff, .2, 20);
+			plight1.position.set(-5, 1, 5);
+			plight1.castShadow = true;
+			const plight2 = new THREE.PointLight(0xff0088, .8, 20);
+			plight2.position.set(0, -1, 1);
+			plight2.castShadow = true;
 
-		Frame.scene.add(plight1);
-		Frame.scene.add(plight2);
+			Frame.scene.add(plight1);
+			Frame.scene.add(plight2);
+		}
 
 		Frame.renderer.shadowMap.enabled = true;
 		Frame.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 		key = createKey({
-			symbol: 'escape',
+			symbol,
 			keyColor,
 			textColor,
 			SVGScale,
@@ -107,7 +145,7 @@
 		});
 
 		Frame.scene.add(key);
-		key.rotation.x = -.6;
+		key.rotation.x = angle;
 
 		Frame.renderer.setSize(sizeX, sizeY);
 

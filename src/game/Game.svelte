@@ -19,6 +19,7 @@
 	import Banner from "./banner/Banner.svelte";
 	import Scene from "./scene/Scene.svelte";
 	import {Howl} from 'howler';
+	import Key from "../keys/single-key/Key.svelte";
 
 	export let onStop;
 
@@ -27,6 +28,7 @@
 	let score = 0;
 	let level = 1;
 	let linesRemovedOnLevel = 0;
+	let levelPercent = 0;
 
 	let nextFigure = '';
 	let v = 0;
@@ -49,9 +51,22 @@
 	let showScene = false;
 
 	let soundEnabled = false;
-	let tickSound;
-	let tadaSound;
-	let thudSound;
+
+	const tickSound = new Howl({
+		src: ['./sounds/tick.mp3']
+	});
+
+	const clickSound = new Howl({
+		src: ['./sounds/click.mp3']
+	});
+
+	const tadaSound = new Howl({
+		src: ['./sounds/tada.mp3']
+	});
+
+	const thudSound = new Howl({
+		src: ['./sounds/thud.mp3']
+	});
 
 	function initGame() {
 		cleanupGameField(GameField);
@@ -61,6 +76,7 @@
 		score = 0;
 		level = 1;
 		linesRemovedOnLevel = 0;
+		levelPercent = 0;
 
 		nextFigure = '';
 		v = 0;
@@ -77,19 +93,6 @@
 	onMount(() => {
 		document.addEventListener("keydown", processKeysDown);
 		document.addEventListener("keyup", processKeysUp);
-
-		tickSound = new Howl({
-			src: ['./sounds/tick.mp3']
-		});
-
-		tadaSound = new Howl({
-			src: ['./sounds/tada.mp3']
-		});
-
-		thudSound = new Howl({
-			src: ['./sounds/thud.mp3']
-		});
-
 		startSession();
 	});
 
@@ -146,13 +149,15 @@
 				if (removed > 0) {
 					score += (removed * removed) * level;
 					linesRemovedOnLevel += removed;
-				}
+                }
 
 				if (linesRemovedOnLevel >= 10) {
+					levelPercent = 100;
+
 					if (soundEnabled) {
-						tadaSound.currentTime = 0;
 						tadaSound.play();
 					}
+
 					levelUp();
 				}
 
@@ -177,16 +182,16 @@
 		const result = fallDown(GameField);
 
 		if (result.hasToRemove && soundEnabled) {
-			thudSound.currentTime = 0;
 			thudSound.play();
 		}
+
+		levelPercent = linesRemovedOnLevel * 10;
 
 		if (result.finished) {
 			if (result.stopRow <= 19) {
 				startNewTurn();
 
 				if (!result.hasToRemove && soundEnabled) {
-					tickSound.currentTime = 0;
 					tickSound.play();
 				}
 			} else {
@@ -238,6 +243,9 @@
 			if (!started || paused) {
 				return;
 			}
+			if (soundEnabled) {
+				clickSound.play();
+			}
 			isDropDown = true;
 			setTickDuration(5);
 			score += 1;
@@ -281,6 +289,9 @@
 		if (paused || !started || gameIsOver) {
 			return;
 		}
+		if (soundEnabled) {
+			clickSound.play();
+		}
 		moveFigureLeft(GameField);
 		tickManager.immediateRestart();
 	}
@@ -288,6 +299,9 @@
 	function moveRight() {
 		if (paused || !started || gameIsOver) {
 			return;
+		}
+		if (soundEnabled) {
+			clickSound.play();
 		}
 		moveFigureRight(GameField);
 		tickManager.immediateRestart();
@@ -299,6 +313,9 @@
 		}
 
 		if (rotateFigure(GameField)) {
+			if (soundEnabled) {
+				clickSound.play();
+			}
 			tickManager.immediateRestart()
 		}
 	}
@@ -412,7 +429,7 @@
 		top: 40px;
 		transform: translateX(-100%);
 		width: 20px;
-		height: 20px;
+		min-height: 20px;
 		display: flex;
 		flex-flow: column nowrap;
 		align-items: center;
@@ -483,7 +500,7 @@
 			left: 50%;
 			top: 100%;
 			padding-left: 0;
-			transform: translateX(-10px) translateY(-60px);
+			transform: translateX(-10px) translateY(-76px) scale(.5);
 		}
 	}
 
@@ -500,8 +517,14 @@
             <div id="scene-container">
                 {#if started}
                     <div id="sound-switch" on:click={toggleSound}>
-                        <Text text="{soundEnabled? '*' : '#'}" scale={6}
-                              colors={soundEnabled ? [0x15FED0]: [0xFFAAAA]}/>
+                        <Key size={80}
+                             keyColor={soundEnabled? 0xFFa600 : 0x022326}
+                             textColor={soundEnabled? 0x022326 : 0x404040}
+                             rotate={false}
+                             angle={0}
+                             lights={false}
+                             symbol="{soundEnabled? 'sound-icon' : 'no-sound-icon'}"/>
+
                     </div>
                 {/if}
                 <div id="side-container">
@@ -514,13 +537,14 @@
                        {GameField}
                        {tick}
                        {tickDuration}
+                       {levelPercent}
                        {paused}/>
             </div>
         {/if}
     </div>
     <div id="help-content">
         <div id="help">
-            <Keys paused={paused}/>
+            <Keys {paused} sound={soundEnabled}/>
         </div>
     </div>
 </div>

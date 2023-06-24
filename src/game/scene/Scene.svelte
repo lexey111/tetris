@@ -11,13 +11,14 @@
 	import {FilledRowAnimations} from "./animations/filled-row-animations";
 	import {FallingAnimations} from "./animations/falling-animations";
 	import {addSpaceItems} from "./helpers/scene-space";
-	import {addWalls} from "./helpers/scene-walls";
+	import {addWalls, wallCubeMaterial, wallCubeProgressMaterial} from "./helpers/scene-walls";
 
 	export let onEvent: (event: string) => void;
 	export let tickDuration;
 	export let GameField = [];
 	export let tick = 0; // new turn
 	export let paused = false;
+	export let levelPercent = 0;
 
 	let Frame: TThreeFrame;
 	let canvas;
@@ -46,6 +47,27 @@
 			drawField();
 			runFieldAnimations();
 		}
+	}
+
+	$: if (walls && levelPercent >= 0) {
+		drawWallPercentage();
+	}
+
+	function drawWallPercentage() {
+		if (!walls) {
+			return;
+		}
+		// vertical wall has 20 items
+		const counter = Math.ceil(20 * levelPercent / 100);
+		const wall1 = walls.children[0].children;
+		const wall2 = walls.children[1].children;
+		const wall3 = walls.children[2].children;
+
+		for (let i = wall1.length - 1; i >= 0; i--) {
+			wall1[i].material = i < counter ? wallCubeProgressMaterial : wallCubeMaterial;
+			wall2[i].material = i < counter ? wallCubeProgressMaterial : wallCubeMaterial;
+		}
+		wall3.forEach(pixel => pixel.material = levelPercent > 0 ? wallCubeProgressMaterial : wallCubeMaterial);
 	}
 
 	onMount(() => {
