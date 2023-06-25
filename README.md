@@ -11,11 +11,11 @@ However, there are some things:
 - breath-taking gameplay,
 - awesome sound effects.
 
-Well, obviously it is an AAA title, and I use this to illustrate my [articles](https://medium.com) on Medium. 
+Well, obviously it is an AAA title, and I use this to illustrate my [articles](https://lexeykoshkin.medium.com/creating-a-3d-tetris-game-for-dummies-like-me-i-d3f6c75d32ed) on Medium. 
 
 ## Demo
 
-Just click [this link](https://lexey111.github.io/tetris/#).
+Click [this link](https://lexey111.github.io/tetris/#).
 
 ## Run
 
