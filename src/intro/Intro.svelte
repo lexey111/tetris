@@ -9,6 +9,7 @@
 
 	export let onStart;
 	export let onImageFacade;
+	export let fadeOut = false;
 
 	let angle;
 
@@ -77,6 +78,21 @@
 		}
 	}
 
+	@keyframes disappear {
+		0% {
+			transform: scaleX(1) scaleY(1);
+			opacity: 1;
+		}
+		80% {
+			transform: scaleX(.5) scaleY(0.005) translateY(100%) rotateZ(-180deg);
+			opacity: .5;
+		}
+		100% {
+			transform: scaleX(0) scaleY(0);
+			opacity: 0;
+		}
+	}
+
 	#intro {
 		position: absolute;
 		top: 100px;
@@ -95,12 +111,23 @@
 		opacity: 0;
 
 		transform-origin: top center;
+	}
 
+	.fade-in {
 		animation-name: appear;
 		animation-delay: .5s;
 		animation-iteration-count: 1;
 		animation-duration: 1s;
 		animation-timing-function: ease;
+		animation-fill-mode: forwards;
+	}
+
+	.fade-out {
+		animation-name: disappear;
+		animation-iteration-count: 1;
+		animation-duration: 1s;
+		animation-timing-function: ease-in;
+		animation-play-state: running;
 		animation-fill-mode: forwards;
 	}
 
@@ -191,7 +218,6 @@
 		border-top-right-radius: 6px;
 	}
 
-
 	.layer-content {
 		padding: 40px;
 		font-size: 14px;
@@ -199,6 +225,10 @@
 		line-height: 1.6;
 		display: flex;
 		flex-flow: column nowrap;
+	}
+
+	.full-height {
+		height: 100%;
 	}
 
 	.layer-content.bouncer {
@@ -214,7 +244,6 @@
 		flex-flow: column wrap;
 		padding: 0;
 	}
-
 
 	#layer-3 a {
 		color: #cdfcaf;
@@ -351,6 +380,26 @@
 		cursor: pointer;
 	}
 
+	.bottom-text {
+		margin-top: auto;
+		text-align: center;
+	}
+
+	ul {
+		margin: 1em 0;
+		padding: 0;
+	}
+
+	li::marker {
+		content: '✔ ';
+		font-size: 1em;
+		color: #c4e05e;
+	}
+
+	ul li {
+		margin-bottom: 0;
+	}
+
 
 	@media screen and (max-width: 1280px) {
 		#layer-1 {
@@ -369,10 +418,6 @@
 
 		.page {
 			width: 50%;
-		}
-
-		.layer-content {
-			/*font-size: 1.5vw;*/
 		}
 	}
 
@@ -421,7 +466,7 @@
 	}
 </style>
 
-<div id="intro">
+<div id="intro" class="{fadeOut?'fade-out' : 'fade-in'}">
     <div id="layer-1" class="page">
         <div class="layer-content" style:transform="skew(0, {angle}deg)">
             <p>
@@ -459,14 +504,14 @@
         <div class="text-3d" style:transform="skew(0, {angle}deg)">Tet</div>
     </div>
     <div id="layer-3" class="page">
-        <div class="layer-content" style:transform="skew(0, {angle}deg)">
+        <div class="layer-content full-height" style:transform="skew(0, {angle}deg)">
             <p>
                 <span class="big-letter">
                     <BigLetter letter="O"/>
                 </span>
                 Once I decided to learn something completely new, as far as possible from my usual "enterprisish"
-                life with <i>clouds</i>, <i>microfrontends</i>, <i>React</i>, <i>Angular</i>, <i>Agile</i> and,
-                especially, <i>Scrum</i>.
+                life with <i>clouds</i>, <i>microfrontends</i>, <i>React</i>, <i>Angular</i>, <i>Agile</i> and
+                <i>Scrum</i>.
             </p>
             <p>
                 This page was created just for fun and relaxation from enterprise software development,
@@ -475,9 +520,17 @@
             <p class="go-link">
                 <a href="https://en.wikipedia.org/wiki/Tetris" target="_blank">Read details &rarr;</a>
             </p>
-            <p>
-                &copy; {year}, <a href="https://www.linkedin.com/in/oleksii-koshkin-2a293339/" target="_blank">Oleksii Koshkin</a>
-            </p>
+            <ul>
+                <li>3D WebGL</li>
+                <li>Game</li>
+                <li>Lightweight framework, almost vanilla</li>
+                <li>Drive!</li>
+            </ul>
+            <div class="bottom-text">
+                &copy; {year}, <a href="https://www.linkedin.com/in/oleksii-koshkin-2a293339/" target="_blank">
+                Oleksii Koshkin
+            </a>
+            </div>
         </div>
         <div class="text-3d" style:transform="skew(0, {angle}deg)">&nbsp;ris</div>
     </div>
