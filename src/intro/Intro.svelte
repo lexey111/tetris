@@ -518,7 +518,7 @@
                 kind of refresher... and you can consider this as one of my CV.
             </p>
             <p class="go-link">
-                <a href="https://medium.com/@lexeykoshkin/creating-a-3d-tetris-game-for-dummies-like-me-i" target="_blank">Read details &rarr;</a>
+                <a href="https://lexeykoshkin.medium.com/creating-a-3d-tetris-game-for-dummies-like-me-i-d3f6c75d32ed" target="_blank">Read details &rarr;</a>
             </p>
             <ul>
                 <li>3D WebGL</li>
